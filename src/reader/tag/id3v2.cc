@@ -9,7 +9,6 @@ namespace Id3v2 {
 namespace {
 
 using Filesystem::readBytes;
-using Filesystem::Way;
 
 const int kTagHeaderLength = 10;
 const int kTagMajorVersionPos = 3;
@@ -61,7 +60,7 @@ bool parseTagHeader(const Bytes& header, bool is_footer, int& version,
 
 int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek) {
   Bytes header;
-  readBytes(file_stream, seek, kTagHeaderLength, header, Way::kFront);
+  readBytes(file_stream, seek, kTagHeaderLength, header);
 
   int version, size;
   bool flag_1, flag_2;
