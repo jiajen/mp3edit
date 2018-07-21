@@ -50,7 +50,6 @@ File::File(const std::string& filepath, FileType filetype,
 
     file_stream.seekg(0, file_stream.end);
     filesize_ = file_stream.tellg();
-    // TODO check whether tellg gives end of file consistently
 
     readMetaData(file_stream);
     if (read_audio_data) readAudioData(file_stream);
@@ -62,6 +61,7 @@ File::File(const std::string& filepath, FileType filetype,
 
 void File::saveFileChanges() {
   // TODO only overwrite if metadata changed
+  // (if same size then only read raw metadata from file to compare)
 }
 
 void File::readMetaData(Filesystem::FileStream& file_stream) {
