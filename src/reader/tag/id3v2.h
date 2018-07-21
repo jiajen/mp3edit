@@ -13,9 +13,9 @@ namespace Id3v2 {
 bool parseTagHeader(const Bytes& header, bool is_footer, int& version,
                     int& size, bool& has_unsync, bool& has_extended_header);
 
-int seekHeaderEnd(Filesystem::FileStream &file_stream, int seek);
+int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek);
 
-int seekFooterStart(Filesystem::FileStream &file_stream, int seek);
+int seekFooterStart(Filesystem::FileStream& file_stream, int seek);
 
 }  // Id3v2
 }  // ReaderTag

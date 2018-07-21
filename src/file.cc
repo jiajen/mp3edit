@@ -64,7 +64,7 @@ void File::saveFileChanges() {
   // TODO only overwrite if metadata changed
 }
 
-void File::readMetaData(Filesystem::FileStream &file_stream) {
+void File::readMetaData(Filesystem::FileStream& file_stream) {
 
   int seek_start = 0, seek_end = filesize_, seek;
   int audio_start, audio_end;
@@ -95,7 +95,7 @@ void File::readMetaData(Filesystem::FileStream &file_stream) {
   } while (seek_start != audio_start || seek_end != audio_end);
 }
 
-void File::readAudioData(Filesystem::FileStream &file_stream) {
+void File::readAudioData(Filesystem::FileStream& file_stream) {
   // TODO Read audio
 }
 

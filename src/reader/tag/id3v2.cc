@@ -59,7 +59,7 @@ bool parseTagHeader(const Bytes& header, bool is_footer, int& version,
   return true;
 }
 
-int seekHeaderEnd(Filesystem::FileStream &file_stream, int seek) {
+int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek) {
   Bytes header;
   readBytes(file_stream, seek, kTagHeaderLength, header, Way::kFront);
 
@@ -71,7 +71,7 @@ int seekHeaderEnd(Filesystem::FileStream &file_stream, int seek) {
   return seek;
 }
 
-int seekFooterStart(Filesystem::FileStream &file_stream, int seek) {
+int seekFooterStart(Filesystem::FileStream& file_stream, int seek) {
 
 }
 

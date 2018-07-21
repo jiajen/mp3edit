@@ -11,7 +11,7 @@ namespace Id3v2_3 {
 
 class Tag {
  public:
-  Tag(Filesystem::FileStream &file_stream, int seek_start, int seek_end);
+  Tag(Filesystem::FileStream& file_stream, int seek_start, int seek_end);
   Bytes generateTagHeader();
   inline std::string getTitle() const { return title_; }
   inline std::string getArtist() const { return artist_; }
