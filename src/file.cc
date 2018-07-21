@@ -50,7 +50,6 @@ File::File(const std::string& filepath, FileType filetype,
 
     file_stream.seekg(0, file_stream.end);
     filesize_ = file_stream.tellg();
-    // TODO check whether tellg gives end of file consistently
 
     readMetaData(file_stream);
     if (read_audio_data) readAudioData(file_stream);
@@ -62,14 +61,14 @@ File::File(const std::string& filepath, FileType filetype,
 
 void File::saveFileChanges() {
   // TODO only overwrite if metadata changed
+  // (if same size then only read raw metadata from file to compare)
 }
 
 void File::readMetaData(Filesystem::FileStream& file_stream) {
   int seek_start = 0, seek_end = filesize_, seek;
-  int audio_start, audio_end;
   do {
-    audio_start = seek_start;
-    audio_end = seek_end;
+    audio_start_ = seek_start;
+    audio_end_ = seek_end;
 
     using namespace ReaderTag;
 
@@ -91,7 +90,7 @@ void File::readMetaData(Filesystem::FileStream& file_stream) {
     // seek_end = Ape::seekFooterStart(file_stream, seek_end);
     // seek_end = Vorbis::seekFooterStart(file_stream, seek_end);
 
-  } while (seek_start != audio_start || seek_end != audio_end);
+  } while (seek_start != audio_start_ || seek_end != audio_end_);
 }
 
 void File::readAudioData(Filesystem::FileStream& file_stream) {
@@ -100,10 +99,12 @@ void File::readAudioData(Filesystem::FileStream& file_stream) {
 
 Bytes File::generateMetadataFront() {
   // TODO generate proper metadata using meeber data and based on filetpe
+  return Bytes();
 }
 
 Bytes File::generateMetadataBack() {
   // TODO generate proper metadata using meeber data and based on filetpe
+  return Bytes();
 }
 
 void File::updateMetadataFromId3v2Tag() {

@@ -5,11 +5,13 @@ namespace ReaderTag {
 namespace Id3v1 {
 
 int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek) {
-
+  // TODO
+  return seek;
 }
 
 int seekFooterStart(Filesystem::FileStream& file_stream, int seek) {
-
+  // TODO
+  return seek;
 }
 
 }  // Id3v1

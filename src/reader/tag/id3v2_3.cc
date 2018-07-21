@@ -10,6 +10,7 @@ Tag::Tag(Filesystem::FileStream& file_stream, int seek_start, int seek_end) {
 
 Bytes Tag::generateTagHeader() {
   // TODO generate id3v2.3 tag purely
+  return Bytes();
 }
 
 }  // Id3v2
