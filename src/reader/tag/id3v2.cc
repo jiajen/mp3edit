@@ -24,26 +24,31 @@ const int kTagFlagFooterPresentBitPos = 4;  // Only in id3v2.4
 
 }  // namespace
 
-bool parseTagHeader(const Bytes& header, int& version, int& size,
-                    bool& has_unsync, bool& has_extended_header) {
+bool parseTagHeader(const Bytes& header, bool is_footer, int& version,
+                    int& size, bool& has_unsync, bool& has_extended_header) {
   if (header.size() != kTagHeaderLength) return false;
-  if (strncmp((const char*)header.data(), "ID3", 3) != 0) return false;
+  if (is_footer) {
+    if (strncmp((const char*)header.data(), "3DI", 3) != 0) return false;
+  } else {
+    if (strncmp((const char*)header.data(), "ID3", 3) != 0) return false;
+  }
   if (header[kTagMajorVersionPos] == 0xFF ||
       header[kTagMinorVersionPos] == 0xFF) return false;
 
   version = header[kTagMajorVersionPos];
 
   unsigned char tags = header[kTagFlagsPos];
-  bool has_footer = false;
   has_unsync = (bool)(tags&(1<<kTagFlagUnsyncBitPos));
   if (version == 3 || version == 4) {
     has_extended_header = (bool)(tags&(1<<kTagFlagExtendedHeaderBitPos));
   } else {
     has_extended_header = false;
   }
+  bool has_footer = (bool)(version == 4 &&
+                           (tags&(1<<kTagFlagFooterPresentBitPos)));
+  if (is_footer && !has_footer) return false;
 
-  size = (version == 4 && (tags&(1<<kTagFlagFooterPresentBitPos))) ? 20 : 10;
-
+  size = (has_footer) ? 20 : 10;
   int shift = 0;
   for (int i = kTagHeaderLength - 1; i >= kTagHeaderSizePos; i--, shift += 7) {
     int val = header[i];
@@ -60,7 +65,8 @@ int seekHeaderEnd(Filesystem::FileStream &file_stream, int seek) {
 
   int version, size;
   bool flag_1, flag_2;
-  if (parseTagHeader(header, version, size, flag_1, flag_2)) seek += size;
+  if (parseTagHeader(header, false, version, size, flag_1, flag_2))
+    seek += size;
 
   return seek;
 }

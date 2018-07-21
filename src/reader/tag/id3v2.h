@@ -10,8 +10,8 @@ namespace Id3v2 {
 
 // Returns true if it is a valid id3v2 tag.
 // Size is the total size of the tag (including header and footer)
-bool parseTagHeader(const Bytes& header, int& version, int& size,
-                    bool& has_unsync, bool& has_extended_header);
+bool parseTagHeader(const Bytes& header, bool is_footer, int& version,
+                    int& size, bool& has_unsync, bool& has_extended_header);
 
 int seekHeaderEnd(Filesystem::FileStream &file_stream, int seek);
 
