@@ -1,0 +1,6 @@
+#ifndef MP3EDIT_SRC_MAIN_H_
+#define MP3EDIT_SRC_MAIN_H_
+
+const char* kApplicationVersion = "@PROJECT_VERSION@";
+
+#endif  // MP3EDIT_SRC_MAIN_H_
