@@ -76,8 +76,8 @@ void File::readMetaData(Filesystem::FileStream &file_stream) {
 
     seek = Id3v2::seekHeaderEnd(file_stream, seek_start);
     if (seek != seek_start) {
-      seek_start = seek;
       // TODO parse id3v2.3
+      seek_start = seek;
     }
 
     // TODO Uncomment completed functions
