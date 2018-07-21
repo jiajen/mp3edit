@@ -65,7 +65,6 @@ void File::saveFileChanges() {
 }
 
 void File::readMetaData(Filesystem::FileStream& file_stream) {
-
   int seek_start = 0, seek_end = filesize_, seek;
   int audio_start, audio_end;
   do {
@@ -88,7 +87,7 @@ void File::readMetaData(Filesystem::FileStream& file_stream) {
 
     // seek_end = Id3v1::seekFooterStart(file_stream, seek_end);
     // seek_end = Lyrics3::seekFooterStart(file_stream, seek_end);
-    // seek_end = Id3v2::seekFooterStart(file_stream, seek_end);
+    seek_end = Id3v2::seekFooterStart(file_stream, seek_end);
     // seek_end = Ape::seekFooterStart(file_stream, seek_end);
     // seek_end = Vorbis::seekFooterStart(file_stream, seek_end);
 
