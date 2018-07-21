@@ -99,10 +99,12 @@ void File::readAudioData(Filesystem::FileStream& file_stream) {
 
 Bytes File::generateMetadataFront() {
   // TODO generate proper metadata using meeber data and based on filetpe
+  return Bytes();
 }
 
 Bytes File::generateMetadataBack() {
   // TODO generate proper metadata using meeber data and based on filetpe
+  return Bytes();
 }
 
 void File::updateMetadataFromId3v2Tag() {
