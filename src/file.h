@@ -40,15 +40,17 @@ class File {
   inline int getTrackNum() const { return track_num_; }
   inline int getTrackDenum() const { return track_denum_; }
   inline std::string getFilepath() const { return filepath_; }
+  void saveFileChanges();
  private:
-  void readMetaData(Filesystem::FileStream &file_stream);
+  void readMetaData(Filesystem::FileStream& file_stream);
   // Sets is_valid_ to false if file appears invalid
-  void readAudioData(Filesystem::FileStream &file_stream);
+  void readAudioData(Filesystem::FileStream& file_stream);
 
   Bytes generateMetadataFront();
   Bytes generateMetadataBack();
 
-  void saveFileChanges();
+  void updateMetadataFromId3v2Tag();
+  void updateMetadataFromVorbis();
 
   std::string title_;
   std::string artist_;

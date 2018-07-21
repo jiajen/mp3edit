@@ -10,13 +10,7 @@ namespace Filesystem {
 
 typedef std::basic_ifstream<char> FileStream;
 
-enum Way {
-  kFront = 0,
-  kBack = 1,
-};
-
-bool readBytes(FileStream& file_stream, int offset, int length,
-               Bytes& output, Way way = Way::kFront);
+bool readBytes(FileStream& file_stream, int offset, int length, Bytes& output);
 
 }  // namespace Filesystem
 }  // namespace Mp3Edit

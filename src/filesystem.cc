@@ -5,10 +5,9 @@
 namespace Mp3Edit {
 namespace Filesystem {
 
-bool readBytes(FileStream& file_stream, int offset, int length,
-               Bytes& output, Way way) {
+bool readBytes(FileStream& file_stream, int offset, int length, Bytes& output) {
   output.resize(length);
-  file_stream.seekg(offset, (way == kFront) ? file_stream.beg:file_stream.end);
+  file_stream.seekg(offset, file_stream.beg);
   file_stream.read((char*)output.data(), length);
   if (!file_stream) {
     output.clear();
