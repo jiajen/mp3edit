@@ -66,10 +66,9 @@ void File::saveFileChanges() {
 
 void File::readMetaData(Filesystem::FileStream& file_stream) {
   int seek_start = 0, seek_end = filesize_, seek;
-  int audio_start, audio_end;
   do {
-    audio_start = seek_start;
-    audio_end = seek_end;
+    audio_start_ = seek_start;
+    audio_end_ = seek_end;
 
     using namespace ReaderTag;
 
@@ -91,7 +90,7 @@ void File::readMetaData(Filesystem::FileStream& file_stream) {
     // seek_end = Ape::seekFooterStart(file_stream, seek_end);
     // seek_end = Vorbis::seekFooterStart(file_stream, seek_end);
 
-  } while (seek_start != audio_start || seek_end != audio_end);
+  } while (seek_start != audio_start_ || seek_end != audio_end_);
 }
 
 void File::readAudioData(Filesystem::FileStream& file_stream) {

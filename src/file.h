@@ -61,14 +61,13 @@ class File {
   std::string filepath_;
   FileType filetype_;
   int filesize_;
+  int audio_start_;
+  int audio_end_;
 
   BitrateType bitrate_type_;
   int bitrate_;
   int sampling_rate_;
   ChannelMode channel_mode_;
-
-  Bytes metadata_front_;
-  Bytes metadata_back_;
 
   // True if valid audio (e.g. reading of properties appeared valid)
   bool is_valid_;
