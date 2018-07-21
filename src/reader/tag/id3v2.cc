@@ -71,7 +71,15 @@ int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek) {
 }
 
 int seekFooterStart(Filesystem::FileStream& file_stream, int seek) {
+  Bytes header;
+  readBytes(file_stream, seek - kTagHeaderLength, kTagHeaderLength, header);
 
+  int version, size;
+  bool flag_1, flag_2;
+  if (parseTagHeader(header, true, version, size, flag_1, flag_2))
+    seek -= size;
+
+  return seek;
 }
 
 }  // Id3v2
