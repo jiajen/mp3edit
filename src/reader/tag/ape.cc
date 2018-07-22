@@ -67,11 +67,23 @@ bool parseTagFooter(const Bytes& footer, int& size) {
 }  // namespace
 
 int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek) {
+  Bytes header;
+  readBytes(file_stream, seek, kTagHeaderLength, header);
 
+  int size;
+  if (parseTagFooter(header, size)) seek += size;
+
+  return seek;
 }
 
 int seekFooterStart(Filesystem::FileStream& file_stream, int seek) {
+  Bytes footer;
+  readBytes(file_stream, seek - kTagFooterLength, kTagFooterLength, footer);
 
+  int size;
+  if (parseTagFooter(footer, size)) seek -= size;
+
+  return seek;
 }
 
 }  // namespace Ape
