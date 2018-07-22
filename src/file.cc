@@ -24,8 +24,8 @@ const char* kFileSupportedFileTypes[] = {
 }  // namespace
 
 FileType getAudioExtension(const std::string& filename) {
-  int n = (int)sizeof(sizeof(kFileSupportedFileTypes)/
-                      sizeof(kFileSupportedFileTypes[0]));
+  int n = (int)(sizeof(kFileSupportedFileTypes)/
+                sizeof(kFileSupportedFileTypes[0]));
 
   for (int i = 0; i < n; i++) {
     int len = strlen(kFileSupportedFileTypes[i]);
