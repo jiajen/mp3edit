@@ -2,6 +2,8 @@
 
 #include <cstring>
 
+#include "mp3edit/src/bytes.h"
+
 namespace Mp3Edit {
 namespace ReaderTag {
 namespace Lyrics3 {
