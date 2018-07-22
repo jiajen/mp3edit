@@ -12,7 +12,7 @@ using Filesystem::readBytes;
 
 const int kTagFooterLength = 15;
 const int kTagPreamblePos = 6;
-const int kTagMaxSizeV1 = 5111;  // 5100 + 11 (LYRICSBEGIN)
+const int kTagMaxSizeV1 = 5111;  // 5100 + 11(length of LYRICSBEGIN)
 
 // Returns -1 if no header is found for the Lyrics3v1 tag.
 // Otherwise returns the size of the Lyrics3v1 tag including LYRICSBEGIN
