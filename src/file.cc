@@ -81,10 +81,10 @@ void File::readMetaData(Filesystem::FileStream& file_stream) {
     // TODO Uncomment completed functions
     // seek_start = Ape::seekHeaderEnd(file_stream, seek_start);
     // seek_start = Vorbis::seekHeaderEnd(file_stream, seek_start);
-    // seek_start = Id3v1::seekHeaderEnd(file_stream, seek_start);
+    seek_start = Id3v1::seekHeaderEnd(file_stream, seek_start);
     // seek_start = Lyrics3::seekHeaderEnd(file_stream, seek_start);
 
-    // seek_end = Id3v1::seekFooterStart(file_stream, seek_end);
+    seek_end = Id3v1::seekFooterStart(file_stream, seek_end);
     // seek_end = Lyrics3::seekFooterStart(file_stream, seek_end);
     seek_end = Id3v2::seekFooterStart(file_stream, seek_end);
     // seek_end = Ape::seekFooterStart(file_stream, seek_end);
