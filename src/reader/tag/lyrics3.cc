@@ -17,8 +17,13 @@ const int kTagMaxSizeV1 = 5111;  // 5100 + 11(length of LYRICSBEGIN)
 // Returns -1 if no header is found for the Lyrics3v1 tag.
 // Otherwise returns the size of the Lyrics3v1 tag including LYRICSBEGIN
 // (but not including LYRICSEND).
-int getLyrics3v1Size(const Bytes& footer) {
-  // TODO look for LYRICSBEGIN
+int getLyrics3v1Size(const Bytes& lyrics) {
+  const char* lyrics_ptr = (const char*)lyrics.data();
+  for (int i = 0, n = lyrics.size() - 11 + 1; i < n; i++) {
+    if (strncmp(lyrics_ptr + i, "LYRICSBEGIN", 11) == 0) {
+      return lyrics.size() - i;
+    }
+  }
   return -1;
 }
 
