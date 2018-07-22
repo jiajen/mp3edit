@@ -74,7 +74,7 @@ void File::readMetaData(Filesystem::FileStream& file_stream) {
 
     seek = Id3v2::seekHeaderEnd(file_stream, seek_start);
     if (seek != seek_start) {
-      // TODO parse id3v2.3
+      // TODO parse id3v2.3 or vorbis depending on filetype
       seek_start = seek;
     }
 
