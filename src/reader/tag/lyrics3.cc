@@ -25,8 +25,13 @@ int getLyrics3v1Size(const Bytes& footer) {
 // Returns -1 if an invalid size is found.
 int getLyrics3v2Size(Bytes::const_iterator it_begin,
                      Bytes::const_iterator it_end) {
-  // TODO
-  return 0;
+  int size = 0;
+  for (int k = 1, digit; ++it_end >= it_begin; k *= 10) {
+    digit = (((int)(*it_end)) - 48);
+    if (digit < 0 || digit > 9) return -1;
+    size += k * digit;
+  }
+  return size;
 }
 
 }  // namespace
