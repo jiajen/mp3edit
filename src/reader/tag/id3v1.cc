@@ -1,16 +1,40 @@
 #include "mp3edit/src/reader/tag/id3v1.h"
 
+#include <cstring>
+
 namespace Mp3Edit {
 namespace ReaderTag {
 namespace Id3v1 {
 
-int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek) {
-  // TODO
+namespace {
+
+using Filesystem::readBytes;
+
+const int kTagHeaderLength = 3;
+const int kTagLength = 128;
+
+const int kEnhancedTagHeaderLength = 4;
+const int kEnhancedTagLength = 227;
+
+}  // namespace
+
+int seekHeaderEnd(Filesystem::FileStream&, int seek) {
   return seek;
 }
 
 int seekFooterStart(Filesystem::FileStream& file_stream, int seek) {
-  // TODO
+  typedef const char cc;
+  Bytes header;
+
+  readBytes(file_stream, seek - kTagLength, kTagHeaderLength, header);
+  if (strncmp((cc*)header.data(), "TAG", kTagHeaderLength) != 0) return seek;
+  seek -= kTagLength;
+
+  readBytes(file_stream, seek - kEnhancedTagLength,
+            kEnhancedTagHeaderLength, header);
+  if (strncmp((cc*)header.data(), "TAG+", kEnhancedTagHeaderLength) == 0)
+    seek -= kEnhancedTagLength;
+
   return seek;
 }
 
