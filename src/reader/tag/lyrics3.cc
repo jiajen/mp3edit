@@ -23,7 +23,8 @@ int getLyrics3v1Size(const Bytes& footer) {
 }
 
 // Returns -1 if an invalid size is found.
-int getLyrics3v2Size(const Bytes& footer_size) {
+int getLyrics3v2Size(Bytes::const_iterator it_begin,
+                     Bytes::const_iterator it_end) {
   // TODO
   return 0;
 }
@@ -41,7 +42,12 @@ int seekFooterStart(Filesystem::FileStream& file_stream, int seek) {
   const char* footer_preamble = (const char*)(footer.data()+kTagPreamblePos);
   if (strncmp(footer_preamble, "LYRICS200", 9) == 0) {
     // Version 2
-    // TODO
+    int lyrics_size = getLyrics3v2Size(footer.begin(),
+                                       footer.begin()+kTagPreamblePos);
+    if (lyrics_size == -1) return seek;
+    readBytes(file_stream, seek - lyrics_size - kTagFooterLength, 11, footer);
+    if (strncmp((const char*)footer.data(), "LYRICSBEGIN", 11) == 0)
+      seek -= (lyrics_size + kTagFooterLength);
   } else if (strncmp(footer_preamble, "LYRICSEND", 9) == 0) {
     // Version 1 (Obsolete)
     readBytes(file_stream, seek - kTagMaxSizeV1 - 9, kTagMaxSizeV1, footer);
