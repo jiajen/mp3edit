@@ -51,6 +51,12 @@ int segmentTableToSize(const Bytes& segment_table) {
   return size;
 }
 
+bool verifyValidOggVorbisCommentHeader(const Bytes& tag) {
+  if (tag[0] != 0x03) return false;
+  if (strncmp((const char*)tag.data()+1, "vorbis", 6) != 0) return false;
+  return true;
+}
+
 }  // namespace
 
 // Warning: Limited functionality. Although the official specification states
@@ -76,6 +82,8 @@ int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek) {
   int page_size = segmentTableToSize(segment_table);
 
   readBytes(file_stream, seek, page_size, second_page);
+  if (!verifyValidOggVorbisCommentHeader(second_page))
+    throw std::system_error(std::error_code(), "Invalid OGG.");
   // TODO
 
   return seek;
