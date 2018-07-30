@@ -16,7 +16,6 @@ int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek) {
 }
 
 int seekFooterStart(Filesystem::FileStream& file_stream, int seek) {
-  // TODO
   return seek;
 }
 
