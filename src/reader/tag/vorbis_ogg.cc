@@ -17,8 +17,9 @@ const int kPageHeaderPrefixLength = 27;
 
 // Checks the validity of an ogg file's first page
 // and the second page's header.
-bool verifyValidOggHeaderPrefix() {
-
+bool verifyValidOggHeaderPrefix(const Bytes& header) {
+  // TODO
+  return false;
 }
 
 }  // namespace
@@ -36,6 +37,8 @@ int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek) {
   Bytes header;
   readBytes(file_stream, seek, kFirstPageLength + kPageHeaderPrefixLength,
             header);
+  if (!verifyValidOggHeaderPrefix(header))
+    throw std::system_error(std::error_code(), "Unsupported OGG.");
   // TODO
   return seek;
 }
