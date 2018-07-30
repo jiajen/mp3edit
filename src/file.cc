@@ -99,12 +99,12 @@ void File::readMetaData(Filesystem::FileStream& file_stream,
         seek_end = VorbisFlac::seekFooterStart(file_stream, seek_end);
         break;
       case FileType::kOgg:
-        // seek = VorbisOgg::seekHeaderEnd(file_stream, seek_start);
+        seek = VorbisOgg::seekHeaderEnd(file_stream, seek_start);
         if (seek != seek_start) {
           // TODO parse vorbis ogg
           seek_start = seek;
         }
-        // seek_end = VorbisOgg::seekFooterStart(file_stream, seek_end);
+        seek_end = VorbisOgg::seekFooterStart(file_stream, seek_end);
         break;
       default:
         break;
