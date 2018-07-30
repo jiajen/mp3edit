@@ -63,16 +63,21 @@ int segmentTableToSize(const Bytes& segment_table) {
 // Future Improvements: Allow reading of vorbis comments spanning more than
 // one page.
 int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek) {
-  Bytes header, segment_table;
+  Bytes header, segment_table, second_page;
   readBytes(file_stream, seek, kFirstPageLength + kPageHeaderPrefixLength,
             header);
+  seek += kFirstPageLength + kPageHeaderPrefixLength;
   if (!verifyValidOggHeaderPrefix(header))
     throw std::system_error(std::error_code(), "Unsupported OGG.");
+
   int number_segments = header[kFirstPageLength + kNumberPageSegmentsPos];
-  readBytes(file_stream, seek + kFirstPageLength + kPageHeaderPrefixLength,
-            number_segments, segment_table);
-  int table_size = segmentTableToSize(segment_table);
+  readBytes(file_stream, seek, number_segments, segment_table);
+  seek += number_segments;
+  int page_size = segmentTableToSize(segment_table);
+
+  readBytes(file_stream, seek, page_size, second_page);
   // TODO
+
   return seek;
 }
 
