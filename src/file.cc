@@ -74,15 +74,14 @@ void File::readMetaData(Filesystem::FileStream& file_stream,
 
     using namespace ReaderTag;
 
-    seek = Id3v2::seekHeaderEnd(file_stream, seek_start);
-    if (seek != seek_start) {
-      // TODO parse id3v2.3 or vorbis depending on filetype
-      seek_start = seek;
-    }
-
     // TODO Uncomment completed functions
     switch (filetype) {
       case FileType::kMp3:
+        seek = Id3v2::seekHeaderEnd(file_stream, seek_start);
+        if (seek != seek_start) {
+          // TODO parse id3v2.3 or vorbis depending on filetype
+          seek_start = seek;
+        }
         seek_start = Ape::seekHeaderEnd(file_stream, seek_start);
         seek_start = Id3v1::seekHeaderEnd(file_stream, seek_start);
         seek_start = Lyrics3::seekHeaderEnd(file_stream, seek_start);
@@ -92,11 +91,19 @@ void File::readMetaData(Filesystem::FileStream& file_stream,
         seek_end = Ape::seekFooterStart(file_stream, seek_end);
         break;
       case FileType::kFlac:
-        // seek_start = VorbisFlac::seekHeaderEnd(file_stream, seek_start);
+        // seek = VorbisFlac::seekHeaderEnd(file_stream, seek_start);
+        if (seek != seek_start) {
+          // TODO parse vorbis flac
+          seek_start = seek;
+        }
         // seek_end = VorbisFlac::seekFooterStart(file_stream, seek_end);
         break;
       case FileType::kOgg:
-        // seek_start = VorbisOgg::seekHeaderEnd(file_stream, seek_start);
+        // seek = VorbisOgg::seekHeaderEnd(file_stream, seek_start);
+        if (seek != seek_start) {
+          // TODO parse vorbis ogg
+          seek_start = seek;
+        }
         // seek_end = VorbisOgg::seekFooterStart(file_stream, seek_end);
         break;
       default:
