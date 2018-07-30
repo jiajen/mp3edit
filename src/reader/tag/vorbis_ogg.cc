@@ -4,6 +4,8 @@
 
 #include <exception>
 
+#include "mp3edit/src/reader/tag/vorbis_shared.h"
+
 namespace Mp3Edit {
 namespace ReaderTag {
 namespace VorbisOgg {
@@ -17,6 +19,7 @@ const int kFirstPageDataStartPos = 28;
 const int kPageHeaderPrefixLength = 27;
 const int kPageNumberStartPos = 18;
 const int kNumberPageSegmentsPos = 26;
+const int kCommonVorbisHeaderSize = 7;
 
 // Checks the validity of an ogg file's first page
 // and the second page's header.
@@ -84,7 +87,11 @@ int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek) {
   readBytes(file_stream, seek, page_size, second_page);
   if (!verifyValidOggVorbisCommentHeader(second_page))
     throw std::system_error(std::error_code(), "Invalid OGG.");
-  // TODO
+  int vorbis_tag_size = VorbisShared::parseTag(second_page,
+                                               kCommonVorbisHeaderSize);
+  if (vorbis_tag_size == -1)
+    throw std::system_error(std::error_code(), "Unsupported OGG.");
+  seek += kCommonVorbisHeaderSize + vorbis_tag_size;
 
   return seek;
 }
