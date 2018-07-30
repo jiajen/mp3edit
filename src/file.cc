@@ -52,8 +52,8 @@ File::File(const std::string& filepath, FileType filetype,
     file_stream.seekg(0, file_stream.end);
     filesize_ = file_stream.tellg();
 
-    readMetaData(file_stream);
-    if (read_audio_data) readAudioData(file_stream);
+    readMetaData(file_stream, filetype);
+    if (read_audio_data) readAudioData(file_stream, filetype);
   } catch (const std::exception&) {
     is_valid_ = false;
   }
@@ -65,7 +65,8 @@ void File::saveFileChanges() {
   // (if same size then only read raw metadata from file to compare)
 }
 
-void File::readMetaData(Filesystem::FileStream& file_stream) {
+void File::readMetaData(Filesystem::FileStream& file_stream,
+                        FileType filetype) {
   int seek_start = 0, seek_end = filesize_, seek;
   do {
     audio_start_ = seek_start;
@@ -80,23 +81,32 @@ void File::readMetaData(Filesystem::FileStream& file_stream) {
     }
 
     // TODO Uncomment completed functions
-    seek_start = Ape::seekHeaderEnd(file_stream, seek_start);
-    // seek_start = VorbisFlac::seekHeaderEnd(file_stream, seek_start);
-    // seek_start = VorbisOgg::seekHeaderEnd(file_stream, seek_start);
-    seek_start = Id3v1::seekHeaderEnd(file_stream, seek_start);
-    seek_start = Lyrics3::seekHeaderEnd(file_stream, seek_start);
-
-    seek_end = Id3v1::seekFooterStart(file_stream, seek_end);
-    seek_end = Lyrics3::seekFooterStart(file_stream, seek_end);
-    seek_end = Id3v2::seekFooterStart(file_stream, seek_end);
-    seek_end = Ape::seekFooterStart(file_stream, seek_end);
-    // seek_end = VorbisFlac::seekFooterStart(file_stream, seek_end);
-    // seek_end = VorbisOgg::seekFooterStart(file_stream, seek_end);
-
+    switch (filetype) {
+      case FileType::kMp3:
+        seek_start = Ape::seekHeaderEnd(file_stream, seek_start);
+        seek_start = Id3v1::seekHeaderEnd(file_stream, seek_start);
+        seek_start = Lyrics3::seekHeaderEnd(file_stream, seek_start);
+        seek_end = Id3v1::seekFooterStart(file_stream, seek_end);
+        seek_end = Lyrics3::seekFooterStart(file_stream, seek_end);
+        seek_end = Id3v2::seekFooterStart(file_stream, seek_end);
+        seek_end = Ape::seekFooterStart(file_stream, seek_end);
+        break;
+      case FileType::kFlac:
+        // seek_start = VorbisFlac::seekHeaderEnd(file_stream, seek_start);
+        // seek_end = VorbisFlac::seekFooterStart(file_stream, seek_end);
+        break;
+      case FileType::kOgg:
+        // seek_start = VorbisOgg::seekHeaderEnd(file_stream, seek_start);
+        // seek_end = VorbisOgg::seekFooterStart(file_stream, seek_end);
+        break;
+      default:
+        break;
+    }
   } while (seek_start != audio_start_ || seek_end != audio_end_);
 }
 
-void File::readAudioData(Filesystem::FileStream& file_stream) {
+void File::readAudioData(Filesystem::FileStream& file_stream,
+                         FileType filetype) {
   // TODO Read audio
 }
 
