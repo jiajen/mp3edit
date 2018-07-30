@@ -2,6 +2,8 @@
 
 #include <cstring>
 
+#include <exception>
+
 #include "mp3edit/src/reader/tag/ape.h"
 #include "mp3edit/src/reader/tag/id3v1.h"
 #include "mp3edit/src/reader/tag/id3v2.h"
@@ -91,20 +93,26 @@ void File::readMetaData(Filesystem::FileStream& file_stream,
         seek_end = Ape::seekFooterStart(file_stream, seek_end);
         break;
       case FileType::kFlac:
+        seek_end = VorbisFlac::seekFooterStart(file_stream, seek_end);
         seek = VorbisFlac::seekHeaderEnd(file_stream, seek_start);
         if (seek != seek_start) {
           // TODO parse vorbis flac
-          seek_start = seek;
+          audio_start_ = seek;
+          return;
+        } else {
+          throw std::system_error(std::error_code(), "Invalid FLAC.");
         }
-        seek_end = VorbisFlac::seekFooterStart(file_stream, seek_end);
         break;
       case FileType::kOgg:
+        seek_end = VorbisOgg::seekFooterStart(file_stream, seek_end);
         seek = VorbisOgg::seekHeaderEnd(file_stream, seek_start);
         if (seek != seek_start) {
           // TODO parse vorbis ogg
-          seek_start = seek;
+          audio_start_ = seek;
+          return;
+        } else {
+          throw std::system_error(std::error_code(), "Invalid OGG.");
         }
-        seek_end = VorbisOgg::seekFooterStart(file_stream, seek_end);
         break;
       default:
         break;
