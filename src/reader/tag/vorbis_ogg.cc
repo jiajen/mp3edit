@@ -42,6 +42,15 @@ bool verifyValidOggHeaderPrefix(const Bytes& header) {
   return true;
 }
 
+int segmentTableToSize(const Bytes& segment_table) {
+  int size = 0, n = segment_table.size();
+  if (n > 0 && segment_table[n-1] == 0xFF)
+    throw std::system_error(std::error_code(), "Invalid OGG.");
+  for (int i = 0; i < n; i++)
+    size += (int)segment_table[i];
+  return size;
+}
+
 }  // namespace
 
 // Warning: Limited functionality. Although the official specification states
@@ -62,6 +71,7 @@ int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek) {
   int number_segments = header[kFirstPageLength + kNumberPageSegmentsPos];
   readBytes(file_stream, seek + kFirstPageLength + kPageHeaderPrefixLength,
             number_segments, segment_table);
+  int table_size = segmentTableToSize(segment_table);
   // TODO
   return seek;
 }
