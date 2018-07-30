@@ -13,13 +13,32 @@ namespace {
 using Filesystem::readBytes;
 
 const int kFirstPageLength = 58;
+const int kFirstPageDataStartPos = 28;
 const int kPageHeaderPrefixLength = 27;
+const int kPageNumberStartPos = 18;
 
 // Checks the validity of an ogg file's first page
 // and the second page's header.
 bool verifyValidOggHeaderPrefix(const Bytes& header) {
-  // TODO
-  return false;
+  // First Page (Identification Header)
+  if (strncmp((const char*)header.data(), "OggS", 4) != 0) return false;
+  if (header[kFirstPageDataStartPos] != 0x01) return false;
+  if (strncmp((const char*)header.data() + kFirstPageDataStartPos + 1,
+              "vorbis", 6) != 0)
+    return false;
+
+  // Second Page (Must fulfill a template as program makes an assumption)
+  if (strncmp((const char*)header.data() + kFirstPageLength, "OggS", 4) != 0)
+    return false;
+  if ((header[kFirstPageLength+4]|header[kFirstPageLength+5]) != 0x00)
+    return false;
+  if (header[kFirstPageLength+kPageNumberStartPos] != 0x01 ||
+      header[kFirstPageLength+kPageNumberStartPos+1] != 0x00 ||
+      header[kFirstPageLength+kPageNumberStartPos+2] != 0x00 ||
+      header[kFirstPageLength+kPageNumberStartPos+3] != 0x00)
+    return false;
+
+  return true;
 }
 
 }  // namespace
