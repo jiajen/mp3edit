@@ -16,6 +16,7 @@ const int kFirstPageLength = 58;
 const int kFirstPageDataStartPos = 28;
 const int kPageHeaderPrefixLength = 27;
 const int kPageNumberStartPos = 18;
+const int kNumberPageSegmentsPos = 26;
 
 // Checks the validity of an ogg file's first page
 // and the second page's header.
@@ -53,11 +54,14 @@ bool verifyValidOggHeaderPrefix(const Bytes& header) {
 // Future Improvements: Allow reading of vorbis comments spanning more than
 // one page.
 int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek) {
-  Bytes header;
+  Bytes header, segment_table;
   readBytes(file_stream, seek, kFirstPageLength + kPageHeaderPrefixLength,
             header);
   if (!verifyValidOggHeaderPrefix(header))
     throw std::system_error(std::error_code(), "Unsupported OGG.");
+  int number_segments = header[kFirstPageLength + kNumberPageSegmentsPos];
+  readBytes(file_stream, seek + kFirstPageLength + kPageHeaderPrefixLength,
+            number_segments, segment_table);
   // TODO
   return seek;
 }
