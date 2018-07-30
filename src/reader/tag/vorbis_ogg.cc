@@ -1,8 +1,8 @@
-#include "mp3edit/src/reader/tag/vorbis.h"
+#include "mp3edit/src/reader/tag/vorbis_ogg.h"
 
 namespace Mp3Edit {
 namespace ReaderTag {
-namespace Vorbis {
+namespace VorbisOgg {
 
 namespace {
 
@@ -19,6 +19,6 @@ int seekFooterStart(Filesystem::FileStream& file_stream, int seek) {
   return seek;
 }
 
-}  // namespace Vorbis
+}  // namespace VorbisOgg
 }  // namespace ReaderTag
 }  // namespace Mp3Edit

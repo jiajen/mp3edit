@@ -7,7 +7,8 @@
 #include "mp3edit/src/reader/tag/id3v2.h"
 #include "mp3edit/src/reader/tag/id3v2_3.h"
 #include "mp3edit/src/reader/tag/lyrics3.h"
-#include "mp3edit/src/reader/tag/vorbis.h"
+#include "mp3edit/src/reader/tag/vorbis_flac.h"
+#include "mp3edit/src/reader/tag/vorbis_ogg.h"
 
 namespace Mp3Edit {
 namespace File {
@@ -80,7 +81,8 @@ void File::readMetaData(Filesystem::FileStream& file_stream) {
 
     // TODO Uncomment completed functions
     seek_start = Ape::seekHeaderEnd(file_stream, seek_start);
-    // seek_start = Vorbis::seekHeaderEnd(file_stream, seek_start);
+    // seek_start = VorbisFlac::seekHeaderEnd(file_stream, seek_start);
+    // seek_start = VorbisOgg::seekHeaderEnd(file_stream, seek_start);
     seek_start = Id3v1::seekHeaderEnd(file_stream, seek_start);
     seek_start = Lyrics3::seekHeaderEnd(file_stream, seek_start);
 
@@ -88,7 +90,8 @@ void File::readMetaData(Filesystem::FileStream& file_stream) {
     seek_end = Lyrics3::seekFooterStart(file_stream, seek_end);
     seek_end = Id3v2::seekFooterStart(file_stream, seek_end);
     seek_end = Ape::seekFooterStart(file_stream, seek_end);
-    // seek_end = Vorbis::seekFooterStart(file_stream, seek_end);
+    // seek_end = VorbisFlac::seekFooterStart(file_stream, seek_end);
+    // seek_end = VorbisOgg::seekFooterStart(file_stream, seek_end);
 
   } while (seek_start != audio_start_ || seek_end != audio_end_);
 }
