@@ -7,7 +7,8 @@ namespace Mp3Edit {
 namespace ReaderTag {
 namespace VorbisShared {
 
-// TODO shared Vorbis internal structure between ogg and flac.
+// Returns -1 on fail, else return number of bytes read.
+int parseTag(const Bytes& tag, int seek);
 
 }  // namespace VorbisShared
 }  // namespace ReaderTag
