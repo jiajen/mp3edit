@@ -14,29 +14,39 @@ using Filesystem::readBytes;
 
 const int kVendorLengthSize = 4;
 
-// This class throws an exception when it reaches
-class SafeReader {
- public:
-  SafeReader(const Bytes& tag, int seek) :
-      tag_(tag), tag_size_(tag.size()), seek_start_(seek), seek_end_(seek) {}
- private:
-  const Bytes& tag_;
-  int tag_size_;
-  int seek_start_;
-  int seek_end_;
-};
-
+// Custom exception to throw when there is nothing else to read.
 class SafeReaderException: public std::exception {
   virtual const char* what() const throw() {
     return "Reached the end of byte array.";
   }
 };
 
-/*int lEndianToIntSafe(Bytes::const_iterator it_begin,
-                     Bytes::const_iterator it_end) {
-  using Reader::Utility::lEndianToInt;
-  return lEndianToInt(it_begin, it_end, false);
-}*/
+// This class throws an exception when it reaches
+class SafeReader {
+ public:
+  SafeReader(const Bytes& tag, int seek) :
+      tag_(tag), tag_size_(tag.size()), seek_start_(seek), seek_end_(seek) {}
+  int readInt(int size) {
+    if (seek_end_ + size > tag_size_) throw SafeReaderException();
+
+    using Reader::Utility::lEndianToInt;
+    // TODO
+    // int foo = lEndianToInt(, , false);
+  }
+  std::string readString(int size) {
+    if (seek_end_ + size > tag_size_) throw SafeReaderException();
+
+    // TODO
+  }
+  inline int bytesRead() {
+    return seek_end_ - seek_start_;
+  }
+ private:
+  const Bytes& tag_;
+  int tag_size_;
+  int seek_start_;
+  int seek_end_;
+};
 
 }  // namespace
 
@@ -50,15 +60,13 @@ int parseTag(const Bytes& tag, int seek, bool has_framing_bit) {
 int parseTag(const Bytes& tag, int seek, bool has_framing_bit,
              std::string& title, std::string& artist, std::string& album,
              int& track_num, int& track_denum) {
-
-
-  int end_seek = seek + kVendorLengthSize;
-  /*int vender_length = lEndianToInt(tag.begin() + seek,
-                                   tag.begin() + end_seek,
-                                   false);
-*/
-  // TODO return size of scanned vorbis comment tag
-  return -1;
+  SafeReader reader(tag, seek);
+  try {
+    // TODO
+  } catch (const SafeReaderException&) {
+    return -1;
+  }
+  return reader.bytesRead();
 }
 
 }  // namespace VorbisShared
