@@ -30,8 +30,11 @@ class SafeReader {
     if (seek_end_ + size > tag_size_) throw SafeReaderException();
 
     using Reader::Utility::lEndianToInt;
-    // TODO
-    // int foo = lEndianToInt(, , false);
+    int ans = lEndianToInt(tag_.begin() + seek_end_,
+                           tag_.begin() + seek_end_ + size,
+                           false);
+    seek_end_ += size;
+    return ans;
   }
   std::string readString(int size) {
     if (seek_end_ + size > tag_size_) throw SafeReaderException();
