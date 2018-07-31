@@ -103,6 +103,16 @@ inline bool checkCommentIsTrack(const std::string& comment,
                       kCommentTrackHeaderSize, value);
 }
 
+void parseTrack(const std::string& track, int& track_num, int& track_denum) {
+  try {
+    // TODO
+    if (track_num <= 0) track_num = -1;
+    if (track_denum <= 0) track_denum = -1;
+  } catch (const std::exception&) {
+    // Ignore exception
+  }
+}
+
 }  // namespace
 
 int parseTag(const Bytes& tag, int seek, bool has_framing_bit) {
@@ -134,7 +144,7 @@ int parseTag(const Bytes& tag, int seek, bool has_framing_bit,
           !checkCommentIsArtist(comment, artist) &&
           !checkCommentIsAlbum(comment, album) &&
           checkCommentIsTrack(comment, track)) {
-        // TODO parse track
+        parseTrack(track, track_num, track_denum);
       }
     }
     if (has_framing_bit && reader.readInt(1) != 0x01)
