@@ -2,6 +2,8 @@
 
 #include <cstring>
 
+#include "mp3edit/src/reader/utility.h"
+
 namespace Mp3Edit {
 namespace ReaderTag {
 namespace Id3v2 {
@@ -47,14 +49,12 @@ bool parseTagHeader(const Bytes& header, bool is_footer, int& version,
                            (tags&(1<<kTagFlagFooterPresentBitPos)));
   if (is_footer && !has_footer) return false;
 
-  size = (has_footer) ? 20 : 10;
-  int shift = 0;
-  for (int i = kTagHeaderLength - 1; i >= kTagHeaderSizePos; i--, shift += 7) {
-    int val = header[i];
-    if (val >= 0x80) return false;
-    size += (val << shift);
-  }
-
+  using Reader::Utility::bEndianToInt;
+  size = bEndianToInt(header.begin() + kTagHeaderSizePos,
+                      header.begin() + kTagHeaderLength,
+                      true);
+  if (size == -1) return false;
+  size += ((has_footer) ? 20 : 10);
   return true;
 }
 

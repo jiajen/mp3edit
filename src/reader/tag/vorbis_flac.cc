@@ -4,6 +4,8 @@
 
 #include <exception>
 
+#include "mp3edit/src/reader/utility.h"
+
 namespace Mp3Edit {
 namespace ReaderTag {
 namespace VorbisFlac {
@@ -19,15 +21,6 @@ const int kBlockFlagLastBlockBitPos = 7;
 const int kBlockTypeVorbisBitMask = 4;
 const int kBlockSizeStartPos = 1;
 const int kBlockSizeSize = 3;
-
-int toInt(Bytes::const_iterator it_begin, Bytes::const_iterator it_end) {
-  int size = 0, jmp = 0;
-  while (--it_end >= it_begin) {
-    size += (((int)(*it_end)) << jmp);
-    jmp += 8;
-  }
-  return size;
-}
 
 }  // namespace
 
@@ -45,9 +38,11 @@ int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek) {
     if ((header[kBlockTypePos]&0x7F) == 0x7F)
       throw std::system_error(std::error_code(), "Invalid FLAC.");
 
+    using Reader::Utility::bEndianToInt;
     size = kBlockHeaderLength +
-           toInt(header.begin() + kBlockSizeStartPos,
-                 header.begin() + kBlockSizeStartPos + kBlockSizeSize);
+           bEndianToInt(header.begin() + kBlockSizeStartPos,
+                        header.begin() + kBlockSizeStartPos + kBlockSizeSize,
+                        false);
     seek += size;
   } while (!(header[kBlockTypePos]&(1<<kBlockFlagLastBlockBitPos)));
 

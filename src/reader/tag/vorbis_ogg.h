@@ -9,7 +9,7 @@ namespace VorbisOgg {
 
 int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek);
 
-int seekFooterStart(Filesystem::FileStream& file_stream, int seek);
+int seekFooterStart(Filesystem::FileStream&, int seek);
 
 }  // namespace VorbisOgg
 }  // namespace ReaderTag
