@@ -1,5 +1,7 @@
 #include "mp3edit/src/reader/tag/vorbis_shared.h"
 
+#include <cstring>
+
 #include <exception>
 
 #include "mp3edit/src/reader/utility.h"
@@ -33,13 +35,19 @@ class SafeReader {
     int ans = lEndianToInt(tag_.begin() + seek_end_,
                            tag_.begin() + seek_end_ + size,
                            false);
+
     seek_end_ += size;
     return ans;
   }
   std::string readString(int size) {
     if (seek_end_ + size > tag_size_) throw SafeReaderException();
 
-    // TODO
+    std::string ans;
+    ans.resize(size);
+    strncpy(&ans[0], (char*)(tag_.data() + seek_end_), size);
+
+    seek_end_ += size;
+    return ans;
   }
   inline int bytesRead() {
     return seek_end_ - seek_start_;
