@@ -1,5 +1,7 @@
 #include "mp3edit/src/reader/tag/vorbis_shared.h"
 
+#include <exception>
+
 #include "mp3edit/src/reader/utility.h"
 
 namespace Mp3Edit {
@@ -9,6 +11,32 @@ namespace VorbisShared {
 namespace {
 
 using Filesystem::readBytes;
+
+const int kVendorLengthSize = 4;
+
+// This class throws an exception when it reaches
+class SafeReader {
+ public:
+  SafeReader(const Bytes& tag, int seek) :
+      tag_(tag), tag_size_(tag.size()), seek_start_(seek), seek_end_(seek) {}
+ private:
+  const Bytes& tag_;
+  int tag_size_;
+  int seek_start_;
+  int seek_end_;
+};
+
+class SafeReaderException: public std::exception {
+  virtual const char* what() const throw() {
+    return "Reached the end of byte array.";
+  }
+};
+
+/*int lEndianToIntSafe(Bytes::const_iterator it_begin,
+                     Bytes::const_iterator it_end) {
+  using Reader::Utility::lEndianToInt;
+  return lEndianToInt(it_begin, it_end, false);
+}*/
 
 }  // namespace
 
@@ -23,7 +51,12 @@ int parseTag(const Bytes& tag, int seek, bool has_framing_bit,
              std::string& title, std::string& artist, std::string& album,
              int& track_num, int& track_denum) {
 
-  // int vender_length = lEndianToInt(tag.begin()+seek, );
+
+  int end_seek = seek + kVendorLengthSize;
+  /*int vender_length = lEndianToInt(tag.begin() + seek,
+                                   tag.begin() + end_seek,
+                                   false);
+*/
   // TODO return size of scanned vorbis comment tag
   return -1;
 }
