@@ -15,9 +15,14 @@ namespace {
 using Filesystem::readBytes;
 
 const int kLengthSize = 4;
+
+int kCommentTitleHeaderSize = 6;
 const char* kCommentTitleHeader = "TITLE=";
+int kCommentArtistHeaderSize = 7;
 const char* kCommentArtistHeader = "ARTIST=";
+int kCommentAlbumHeaderSize = 6;
 const char* kCommentAlbumHeader = "ALBUM=";
+int kCommentTrackHeaderSize = 12;
 const char* kCommentTrackHeader = "TRACKNUMBER=";
 
 // Custom exception to throw when there is nothing else to read.
@@ -67,6 +72,37 @@ class SafeReader {
   int seek_end_;
 };
 
+bool matchComment(const std::string& comment, const char* header,
+                  int header_size, std::string& value) {
+  if ((int)comment.length() < header_size) return false;
+  if (strncmp((const char*)comment.data(), header, header_size) == 0) {
+    value = std::string(comment.begin() + header_size, comment.end());
+    return true;
+  } else {
+    return false;
+  }
+}
+inline bool checkCommentIsTitle(const std::string& comment,
+                                std::string& value) {
+  return matchComment(comment, kCommentTitleHeader,
+                      kCommentTitleHeaderSize, value);
+}
+inline bool checkCommentIsArtist(const std::string& comment,
+                                 std::string& value) {
+  return matchComment(comment, kCommentArtistHeader,
+                      kCommentArtistHeaderSize, value);
+}
+inline bool checkCommentIsAlbum(const std::string& comment,
+                                std::string& value) {
+  return matchComment(comment, kCommentAlbumHeader,
+                      kCommentAlbumHeaderSize, value);
+}
+inline bool checkCommentIsTrack(const std::string& comment,
+                                std::string& value) {
+  return matchComment(comment, kCommentTrackHeader,
+                      kCommentTrackHeaderSize, value);
+}
+
 }  // namespace
 
 int parseTag(const Bytes& tag, int seek, bool has_framing_bit) {
@@ -79,7 +115,14 @@ int parseTag(const Bytes& tag, int seek, bool has_framing_bit) {
 int parseTag(const Bytes& tag, int seek, bool has_framing_bit,
              std::string& title, std::string& artist, std::string& album,
              int& track_num, int& track_denum) {
+  title.clear();
+  artist.clear();
+  album.clear();
+  track_num = -1;
+  track_denum = -1;
+
   SafeReader reader(tag, seek);
+  std::string track;
   try {
     int vender_length = reader.readInt(kLengthSize);
     reader.readSkip(vender_length);
@@ -87,7 +130,12 @@ int parseTag(const Bytes& tag, int seek, bool has_framing_bit,
     while (comment_list_length--) {
       int comment_length = reader.readInt(kLengthSize);
       std::string comment = reader.readString(comment_length);
-      // TODO
+      if (!checkCommentIsTitle(comment, title) &&
+          !checkCommentIsArtist(comment, artist) &&
+          !checkCommentIsAlbum(comment, album) &&
+          checkCommentIsTrack(comment, track)) {
+        // TODO parse track
+      }
     }
     if (has_framing_bit && reader.readInt(1) != 0x01)
       return -1;
