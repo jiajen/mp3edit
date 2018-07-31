@@ -88,7 +88,8 @@ int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek) {
   if (!verifyValidOggVorbisCommentHeader(second_page))
     throw std::system_error(std::error_code(), "Invalid OGG.");
   int vorbis_tag_size = VorbisShared::parseTag(second_page,
-                                               kCommonVorbisHeaderSize);
+                                               kCommonVorbisHeaderSize,
+                                               true);
   if (vorbis_tag_size == -1)
     throw std::system_error(std::error_code(), "Unsupported OGG.");
   seek += kCommonVorbisHeaderSize + vorbis_tag_size;
