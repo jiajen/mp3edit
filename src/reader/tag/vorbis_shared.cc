@@ -2,6 +2,7 @@
 
 #include <cstring>
 
+#include <algorithm>
 #include <exception>
 
 #include "mp3edit/src/reader/utility.h"
@@ -105,12 +106,19 @@ inline bool checkCommentIsTrack(const std::string& comment,
 
 void parseTrack(const std::string& track, int& track_num, int& track_denum) {
   try {
-    // TODO
-    if (track_num <= 0) track_num = -1;
-    if (track_denum <= 0) track_denum = -1;
+    std::string::size_type pos = track.find_first_of('/');
+    if (pos != std::string::npos) {
+      track_num = std::atoi(track.substr(0, pos).c_str());
+      track_denum = std::atoi(track.substr(pos+1,
+                                           track.length()-pos-1).c_str());
+    } else {
+      track_num = std::atoi(track.c_str());
+    }
   } catch (const std::exception&) {
     // Ignore exception
   }
+  if (track_num <= 0) track_num = -1;
+  if (track_denum <= 0) track_denum = -1;
 }
 
 }  // namespace
