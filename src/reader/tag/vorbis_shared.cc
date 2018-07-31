@@ -14,7 +14,11 @@ namespace {
 
 using Filesystem::readBytes;
 
-const int kVendorLengthSize = 4;
+const int kLengthSize = 4;
+const char* kCommentTitleHeader = "TITLE=";
+const char* kCommentArtistHeader = "ARTIST=";
+const char* kCommentAlbumHeader = "ALBUM=";
+const char* kCommentTrackHeader = "TRACKNUMBER=";
 
 // Custom exception to throw when there is nothing else to read.
 class SafeReaderException: public std::exception {
@@ -77,7 +81,16 @@ int parseTag(const Bytes& tag, int seek, bool has_framing_bit,
              int& track_num, int& track_denum) {
   SafeReader reader(tag, seek);
   try {
-    // TODO
+    int vender_length = reader.readInt(kLengthSize);
+    reader.readSkip(vender_length);
+    int comment_list_length = reader.readInt(kLengthSize);
+    while (comment_list_length--) {
+      int comment_length = reader.readInt(kLengthSize);
+      std::string comment = reader.readString(comment_length);
+      // TODO
+    }
+    if (has_framing_bit && reader.readInt(1) != 0x01)
+      return -1;
   } catch (const SafeReaderException&) {
     return -1;
   }
