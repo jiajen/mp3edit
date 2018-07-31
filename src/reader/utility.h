@@ -8,10 +8,12 @@ namespace Reader {
 namespace Utility {
 
 // Returns -1 on failure.
-int lEndianToInt(Bytes::const_iterator it_begin, Bytes::const_iterator it_end);
+int lEndianToInt(Bytes::const_iterator it_begin, Bytes::const_iterator it_end,
+                 bool is_sync_safe);
 
 // Returns -1 on failure.
-int bEndianToInt(Bytes::const_iterator it_begin, Bytes::const_iterator it_end);
+int bEndianToInt(Bytes::const_iterator it_begin, Bytes::const_iterator it_end,
+                 bool is_sync_safe);
 
 }  // namespace Utility
 }  // namespace Reader
