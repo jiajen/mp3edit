@@ -3,6 +3,7 @@
 #include <cstring>
 
 #include "mp3edit/src/bytes.h"
+#include "mp3edit/src/reader/utility.h"
 
 namespace Mp3Edit {
 namespace ReaderTag {
@@ -29,16 +30,6 @@ const int kTagFlagHeaderExistsPos = 7;
 const int kTagReservedStartPos = 24;
 const int kTagReservedSize = 8;
 
-int toInt(Bytes::const_iterator it_begin, Bytes::const_iterator it_end) {
-  int size = 0, jmp = 0;
-  while (it_begin != it_end) {
-    size += (((int)(*it_begin)) << jmp);
-    it_begin++;
-    jmp += 8;
-  }
-  return size;
-}
-
 // Returns false if tag is not valid.
 bool parseTagFooter(const Bytes& footer, int& size) {
   if (footer.size() != kTagFooterLength) return false;
@@ -48,11 +39,15 @@ bool parseTagFooter(const Bytes& footer, int& size) {
     if (footer[kTagReservedStartPos+i] != 0x00) return false;
   }
 
-  int version = toInt(footer.begin() + kTagVersionStartPos,
-                      footer.begin() + kTagVersionStartPos + kTagVersionSize);
+  using Reader::Utility::lEndianToInt;
+  int version = lEndianToInt(footer.begin() + kTagVersionStartPos,
+                             footer.begin() + kTagVersionStartPos +
+                                              kTagVersionSize,
+                             false);
 
-  size = toInt(footer.begin() + kTagSizeStartPos,
-               footer.begin() + kTagSizeStartPos + kTagSizeSize);
+  size = lEndianToInt(footer.begin() + kTagSizeStartPos,
+                      footer.begin() + kTagSizeStartPos + kTagSizeSize,
+                      false);
 
   // For version 1, size includes entire tag (includes the footer)
   // For version 2, size includes entire tag with footer but not the header
