@@ -49,6 +49,10 @@ class SafeReader {
     seek_end_ += size;
     return ans;
   }
+  void readSkip(int size) {
+    if (seek_end_ + size > tag_size_) throw SafeReaderException();
+    seek_end_ += size;
+  }
   inline int bytesRead() {
     return seek_end_ - seek_start_;
   }
