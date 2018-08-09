@@ -89,6 +89,7 @@ void parseTag(const Bytes& raw_tag, std::string& title, std::string& artist,
     } else if (strncmp(frame_ptr, kTagFrameIdTrack, frame_id_len) == 0) {
       bytesToTrack(frame_data_ptr, frame_data_ptr + frame_size,
                    track_num, track_denum);
+      Sanitiser::sanitiseTrack(track_num, track_denum);
     } else if (strncmp(frame_ptr, kTagFrameIdAlbumArtist, frame_id_len) == 0) {
       std::string album_artist;
       bytesToString(frame_data_ptr, frame_data_ptr + frame_size,

@@ -42,6 +42,23 @@ std::string toValidFilename(const std::string& str) {
   return filename;
 }
 
+bool sanitiseTrack(int& track_num, int& track_denum) {
+  bool changed = false;
+  if (track_num != -1 && track_num < 1) {
+    track_num = -1;
+    changed = true;
+  }
+  if (track_denum != -1 && track_denum < 1) {
+    track_denum = -1;
+    changed = true;
+  }
+  if (track_num != -1 && track_denum != -1 && track_num > track_denum) {
+    track_denum = -1;
+    changed = true;
+  }
+  return changed;
+}
+
 bool sanitiseString(std::string& str) {
   std::string valid_str, trimmed_str;
   valid_str.reserve(str.length());

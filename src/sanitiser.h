@@ -11,6 +11,8 @@ bool sanitiseIntegerString(std::string& str);
 // Returns a filename string that is valid in both linux and windows.
 std::string toValidFilename(const std::string& str);
 
+bool sanitiseTrack(int& track_num, int& track_denum);
+
 // Returns true if string was changed.
 bool sanitiseString(std::string& str);
 
