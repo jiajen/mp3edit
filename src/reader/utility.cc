@@ -76,7 +76,7 @@ void bytesToTrack(Bytes::const_iterator it_begin, Bytes::const_iterator it_end,
   track_denum = -1;
   try {
     track_num = std::atoi(track_num_str.c_str());
-    if (separator_pos) track_denum = std::atoi(track_denum_str.c_str());
+    if (separator_pos != -1) track_denum = std::atoi(track_denum_str.c_str());
   } catch (const std::exception&) {
     // Do nothing
   }
