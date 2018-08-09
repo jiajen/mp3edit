@@ -12,7 +12,7 @@ namespace ReaderTag {
 namespace Id3v2_3 {
 
 void parseTag(const Bytes& tag, std::string& title, std::string& artist,
-              std::string& album, int track_num, int track_denum);
+              std::string& album, int& track_num, int& track_denum);
 
 // Returns the metadata tag portion of an audio file.
 Bytes extractTag(Filesystem::FileStream& file_stream,
