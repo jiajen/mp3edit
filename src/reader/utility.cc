@@ -1,5 +1,9 @@
 #include "mp3edit/src/reader/utility.h"
 
+#include <cstring>
+
+#include <algorithm>
+
 namespace Mp3Edit {
 namespace Reader {
 namespace Utility {
@@ -41,12 +45,30 @@ int bEndianToInt(Bytes::const_iterator it_begin, Bytes::const_iterator it_end,
 
 void bytesToString(Bytes::const_iterator it_begin, Bytes::const_iterator it_end,
                    std::string& output) {
-  // TODO
+  int size = it_end - it_begin;
+  output.resize(size);
+  strncpy(output.data(), (const char*)(&*it_begin), size);
 }
 
 void bytesToTrack(Bytes::const_iterator it_begin, Bytes::const_iterator it_end,
                   int& track_num, int& track_denum) {
-  // TODO
+  track_num = -1;
+  track_denum = -1;
+  for (Bytes::const_iterator it = it_begin; it < it_end; it++) {
+    if (*it == 0x47) {
+      std::string track_num_str;
+      std::string track_denum_str;
+      bytesToString(it_begin, it, track_num_str);
+      bytesToString(it+1, it_end, track_denum_str);
+      // TODO sanitise into numeric string
+      try {
+
+        // TODO parse separated strings as numbers
+      } catch (const std::exception&) {
+        // Do nothing
+      }
+    }
+  }
 }
 
 }  // namespace Utility
