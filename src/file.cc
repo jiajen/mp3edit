@@ -81,7 +81,8 @@ void File::readMetaData(Filesystem::FileStream& file_stream,
       case FileType::kMp3:
         seek = Id3v2::seekHeaderEnd(file_stream, seek_start);
         if (seek != seek_start) {
-          // TODO parse id3v2.3 or vorbis depending on filetype
+          Id3v2_3::parseTag(Id3v2_3::extractTag(file_stream, seek_start, seek),
+                            title_, artist_, album_, track_num_, track_denum_);
           seek_start = seek;
         }
         seek_start = Ape::seekHeaderEnd(file_stream, seek_start);

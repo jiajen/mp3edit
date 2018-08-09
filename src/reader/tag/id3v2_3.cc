@@ -12,10 +12,6 @@ void parseTag(const Bytes& tag, std::string& title, std::string& artist,
 Bytes extractTag(Filesystem::FileStream& file_stream,
                  int seek_tag_start, int seek_tag_end) {
   // TODO separate tag from seek_start and old seek_start
-}
-
-Bytes Tag::generateTagHeader() {
-  // TODO generate id3v2.3 tag purely
   return Bytes();
 }
 
