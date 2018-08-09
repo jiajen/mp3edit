@@ -9,6 +9,10 @@ namespace Mp3Edit {
 namespace ReaderTag {
 namespace Id3v2_3 {
 
+// Returns the metadata tag portion of an audio file.
+Bytes extractTag(Filesystem::FileStream& file_stream,
+                 int seek_tag_start, int seek_tag_end);
+
 class Tag {
  public:
   Tag(Filesystem::FileStream& file_stream, int seek_start, int seek_end);

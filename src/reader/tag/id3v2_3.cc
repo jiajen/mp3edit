@@ -4,6 +4,11 @@ namespace Mp3Edit {
 namespace ReaderTag {
 namespace Id3v2_3 {
 
+Bytes extractTag(Filesystem::FileStream& file_stream,
+                 int seek_tag_start, int seek_tag_end) {
+  // TODO separate tag from seek_start and old seek_start
+}
+
 Tag::Tag(Filesystem::FileStream& file_stream, int seek_start, int seek_end) {
   // TODO parse
 }
