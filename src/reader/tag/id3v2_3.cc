@@ -1,5 +1,7 @@
 #include "mp3edit/src/reader/tag/id3v2_3.h"
 
+#include "mp3edit/src/filesystem.h"
+
 namespace Mp3Edit {
 namespace ReaderTag {
 namespace Id3v2_3 {
@@ -11,8 +13,10 @@ void parseTag(const Bytes& tag, std::string& title, std::string& artist,
 
 Bytes extractTag(Filesystem::FileStream& file_stream,
                  int seek_tag_start, int seek_tag_end) {
-  // TODO separate tag from seek_start and old seek_start
-  return Bytes();
+  using Filesystem::readBytes;
+  Bytes tag;
+  readBytes(file_stream, seek_tag_start, seek_tag_end - seek_tag_start, tag);
+  return tag;
 }
 
 }  // Id3v2
