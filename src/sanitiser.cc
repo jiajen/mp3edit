@@ -1,16 +1,31 @@
 #include "mp3edit/src/sanitiser.h"
 
 namespace Mp3Edit {
-namespace Id3 {
 namespace Sanitiser {
 
 namespace {
 
-const char kMaxValidChar = 126;
 const char kMinValidChar = 32;
+const char kMaxValidChar = 126;
 const char* kInvalidFilenameChars = "<>:\"/\\|?*";
+const char kMinValidNumericChar = 48;
+const char kMaxValidNumericChar = 57;
 
 }  // namespace
+
+bool sanitiseIntegerString(std::string& str) {
+  bool changed = false;
+  std::string valid_str;
+  for (const char& c: str) {
+    if (c >= kMinValidNumericChar && c <= kMaxValidNumericChar) {
+      valid_str.push_back(c);
+    } else {
+      changed = true;
+    }
+  }
+  str = valid_str;
+  return changed;
+}
 
 std::string toValidFilename(const std::string& str) {
   std::string filename, sanitised_filename = str;
@@ -48,5 +63,4 @@ bool sanitiseString(std::string& str) {
 }
 
 }  // namespace Sanitiser
-}  // namespace Id3
 }  // namespace Mp3Edit

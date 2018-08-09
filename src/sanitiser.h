@@ -4,8 +4,9 @@
 #include <string>
 
 namespace Mp3Edit {
-namespace Id3 {
 namespace Sanitiser {
+
+bool sanitiseIntegerString(std::string& str);
 
 // Returns a filename string that is valid in both linux and windows.
 std::string toValidFilename(const std::string& str);
@@ -14,7 +15,6 @@ std::string toValidFilename(const std::string& str);
 bool sanitiseString(std::string& str);
 
 }  // namespace Sanitiser
-}  // namespace Id3
 }  // namespace Mp3Edit
 
 #endif  // MP3EDIT_SRC_SANITISER_H_
