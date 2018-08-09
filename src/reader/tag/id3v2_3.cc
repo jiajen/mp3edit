@@ -51,7 +51,6 @@ Bytes clearTagUnsync(const Bytes& raw_tag) {
 
 void parseTag(const Bytes& raw_tag, std::string& title, std::string& artist,
               std::string& album, int track_num, int track_denum) {
-
   bool has_unsync, has_extended_header;
   int tag_version, unused;
 
