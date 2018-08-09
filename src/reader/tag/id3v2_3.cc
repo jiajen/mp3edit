@@ -1,5 +1,7 @@
 #include "mp3edit/src/reader/tag/id3v2_3.h"
 
+#include <cstring>
+
 #include "mp3edit/src/filesystem.h"
 #include "mp3edit/src/reader/utility.h"
 
@@ -15,9 +17,16 @@ const int kExtendedHeaderTagFlagStart = 14;
 const int kExtendedHeaderTagFlagSize = 2;
 const int kExtendedTagFlagCrcBitPos = 7;
 const int kTagFrameHeaderLength = 10;
+const int kTagFrameHeaderIdStart = 0;
 const int kTagFrameHeaderIdLength = 4;
 const int kTagFrameSizeStart = 4;
 const int kTagFrameSizeLength = 4;
+
+const char* kTagFrameIdTitle = "TIT2";
+const char* kTagFrameIdArtist = "TPE1";
+const char* kTagFrameIdAlbum = "TALB";
+const char* kTagFrameIdTrack = "TRCK";
+const char* kTagFrameIdAlbumArtist = "TPE2";
 
 int getPostHeaderSeek(const Bytes& tag) {
   if (tag[kExtendedHeaderTagFlagStart]&(1<<kExtendedTagFlagCrcBitPos)) {
@@ -63,8 +72,24 @@ void parseTag(const Bytes& raw_tag, std::string& title, std::string& artist,
 
     // TODO output data from tag
 
+    const int& frame_id_len = kTagFrameHeaderIdLength;
+    const char* frame_ptr = (const char*)(tag.data() + seek +
+                                          kTagFrameHeaderIdStart);
+    if (strncmp(frame_ptr, kTagFrameIdTitle, frame_id_len) == 0) {
+      // TODO save into relevant variable
+    } else if (strncmp(frame_ptr, kTagFrameIdArtist, frame_id_len) == 0) {
+
+    } else if (strncmp(frame_ptr, kTagFrameIdAlbum, frame_id_len) == 0) {
+
+    } else if (strncmp(frame_ptr, kTagFrameIdTrack, frame_id_len) == 0) {
+
+    } else if (strncmp(frame_ptr, kTagFrameIdAlbumArtist, frame_id_len) == 0) {
+
+    }
+
     seek += kTagFrameHeaderLength + frame_size;
   }
+  // TODO sanitise
 }
 
 Bytes extractTag(Filesystem::FileStream& file_stream,
