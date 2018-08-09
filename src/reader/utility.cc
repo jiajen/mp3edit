@@ -39,6 +39,16 @@ int bEndianToInt(Bytes::const_iterator it_begin, Bytes::const_iterator it_end,
   return bytesToInt(it_end-1, it_begin-1, is_sync_safe);
 }
 
+void bytesToString(Bytes::const_iterator it_begin, Bytes::const_iterator it_end,
+                   std::string& output) {
+  // TODO
+}
+
+void bytesToTrack(Bytes::const_iterator it_begin, Bytes::const_iterator it_end,
+                  int& track_num, int& track_denum) {
+  // TODO
+}
+
 }  // namespace Utility
 }  // namespace Reader
 }  // namespace Mp3Edit

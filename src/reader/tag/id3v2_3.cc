@@ -66,25 +66,31 @@ void parseTag(const Bytes& raw_tag, std::string& title, std::string& artist,
   int frame_size;
   while (seek + kTagFrameHeaderLength < tag_size) {
     using Reader::Utility::bEndianToInt;
+    using Reader::Utility::bytesToString;
+    using Reader::Utility::bytesToTrack;
     frame_size = bEndianToInt(tag.begin() + seek + kTagFrameSizeStart,
                               tag.begin() + seek + kTagFrameSizeStart +
                                                    kTagFrameSizeLength, false);
 
-    // TODO output data from tag
-
     const int& frame_id_len = kTagFrameHeaderIdLength;
     const char* frame_ptr = (const char*)(tag.data() + seek +
                                           kTagFrameHeaderIdStart);
+    Bytes::const_iterator frame_data_ptr = tag.begin() + seek +
+                                           kTagHeaderLength;
     if (strncmp(frame_ptr, kTagFrameIdTitle, frame_id_len) == 0) {
-      // TODO save into relevant variable
+      bytesToString(frame_data_ptr, frame_data_ptr + frame_size, title);
     } else if (strncmp(frame_ptr, kTagFrameIdArtist, frame_id_len) == 0) {
-
+      bytesToString(frame_data_ptr, frame_data_ptr + frame_size, artist);
     } else if (strncmp(frame_ptr, kTagFrameIdAlbum, frame_id_len) == 0) {
-
+      bytesToString(frame_data_ptr, frame_data_ptr + frame_size, album);
     } else if (strncmp(frame_ptr, kTagFrameIdTrack, frame_id_len) == 0) {
-
+      bytesToTrack(frame_data_ptr, frame_data_ptr + frame_size,
+                   track_num, track_denum);
     } else if (strncmp(frame_ptr, kTagFrameIdAlbumArtist, frame_id_len) == 0) {
-
+      std::string album_artist;
+      bytesToString(frame_data_ptr, frame_data_ptr + frame_size,
+                    album_artist);
+      if (artist != album_artist) artist += " + " + album_artist;
     }
 
     seek += kTagFrameHeaderLength + frame_size;
