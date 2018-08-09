@@ -56,7 +56,7 @@ void bytesToTrack(Bytes::const_iterator it_begin, Bytes::const_iterator it_end,
   Bytes::const_iterator it;
   int separator_pos = -1;
   for (it = it_begin; it < it_end; it++) {
-    if (*it == 0x47) {
+    if (*it == 0x2F) {
       separator_pos = it - it_begin;
       break;
     }
