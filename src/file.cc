@@ -42,7 +42,8 @@ FileType getAudioExtension(const std::string& filename) {
 
 File::File(const std::string& filepath, FileType filetype,
            bool read_audio_data):
-    filepath_(filepath), filetype_(filetype), filesize_(0), is_valid_(true) {
+    track_num_(-1), track_denum_(-1), filepath_(filepath),
+    filetype_(filetype), filesize_(0), is_valid_(true) {
   Filesystem::FileStream file_stream(filepath_,
                                      std::ios::in | std::ifstream::binary);
   try {
