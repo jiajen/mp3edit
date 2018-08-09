@@ -95,6 +95,8 @@ void parseTag(const Bytes& raw_tag, std::string& title, std::string& artist,
                     album_artist);
       Sanitiser::sanitiseString(album_artist);
       if (artist != album_artist) artist += " + " + album_artist;
+    } else if (*frame_ptr == 0x00) {
+      break;
     }
 
     seek += kTagFrameHeaderLength + frame_size;
