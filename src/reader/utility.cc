@@ -48,7 +48,7 @@ void bytesToString(Bytes::const_iterator it_begin, Bytes::const_iterator it_end,
                    std::string& output) {
   int size = it_end - it_begin;
   output.resize(size);
-  strncpy(output.data(), (const char*)(&*it_begin), size);
+  memcpy(output.data(), &(*it_begin), size);
 }
 
 void bytesToTrack(Bytes::const_iterator it_begin, Bytes::const_iterator it_end,
