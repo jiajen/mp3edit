@@ -8,10 +8,18 @@ namespace Id3v2_3 {
 namespace {
 
 const int kTagHeaderLength = 10;
+const int kExtendedHeaderLength = 10;
+const int kExtendedHeaderCrcLength = 4;
+const int kExtendedHeaderTagFlagStart = 14;
+const int kExtendedHeaderTagFlagSize = 2;
+const int kExtendedTagFlagCrcBitPos = 7;
 
 int getPostHeaderSeek(const Bytes& tag) {
-  // TODO handle extended header
-  return -1;
+  if (tag[kExtendedHeaderTagFlagStart]&(1<<kExtendedTagFlagCrcBitPos)) {
+    return kTagHeaderLength + kExtendedHeaderLength + kExtendedHeaderCrcLength;
+  } else {
+    return kTagHeaderLength + kExtendedHeaderLength;
+  }
 }
 
 Bytes clearTagUnsync(const Bytes& raw_tag) {
