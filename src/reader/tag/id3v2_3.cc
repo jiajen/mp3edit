@@ -3,6 +3,7 @@
 #include <cstring>
 
 #include "mp3edit/src/filesystem.h"
+#include "mp3edit/src/sanitiser.h"
 #include "mp3edit/src/reader/utility.h"
 
 namespace Mp3Edit {
@@ -79,10 +80,13 @@ void parseTag(const Bytes& raw_tag, std::string& title, std::string& artist,
                                            kTagHeaderLength;
     if (strncmp(frame_ptr, kTagFrameIdTitle, frame_id_len) == 0) {
       bytesToString(frame_data_ptr, frame_data_ptr + frame_size, title);
+      Sanitiser::sanitiseString(title);
     } else if (strncmp(frame_ptr, kTagFrameIdArtist, frame_id_len) == 0) {
       bytesToString(frame_data_ptr, frame_data_ptr + frame_size, artist);
+      Sanitiser::sanitiseString(artist);
     } else if (strncmp(frame_ptr, kTagFrameIdAlbum, frame_id_len) == 0) {
       bytesToString(frame_data_ptr, frame_data_ptr + frame_size, album);
+      Sanitiser::sanitiseString(album);
     } else if (strncmp(frame_ptr, kTagFrameIdTrack, frame_id_len) == 0) {
       bytesToTrack(frame_data_ptr, frame_data_ptr + frame_size,
                    track_num, track_denum);
@@ -90,12 +94,12 @@ void parseTag(const Bytes& raw_tag, std::string& title, std::string& artist,
       std::string album_artist;
       bytesToString(frame_data_ptr, frame_data_ptr + frame_size,
                     album_artist);
+      Sanitiser::sanitiseString(album_artist);
       if (artist != album_artist) artist += " + " + album_artist;
     }
 
     seek += kTagFrameHeaderLength + frame_size;
   }
-  // TODO sanitise
 }
 
 Bytes extractTag(Filesystem::FileStream& file_stream,
