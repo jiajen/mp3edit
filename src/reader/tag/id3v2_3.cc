@@ -9,23 +9,36 @@ namespace {
 
 const int kTagHeaderLength = 10;
 
-int getPostHeaderSeek(const Bytes& tag, bool has_extended_header) {
+int getPostHeaderSeek(const Bytes& tag) {
   // TODO handle extended header
   return -1;
 }
 
+Bytes clearTagUnsync(const Bytes& raw_tag) {
+  Bytes new_tag(raw_tag.begin(), raw_tag.begin()+10);
+  new_tag.reserve(raw_tag.size());
+  for (int i = 10, s = raw_tag.size(); i < s; i++) {
+    new_tag.push_back(raw_tag[i]);
+    if (i < s-1 && raw_tag[i] == 0xFF && raw_tag[i+1] == 0x00) i++;
+  }
+  return new_tag;
+}
+
 }  // namespace
 
-void parseTag(const Bytes& tag, std::string& title, std::string& artist,
+void parseTag(const Bytes& raw_tag, std::string& title, std::string& artist,
               std::string& album, int track_num, int track_denum) {
+
   bool has_unsync, has_extended_header;
   int tag_version, unused;
 
-  Bytes header(tag.begin(), tag.begin() + kTagHeaderLength);
+  Bytes header(raw_tag.begin(), raw_tag.begin() + kTagHeaderLength);
   Id3v2::parseTagHeader(header, false, tag_version, unused,
                         has_unsync, has_extended_header);
   if (tag_version != 3) return;
 
+  Bytes tag = (has_unsync) ? clearTagUnsync(raw_tag) : raw_tag;
+  int seek = (has_extended_header) ? getPostHeaderSeek(tag) : kTagHeaderLength;
 
   // TODO output data from tag
 }
