@@ -42,7 +42,8 @@ FileType getAudioExtension(const std::string& filename) {
 
 File::File(const std::string& filepath, FileType filetype,
            bool read_audio_data):
-    filepath_(filepath), filetype_(filetype), filesize_(0), is_valid_(true) {
+    track_num_(-1), track_denum_(-1), filepath_(filepath),
+    filetype_(filetype), filesize_(0), is_valid_(true) {
   Filesystem::FileStream file_stream(filepath_,
                                      std::ios::in | std::ifstream::binary);
   try {
@@ -76,12 +77,12 @@ void File::readMetaData(Filesystem::FileStream& file_stream,
 
     using namespace ReaderTag;
 
-    // TODO Uncomment completed functions
     switch (filetype) {
       case FileType::kMp3:
         seek = Id3v2::seekHeaderEnd(file_stream, seek_start);
         if (seek != seek_start) {
-          // TODO parse id3v2.3 or vorbis depending on filetype
+          Id3v2_3::parseTag(Id3v2_3::extractTag(file_stream, seek_start, seek),
+                            title_, artist_, album_, track_num_, track_denum_);
           seek_start = seek;
         }
         seek_start = Ape::seekHeaderEnd(file_stream, seek_start);

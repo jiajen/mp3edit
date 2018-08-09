@@ -54,7 +54,7 @@ class SafeReader {
 
     std::string ans;
     ans.resize(size);
-    strncpy(&ans[0], (char*)(tag_.data() + seek_end_), size);
+    memcpy(&ans[0], tag_.data() + seek_end_, size);
 
     seek_end_ += size;
     return ans;
