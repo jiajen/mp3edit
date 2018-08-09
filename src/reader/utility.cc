@@ -67,7 +67,7 @@ void bytesToTrack(Bytes::const_iterator it_begin, Bytes::const_iterator it_end,
   it = (separator_pos == -1) ? it_end : it_begin + separator_pos;
   bytesToString(it_begin, it, track_num_str);
   Sanitiser::sanitiseIntegerString(track_num_str);
-  if (separator_pos) {
+  if (separator_pos != -1) {
     bytesToString(it+1, it_end, track_denum_str);
     Sanitiser::sanitiseIntegerString(track_denum_str);
   }
