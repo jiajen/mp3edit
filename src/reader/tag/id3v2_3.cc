@@ -1,6 +1,7 @@
 #include "mp3edit/src/reader/tag/id3v2_3.h"
 
 #include "mp3edit/src/filesystem.h"
+#include "mp3edit/src/reader/utility.h"
 
 namespace Mp3Edit {
 namespace ReaderTag {
@@ -13,6 +14,10 @@ const int kExtendedHeaderCrcLength = 4;
 const int kExtendedHeaderTagFlagStart = 14;
 const int kExtendedHeaderTagFlagSize = 2;
 const int kExtendedTagFlagCrcBitPos = 7;
+const int kTagFrameHeaderLength = 10;
+const int kTagFrameHeaderIdLength = 4;
+const int kTagFrameSizeStart = 4;
+const int kTagFrameSizeLength = 4;
 
 int getPostHeaderSeek(const Bytes& tag) {
   if (tag[kExtendedHeaderTagFlagStart]&(1<<kExtendedTagFlagCrcBitPos)) {
@@ -48,7 +53,18 @@ void parseTag(const Bytes& raw_tag, std::string& title, std::string& artist,
   Bytes tag = (has_unsync) ? clearTagUnsync(raw_tag) : raw_tag;
   int seek = (has_extended_header) ? getPostHeaderSeek(tag) : kTagHeaderLength;
 
-  // TODO output data from tag
+  int tag_size = tag.size();
+  int frame_size;
+  while (seek + kTagFrameHeaderLength < tag_size) {
+    using Reader::Utility::bEndianToInt;
+    frame_size = bEndianToInt(tag.begin() + seek + kTagFrameSizeStart,
+                              tag.begin() + seek + kTagFrameSizeStart +
+                                                   kTagFrameSizeLength, false);
+
+    // TODO output data from tag
+
+    seek += kTagFrameHeaderLength + frame_size;
+  }
 }
 
 Bytes extractTag(Filesystem::FileStream& file_stream,
