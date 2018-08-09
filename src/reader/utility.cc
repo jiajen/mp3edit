@@ -1,4 +1,5 @@
 #include "mp3edit/src/reader/utility.h"
+#include "mp3edit/src/sanitiser.h"
 
 #include <cstring>
 
@@ -52,22 +53,32 @@ void bytesToString(Bytes::const_iterator it_begin, Bytes::const_iterator it_end,
 
 void bytesToTrack(Bytes::const_iterator it_begin, Bytes::const_iterator it_end,
                   int& track_num, int& track_denum) {
+  Bytes::const_iterator it;
+  int separator_pos = -1;
+  for (it = it_begin; it < it_end; it++) {
+    if (*it == 0x47) {
+      separator_pos = it - it_begin;
+      break;
+    }
+  }
+
+  std::string track_num_str;
+  std::string track_denum_str;
+  it = (separator_pos == -1) ? it_end : it_begin + separator_pos;
+  bytesToString(it_begin, it, track_num_str);
+  Sanitiser::sanitiseIntegerString(track_num_str);
+  if (separator_pos) {
+    bytesToString(it+1, it_end, track_denum_str);
+    Sanitiser::sanitiseIntegerString(track_denum_str);
+  }
+
   track_num = -1;
   track_denum = -1;
-  for (Bytes::const_iterator it = it_begin; it < it_end; it++) {
-    if (*it == 0x47) {
-      std::string track_num_str;
-      std::string track_denum_str;
-      bytesToString(it_begin, it, track_num_str);
-      bytesToString(it+1, it_end, track_denum_str);
-      // TODO sanitise into numeric string
-      try {
-
-        // TODO parse separated strings as numbers
-      } catch (const std::exception&) {
-        // Do nothing
-      }
-    }
+  try {
+    track_num = std::atoi(track_num_str.c_str());
+    if (separator_pos) track_denum = std::atoi(track_denum_str.c_str());
+  } catch (const std::exception&) {
+    // Do nothing
   }
 }
 
