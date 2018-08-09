@@ -77,7 +77,6 @@ void File::readMetaData(Filesystem::FileStream& file_stream,
 
     using namespace ReaderTag;
 
-    // TODO Uncomment completed functions
     switch (filetype) {
       case FileType::kMp3:
         seek = Id3v2::seekHeaderEnd(file_stream, seek_start);
