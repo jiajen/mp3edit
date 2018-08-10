@@ -178,19 +178,13 @@ Bytes generateTag(const std::string& title, const std::string& artist,
                                       kTagSizeLength, true);
   tag.insert(tag.end(), tag_size_bytes.begin(), tag_size_bytes.end());
 
-  if (!title.empty()) {
-
-  }
-  if (!artist.empty()) {
-
-  }
-  if (!album.empty()) {
-
-  }
-  if (track_num != -1) {
-
-  }
-  // TODO generate tag frames
+  if (!title.empty()) appendFrame(kTagFrameIdTitle, title, tag);
+  if (!artist.empty()) appendFrame(kTagFrameIdArtist, artist, tag);
+  if (!album.empty()) appendFrame(kTagFrameIdAlbum, album, tag);
+  if (track_num != -1) appendFrame(kTagFrameIdTrack,
+                                   generateTrackString(track_num, track_denum),
+                                   tag);
+  if (!artist.empty()) appendFrame(kTagFrameIdAlbumArtist, artist, tag);
 
   return tag;
 }
