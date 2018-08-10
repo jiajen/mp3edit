@@ -89,7 +89,12 @@ void File::readMetaData(Filesystem::FileStream& file_stream,
         seek_start = Ape::seekHeaderEnd(file_stream, seek_start);
         seek_start = Id3v1::seekHeaderEnd(file_stream, seek_start);
         seek_start = Lyrics3::seekHeaderEnd(file_stream, seek_start);
-        seek_end = Id3v1::seekFooterStart(file_stream, seek_end);
+        seek = Id3v1::seekFooterStart(file_stream, seek_end);
+        if (seek != seek_end) {
+          Id3v1::parseTag(Id3v1::extractTag(file_stream, seek, seek_end),
+                          title_, artist_, album_, track_num_, track_denum_);
+          seek_end = seek;
+        }
         seek_end = Lyrics3::seekFooterStart(file_stream, seek_end);
         seek_end = Id3v2::seekFooterStart(file_stream, seek_end);
         seek_end = Ape::seekFooterStart(file_stream, seek_end);
