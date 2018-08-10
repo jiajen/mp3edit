@@ -76,6 +76,18 @@ int calculateTagDataSize(const std::string& title, const std::string& artist,
   return (size == kTagHeaderLength) ? 0 : size;
 }
 
+std::string generateTrackString(int track_num, int track_denum) {
+  if (track_denum == -1) {
+    return std::to_string(track_num);
+  } else {
+    return std::to_string(track_num) + "/" + std::to_string(track_denum);
+  }
+}
+
+void appendFrame(const char* frame_id, const std::string& data) {
+  // TODO
+}
+
 }  // namespace
 
 void parseTag(const Bytes& raw_tag, std::string& title, std::string& artist,
@@ -154,6 +166,18 @@ Bytes generateTag(const std::string& title, const std::string& artist,
                                       kTagSizeLength, true);
   tag.insert(tag.end(), tag_size_bytes.begin(), tag_size_bytes.end());
 
+  if (!title.empty()) {
+
+  }
+  if (!artist.empty()) {
+
+  }
+  if (!album.empty()) {
+
+  }
+  if (track_num != -1) {
+
+  }
   // TODO generate tag frames
 
   return tag;
