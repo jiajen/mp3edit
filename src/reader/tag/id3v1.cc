@@ -33,9 +33,10 @@ const int kEnhancedTagFieldSize = 60;
 using Reader::Utility::bytesToString;
 
 void mergeToExistingField(const std::string& parsed_field, std::string& field) {
-  // Id3v1 is treated as a truncated version of the full tag.
-  // If id3v1 differs, it is appended to any existing field data.
-  // TODO merge with above
+  if (parsed_field.length() > field.length() ||
+      field.substr(0, parsed_field.length()) != parsed_field) {
+    field += " + " + parsed_field;
+  }
 }
 
 void mergeToExistingTracks(int parsed_track, int& track_num, int& track_denum) {
