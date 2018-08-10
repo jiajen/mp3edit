@@ -114,7 +114,14 @@ Bytes extractTag(Filesystem::FileStream& file_stream,
 
 Bytes generateTag(const std::string& title, const std::string& artist,
                   const std::string& album, int track_num, int track_denum) {
+  Bytes tag;
+  // Id3v2.3 forbids a tag with zero frames.
+  if (title.empty() && artist.empty() && album.empty() &&
+      track_num == -1 && track_denum == -1) return tag;
+
   // TODO generate tag
+
+  return tag;
 }
 
 }  // Id3v2
