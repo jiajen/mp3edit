@@ -127,7 +127,7 @@ Bytes generateTag(const std::string& title, const std::string& artist,
   memcpy(tag.data() + kTagTitlePos, title.data(), limitLen(title.length()));
   memcpy(tag.data() + kTagArtistPos, artist.data(), limitLen(artist.length()));
   memcpy(tag.data() + kTagAlbumPos, album.data(), limitLen(album.length()));
-  tag[kTagTrackPos] = (unsigned char)(255&track_num);
+  if (track_num != -1) tag[kTagTrackPos] = (unsigned char)(255&track_num);
   tag[kTagGenrePos] = kTagDefaultGenre;
   return tag;
 }
