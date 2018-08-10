@@ -12,6 +12,7 @@ namespace Id3v2_3 {
 namespace {
 
 const int kTagHeaderLength = 10;
+const int kTagSizeLength = 4;
 const int kExtendedHeaderLength = 10;
 const int kExtendedHeaderCrcLength = 4;
 const int kExtendedHeaderTagFlagStart = 14;
@@ -29,8 +30,13 @@ const char* kTagFrameIdAlbum = "TALB";
 const char* kTagFrameIdTrack = "TRCK";
 const char* kTagFrameIdAlbumArtist = "TPE2";
 
-const char* kHeaderTemplate = "\x49\x44\x33\x03\x00\x00"
-                              "\x00\x00\x00\x00";  // Last 4 bytes are for size.
+const char* kHeaderTemplate = "\x49\x44\x33\x03\x00\x00";
+
+using Filesystem::readBytes;
+using Reader::Utility::intToBEndian;
+using Reader::Utility::bEndianToInt;
+using Reader::Utility::bytesToString;
+using Reader::Utility::bytesToTrack;
 
 int getPostHeaderSeek(const Bytes& tag) {
   if (tag[kExtendedHeaderTagFlagStart]&(1<<kExtendedTagFlagCrcBitPos)) {
@@ -88,9 +94,6 @@ void parseTag(const Bytes& raw_tag, std::string& title, std::string& artist,
   int tag_size = tag.size();
   int frame_size;
   while (seek + kTagFrameHeaderLength < tag_size) {
-    using Reader::Utility::bEndianToInt;
-    using Reader::Utility::bytesToString;
-    using Reader::Utility::bytesToTrack;
     frame_size = bEndianToInt(tag.begin() + seek + kTagFrameSizeStart,
                               tag.begin() + seek + kTagFrameSizeStart +
                                                    kTagFrameSizeLength, false);
@@ -129,7 +132,6 @@ void parseTag(const Bytes& raw_tag, std::string& title, std::string& artist,
 
 Bytes extractTag(Filesystem::FileStream& file_stream,
                  int seek_tag_start, int seek_tag_end) {
-  using Filesystem::readBytes;
   Bytes tag;
   readBytes(file_stream, seek_tag_start, seek_tag_end - seek_tag_start, tag);
   return tag;
@@ -144,7 +146,15 @@ Bytes generateTag(const std::string& title, const std::string& artist,
   if (tag_data_size == 0) return tag;
   tag.reserve(tag_data_size);
 
-  // TODO generate tag
+  tag.insert(tag.end(),
+             (const unsigned char*)kHeaderTemplate,
+             (const unsigned char*)kHeaderTemplate +
+                                   kTagHeaderLength - kTagSizeLength);
+  Bytes tag_size_bytes = intToBEndian(tag_data_size - kTagHeaderLength,
+                                      kTagSizeLength, true);
+  tag.insert(tag.end(), tag_size_bytes.begin(), tag_size_bytes.end());
+
+  // TODO generate tag frames
 
   return tag;
 }
