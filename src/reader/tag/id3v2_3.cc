@@ -23,6 +23,7 @@ const int kTagFrameHeaderIdStart = 0;
 const int kTagFrameHeaderIdLength = 4;
 const int kTagFrameSizeStart = 4;
 const int kTagFrameSizeLength = 4;
+const int kTagFrameFlagsLength = 2;
 
 const char* kTagFrameIdTitle = "TIT2";
 const char* kTagFrameIdArtist = "TPE1";
@@ -37,6 +38,8 @@ using Reader::Utility::intToBEndian;
 using Reader::Utility::bEndianToInt;
 using Reader::Utility::bytesToString;
 using Reader::Utility::bytesToTrack;
+
+typedef const unsigned char* BytePtr;
 
 int getPostHeaderSeek(const Bytes& tag) {
   if (tag[kExtendedHeaderTagFlagStart]&(1<<kExtendedTagFlagCrcBitPos)) {
@@ -84,7 +87,14 @@ std::string generateTrackString(int track_num, int track_denum) {
   }
 }
 
-void appendFrame(const char* frame_id, const std::string& data) {
+// Assumes all frames are in ISO-8859.
+void appendFrame(const char* frame_id, const std::string& data, Bytes& tag) {
+  tag.insert(tag.end(), (BytePtr)frame_id,
+                        (BytePtr)frame_id + kTagFrameHeaderIdLength);
+  Bytes frame_size_bytes = intToBEndian(2 + data.length(),
+                                        kTagFrameSizeLength, false);
+  tag.insert(tag.end(), frame_size_bytes.begin(), frame_size_bytes.end());
+  tag.insert(tag.end(), kTagFrameFlagsLength, 0x00);
   // TODO
 }
 
@@ -158,10 +168,9 @@ Bytes generateTag(const std::string& title, const std::string& artist,
   if (tag_data_size == 0) return tag;
   tag.reserve(tag_data_size);
 
-  tag.insert(tag.end(),
-             (const unsigned char*)kHeaderTemplate,
-             (const unsigned char*)kHeaderTemplate +
-                                   kTagHeaderLength - kTagSizeLength);
+  tag.insert(tag.end(), (BytePtr)kHeaderTemplate,
+                        (BytePtr)kHeaderTemplate + kTagHeaderLength -
+                                                   kTagSizeLength);
   Bytes tag_size_bytes = intToBEndian(tag_data_size - kTagHeaderLength,
                                       kTagSizeLength, true);
   tag.insert(tag.end(), tag_size_bytes.begin(), tag_size_bytes.end());
