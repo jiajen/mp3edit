@@ -25,7 +25,9 @@ void parseTag(const Bytes& tag, std::string& title, std::string& artist,
 
 Bytes extractTag(Filesystem::FileStream& file_stream,
                  int seek_tag_start, int seek_tag_end) {
-  // TODO
+  Bytes tag;
+  readBytes(file_stream, seek_tag_start, seek_tag_end - seek_tag_start, tag);
+  return tag;
 }
 
 Bytes generateTag(const std::string& title, const std::string& artist,
