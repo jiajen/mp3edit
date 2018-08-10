@@ -23,7 +23,10 @@ const int kTagTitlePos = 3;
 const int kTagArtistPos = 33;
 const int kTagAlbumPos = 63;
 const int kTagTrackPos = 126;
+const int kTagGenrePos = 127;
 const int kTagFieldSize = 30;
+
+const unsigned char kTagDefaultGenre = 12;  // Genre: Other
 
 const int kEnhancedTagTitlePos = 4;
 const int kEnhancedTagArtistPos = 64;
@@ -125,6 +128,7 @@ Bytes generateTag(const std::string& title, const std::string& artist,
   memcpy(tag.data() + kTagArtistPos, artist.data(), limitLen(artist.length()));
   memcpy(tag.data() + kTagAlbumPos, album.data(), limitLen(album.length()));
   tag[kTagTrackPos] = (unsigned char)(255&track_num);
+  tag[kTagGenrePos] = kTagDefaultGenre;
   return tag;
 }
 
