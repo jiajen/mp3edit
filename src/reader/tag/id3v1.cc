@@ -113,9 +113,19 @@ Bytes extractTag(Filesystem::FileStream& file_stream,
   return tag;
 }
 
+inline int limitLen(int length) {
+  return (length < kTagFieldSize) ? length : kTagFieldSize;
+}
+
 Bytes generateTag(const std::string& title, const std::string& artist,
-                  const std::string& album, int track_num, int track_denum) {
-  // TODO
+                  const std::string& album, int track_num, int) {
+  Bytes tag(kTagLength, 0x00);
+  memcpy(tag.data(), kTagPreamble, kTagHeaderLength);
+  memcpy(tag.data() + kTagTitlePos, title.data(), limitLen(title.length()));
+  memcpy(tag.data() + kTagArtistPos, artist.data(), limitLen(artist.length()));
+  memcpy(tag.data() + kTagAlbumPos, album.data(), limitLen(album.length()));
+  tag[kTagTrackPos] = (unsigned char)(255&track_num);
+  return tag;
 }
 
 int seekHeaderEnd(Filesystem::FileStream&, int seek) {
