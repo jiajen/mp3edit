@@ -95,7 +95,10 @@ void appendFrame(const char* frame_id, const std::string& data, Bytes& tag) {
                                         kTagFrameSizeLength, false);
   tag.insert(tag.end(), frame_size_bytes.begin(), frame_size_bytes.end());
   tag.insert(tag.end(), kTagFrameFlagsLength, 0x00);
-  // TODO
+  tag.push_back(0x00);
+  tag.insert(tag.end(), (BytePtr)data.c_str(),
+                        (BytePtr)data.c_str() + data.length());
+  tag.push_back(0x00);
 }
 
 }  // namespace
