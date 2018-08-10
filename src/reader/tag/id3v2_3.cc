@@ -29,6 +29,9 @@ const char* kTagFrameIdAlbum = "TALB";
 const char* kTagFrameIdTrack = "TRCK";
 const char* kTagFrameIdAlbumArtist = "TPE2";
 
+const char* kHeaderTemplate = "\x49\x44\x33\x03\x00\x00"
+                              "\x00\x00\x00\x00";  // Last 4 bytes are for size.
+
 int getPostHeaderSeek(const Bytes& tag) {
   if (tag[kExtendedHeaderTagFlagStart]&(1<<kExtendedTagFlagCrcBitPos)) {
     return kTagHeaderLength + kExtendedHeaderLength + kExtendedHeaderCrcLength;
