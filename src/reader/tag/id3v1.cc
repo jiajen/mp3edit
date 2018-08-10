@@ -30,6 +30,9 @@ const int kEnhancedTagArtistPos = 64;
 const int kEnhancedTagAlbumPos = 124;
 const int kEnhancedTagFieldSize = 60;
 
+const char* kTagPreamble = "TAG";
+const char* kEnhancedTagPreamble = "TAG+";
+
 using Reader::Utility::bytesToString;
 
 void mergeToExistingField(const std::string& parsed_field, std::string& field) {
@@ -124,12 +127,14 @@ int seekFooterStart(Filesystem::FileStream& file_stream, int seek) {
   Bytes header;
 
   readBytes(file_stream, seek - kTagLength, kTagHeaderLength, header);
-  if (strncmp((cc*)header.data(), "TAG", kTagHeaderLength) != 0) return seek;
+  if (strncmp((cc*)header.data(), kTagPreamble,
+                                  kTagHeaderLength) != 0) return seek;
   seek -= kTagLength;
 
   readBytes(file_stream, seek - kEnhancedTagLength,
             kEnhancedTagHeaderLength, header);
-  if (strncmp((cc*)header.data(), "TAG+", kEnhancedTagHeaderLength) == 0)
+  if (strncmp((cc*)header.data(), kEnhancedTagPreamble,
+                                  kEnhancedTagHeaderLength) == 0)
     seek -= kEnhancedTagLength;
 
   return seek;
