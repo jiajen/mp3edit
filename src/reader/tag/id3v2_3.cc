@@ -50,6 +50,26 @@ Bytes clearTagUnsync(const Bytes& raw_tag) {
   return new_tag;
 }
 
+int calculateTagDataSize(const std::string& title, const std::string& artist,
+                         const std::string& album,
+                         int track_num, int track_denum) {
+  int size = kTagHeaderLength;
+  // +2 for leading and trailing 0x00 needed for ISO-8859 encoding
+  if (!title.empty()) size += kTagFrameHeaderLength + 2 + title.length();
+  if (!artist.empty()) size += kTagFrameHeaderLength + 2 + artist.length();
+  if (!album.empty()) size += kTagFrameHeaderLength + 2 + album.length();
+  if (track_num != -1) {
+    std::string track_num_str = std::to_string(track_num);
+    size += kTagFrameHeaderLength + 2 + track_num_str.length();
+    if (track_denum != -1) {
+      std::string track_denum_str = std::to_string(track_denum);
+      size += 1 + track_denum_str.length();
+    }
+  }
+
+  return (size == kTagHeaderLength) ? 0 : size;
+}
+
 }  // namespace
 
 void parseTag(const Bytes& raw_tag, std::string& title, std::string& artist,
@@ -118,9 +138,11 @@ Bytes extractTag(Filesystem::FileStream& file_stream,
 Bytes generateTag(const std::string& title, const std::string& artist,
                   const std::string& album, int track_num, int track_denum) {
   Bytes tag;
+  int tag_data_size = calculateTagDataSize(title, artist, album,
+                                           track_num, track_denum);
   // Id3v2.3 forbids a tag with zero frames.
-  if (title.empty() && artist.empty() && album.empty() &&
-      track_num == -1 && track_denum == -1) return tag;
+  if (tag_data_size == 0) return tag;
+  tag.reserve(tag_data_size);
 
   // TODO generate tag
 
