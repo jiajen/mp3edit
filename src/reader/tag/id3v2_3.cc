@@ -112,6 +112,11 @@ Bytes extractTag(Filesystem::FileStream& file_stream,
   return tag;
 }
 
+Bytes generateTag(const std::string& title, const std::string& artist,
+                  const std::string& album, int track_num, int track_denum) {
+  // TODO generate tag
+}
+
 }  // Id3v2
 }  // ReaderTag
 }  // Mp3Edit
