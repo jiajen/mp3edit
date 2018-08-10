@@ -38,7 +38,7 @@ void intToBytes(int val, bool is_sync_safe,
                 Bytes::iterator it_begin, Bytes::iterator it_end) {
   int jmp = (is_sync_safe ? 7:8);
   while (it_begin != it_end && val > 0) {
-    *it_begin = (unsigned char)(val &= ((1<<(jmp+1))-1));
+    *it_begin = (unsigned char)(val&((1<<jmp)-1));
     val >>= jmp;
     it_begin = (it_begin < it_end) ? it_begin+1:it_begin-1;
   }
