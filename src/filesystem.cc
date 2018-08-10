@@ -1,6 +1,6 @@
 #include "mp3edit/src/filesystem.h"
 
-#include <exception>
+#include <system_error>
 
 namespace Mp3Edit {
 namespace Filesystem {

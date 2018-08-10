@@ -3,6 +3,7 @@
 #include <cstring>
 
 #include <algorithm>
+#include <exception>
 #include <system_error>
 
 #include "mp3edit/src/sanitiser.h"
