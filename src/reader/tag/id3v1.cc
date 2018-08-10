@@ -49,7 +49,27 @@ void parseTag(const Bytes& tag, std::string& title, std::string& artist,
   bytesToString(tag_begin + kTagAlbumPos,
                 tag_begin + kTagAlbumPos + kTagFieldSize, parsed_album);
   parsed_track_num = (int)(*(tag_begin + kTagTrackPos));
-  // TODO handle enhanced append
+  if (parsed_track_num == 0) parsed_track_num = -1;
+
+  if (tag.size() == kEnhancedTagLength + kTagLength) {
+    tag_begin -= kEnhancedTagLength;
+    std::string extended_title;
+    std::string extended_artist;
+    std::string extended_album;
+    bytesToString(tag_begin + kEnhancedTagTitlePos,
+                  tag_begin + kEnhancedTagTitlePos + kEnhancedTagFieldSize,
+                  extended_title);
+    bytesToString(tag_begin + kEnhancedTagArtistPos,
+                  tag_begin + kEnhancedTagArtistPos + kEnhancedTagFieldSize,
+                  extended_artist);
+    bytesToString(tag_begin + kEnhancedTagAlbumPos,
+                  tag_begin + kEnhancedTagAlbumPos + kEnhancedTagFieldSize,
+                  extended_album);
+    parsed_title += extended_title;
+    parsed_artist += extended_artist;
+    parsed_album += extended_album;
+  }
+
   Sanitiser::sanitiseString(parsed_title);
   Sanitiser::sanitiseString(parsed_artist);
   Sanitiser::sanitiseString(parsed_album);
