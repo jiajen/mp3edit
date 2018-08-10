@@ -33,14 +33,26 @@ const int kEnhancedTagFieldSize = 60;
 using Reader::Utility::bytesToString;
 
 void mergeToExistingField(const std::string& parsed_field, std::string& field) {
-  if (parsed_field.length() > field.length() ||
-      field.substr(0, parsed_field.length()) != parsed_field) {
+  if (parsed_field.empty()) {
+    return;
+  } else if (field.empty()) {
+    field = parsed_field;
+  } else if (parsed_field.length() > field.length() ||
+             field.substr(0, parsed_field.length()) != parsed_field) {
     field += " + " + parsed_field;
   }
 }
 
 void mergeToExistingTracks(int parsed_track, int& track_num, int& track_denum) {
-  // TODO handle various track cases
+  if (parsed_track == -1) {
+    return;
+  } else if (track_num == -1) {
+    track_num = parsed_track;
+  } else if (parsed_track != track_num) {
+    track_num = -1;
+    track_denum = -1;
+  }
+  Sanitiser::sanitiseTrack(track_num, track_denum);
 }
 
 }  // namespace
