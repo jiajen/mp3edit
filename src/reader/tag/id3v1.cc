@@ -41,7 +41,23 @@ void parseTag(const Bytes& tag, std::string& title, std::string& artist,
   std::string parsed_album;
   int parsed_track_num;
 
-  // TODO
+  Bytes::const_iterator tag_begin = tag.end() - kTagLength;
+  bytesToString(tag_begin + kTagTitlePos,
+                tag_begin + kTagTitlePos + kTagFieldSize, parsed_title);
+  bytesToString(tag_begin + kTagArtistPos,
+                tag_begin + kTagArtistPos + kTagFieldSize, parsed_artist);
+  bytesToString(tag_begin + kTagAlbumPos,
+                tag_begin + kTagAlbumPos + kTagFieldSize, parsed_album);
+  parsed_track_num = (int)(*(tag_begin + kTagTrackPos));
+  // TODO handle enhanced append
+  Sanitiser::sanitiseString(parsed_title);
+  Sanitiser::sanitiseString(parsed_artist);
+  Sanitiser::sanitiseString(parsed_album);
+
+  // Id3v1 is treated as a truncated version of the full tag.
+  // If id3v1 differs, it is appended to any existing field data.
+  // TODO merge with above
+  // TODO handle various track cases
 }
 
 Bytes extractTag(Filesystem::FileStream& file_stream,
