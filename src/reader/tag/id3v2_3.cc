@@ -12,6 +12,7 @@ namespace Id3v2_3 {
 namespace {
 
 const int kTagHeaderLength = 10;
+const int kTagSizeLength = 4;
 const int kExtendedHeaderLength = 10;
 const int kExtendedHeaderCrcLength = 4;
 const int kExtendedHeaderTagFlagStart = 14;
@@ -22,12 +23,23 @@ const int kTagFrameHeaderIdStart = 0;
 const int kTagFrameHeaderIdLength = 4;
 const int kTagFrameSizeStart = 4;
 const int kTagFrameSizeLength = 4;
+const int kTagFrameFlagsLength = 2;
 
 const char* kTagFrameIdTitle = "TIT2";
 const char* kTagFrameIdArtist = "TPE1";
 const char* kTagFrameIdAlbum = "TALB";
 const char* kTagFrameIdTrack = "TRCK";
 const char* kTagFrameIdAlbumArtist = "TPE2";
+
+const char* kHeaderTemplate = "\x49\x44\x33\x03\x00\x00";
+
+using Filesystem::readBytes;
+using Reader::Utility::intToBEndian;
+using Reader::Utility::bEndianToInt;
+using Reader::Utility::bytesToString;
+using Reader::Utility::bytesToTrack;
+
+typedef const unsigned char* BytePtr;
 
 int getPostHeaderSeek(const Bytes& tag) {
   if (tag[kExtendedHeaderTagFlagStart]&(1<<kExtendedTagFlagCrcBitPos)) {
@@ -45,6 +57,49 @@ Bytes clearTagUnsync(const Bytes& raw_tag) {
     if (i < s-1 && raw_tag[i] == 0xFF && raw_tag[i+1] == 0x00) i++;
   }
   return new_tag;
+}
+
+int calculateTagDataSize(const std::string& title, const std::string& artist,
+                         const std::string& album,
+                         int track_num, int track_denum) {
+  int size = kTagHeaderLength;
+  // +2 for leading and trailing 0x00 needed for ISO-8859 encoding.
+  if (!title.empty()) size += kTagFrameHeaderLength + 2 + title.length();
+  // 2* for artist and album artist.
+  if (!artist.empty()) size += 2*(kTagFrameHeaderLength + 2 + artist.length());
+  if (!album.empty()) size += kTagFrameHeaderLength + 2 + album.length();
+  if (track_num != -1) {
+    std::string track_num_str = std::to_string(track_num);
+    size += kTagFrameHeaderLength + 2 + track_num_str.length();
+    if (track_denum != -1) {
+      std::string track_denum_str = std::to_string(track_denum);
+      size += 1 + track_denum_str.length();
+    }
+  }
+
+  return (size == kTagHeaderLength) ? 0 : size;
+}
+
+std::string generateTrackString(int track_num, int track_denum) {
+  if (track_denum == -1) {
+    return std::to_string(track_num);
+  } else {
+    return std::to_string(track_num) + "/" + std::to_string(track_denum);
+  }
+}
+
+// Assumes all frames are in ISO-8859.
+void appendFrame(const char* frame_id, const std::string& data, Bytes& tag) {
+  tag.insert(tag.end(), (BytePtr)frame_id,
+                        (BytePtr)frame_id + kTagFrameHeaderIdLength);
+  Bytes frame_size_bytes = intToBEndian(2 + data.length(),
+                                        kTagFrameSizeLength, false);
+  tag.insert(tag.end(), frame_size_bytes.begin(), frame_size_bytes.end());
+  tag.insert(tag.end(), kTagFrameFlagsLength, 0x00);
+  tag.push_back(0x00);
+  tag.insert(tag.end(), (BytePtr)data.c_str(),
+                        (BytePtr)data.c_str() + data.length());
+  tag.push_back(0x00);
 }
 
 }  // namespace
@@ -65,9 +120,6 @@ void parseTag(const Bytes& raw_tag, std::string& title, std::string& artist,
   int tag_size = tag.size();
   int frame_size;
   while (seek + kTagFrameHeaderLength < tag_size) {
-    using Reader::Utility::bEndianToInt;
-    using Reader::Utility::bytesToString;
-    using Reader::Utility::bytesToTrack;
     frame_size = bEndianToInt(tag.begin() + seek + kTagFrameSizeStart,
                               tag.begin() + seek + kTagFrameSizeStart +
                                                    kTagFrameSizeLength, false);
@@ -106,9 +158,35 @@ void parseTag(const Bytes& raw_tag, std::string& title, std::string& artist,
 
 Bytes extractTag(Filesystem::FileStream& file_stream,
                  int seek_tag_start, int seek_tag_end) {
-  using Filesystem::readBytes;
   Bytes tag;
   readBytes(file_stream, seek_tag_start, seek_tag_end - seek_tag_start, tag);
+  return tag;
+}
+
+Bytes generateTag(const std::string& title, const std::string& artist,
+                  const std::string& album, int track_num, int track_denum) {
+  Bytes tag;
+  int tag_data_size = calculateTagDataSize(title, artist, album,
+                                           track_num, track_denum);
+  // Id3v2.3 forbids a tag with zero frames.
+  if (tag_data_size == 0) return tag;
+  tag.reserve(tag_data_size);
+
+  tag.insert(tag.end(), (BytePtr)kHeaderTemplate,
+                        (BytePtr)kHeaderTemplate + kTagHeaderLength -
+                                                   kTagSizeLength);
+  Bytes tag_size_bytes = intToBEndian(tag_data_size - kTagHeaderLength,
+                                      kTagSizeLength, true);
+  tag.insert(tag.end(), tag_size_bytes.begin(), tag_size_bytes.end());
+
+  if (!title.empty()) appendFrame(kTagFrameIdTitle, title, tag);
+  if (!artist.empty()) appendFrame(kTagFrameIdArtist, artist, tag);
+  if (!album.empty()) appendFrame(kTagFrameIdAlbum, album, tag);
+  if (track_num != -1) appendFrame(kTagFrameIdTrack,
+                                   generateTrackString(track_num, track_denum),
+                                   tag);
+  if (!artist.empty()) appendFrame(kTagFrameIdAlbumArtist, artist, tag);
+
   return tag;
 }
 

@@ -18,6 +18,10 @@ void parseTag(const Bytes& tag, std::string& title, std::string& artist,
 Bytes extractTag(Filesystem::FileStream& file_stream,
                  int seek_tag_start, int seek_tag_end);
 
+// Returns the entire tag
+Bytes generateTag(const std::string& title, const std::string& artist,
+                  const std::string& album, int track_num, int track_denum);
+
 }  // Id3v2_3
 }  // ReaderTag
 }  // Mp3Edit

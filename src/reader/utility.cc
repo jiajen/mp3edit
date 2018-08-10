@@ -1,9 +1,12 @@
 #include "mp3edit/src/reader/utility.h"
-#include "mp3edit/src/sanitiser.h"
 
 #include <cstring>
 
 #include <algorithm>
+#include <exception>
+#include <system_error>
+
+#include "mp3edit/src/sanitiser.h"
 
 namespace Mp3Edit {
 namespace Reader {
@@ -30,6 +33,18 @@ int bytesToInt(Bytes::const_iterator it_begin, Bytes::const_iterator it_end,
   return size;
 }
 
+// it_begin starts at the lowest significant byte.
+void intToBytes(int val, bool is_sync_safe,
+                Bytes::iterator it_begin, Bytes::iterator it_end) {
+  int jmp = (is_sync_safe ? 7:8);
+  while (it_begin != it_end && val > 0) {
+    *it_begin = (unsigned char)(val&((1<<jmp)-1));
+    val >>= jmp;
+    it_begin = (it_begin < it_end) ? it_begin+1:it_begin-1;
+  }
+  if (val > 0) throw std::system_error(std::error_code(), "Invalid FLAC.");
+}
+
 }  // namespace
 
 int lEndianToInt(Bytes::const_iterator it_begin, Bytes::const_iterator it_end,
@@ -42,6 +57,18 @@ int bEndianToInt(Bytes::const_iterator it_begin, Bytes::const_iterator it_end,
                  bool is_sync_safe) {
   if (!isValidByteArray(it_begin, it_end)) return -1;
   return bytesToInt(it_end-1, it_begin-1, is_sync_safe);
+}
+
+Bytes intToBEndian(int val, int length, bool is_sync_safe) {
+  Bytes size(length, 0x00);
+  intToBytes(val, is_sync_safe, size.end()-1, size.begin()-1);
+  return size;
+}
+
+Bytes intToLEndian(int val, int length, bool is_sync_safe) {
+  Bytes size(length, 0x00);
+  intToBytes(val, is_sync_safe, size.begin(), size.end());
+  return size;
 }
 
 void bytesToString(Bytes::const_iterator it_begin, Bytes::const_iterator it_end,

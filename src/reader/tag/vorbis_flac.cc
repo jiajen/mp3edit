@@ -2,7 +2,7 @@
 
 #include <cstring>
 
-#include <exception>
+#include <system_error>
 
 #include "mp3edit/src/reader/utility.h"
 

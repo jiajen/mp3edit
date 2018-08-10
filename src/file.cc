@@ -3,6 +3,7 @@
 #include <cstring>
 
 #include <exception>
+#include <system_error>
 
 #include "mp3edit/src/reader/tag/ape.h"
 #include "mp3edit/src/reader/tag/id3v1.h"
