@@ -32,6 +32,16 @@ const int kEnhancedTagFieldSize = 60;
 
 using Reader::Utility::bytesToString;
 
+void mergeToExistingField(const std::string& parsed_field, std::string& field) {
+  // Id3v1 is treated as a truncated version of the full tag.
+  // If id3v1 differs, it is appended to any existing field data.
+  // TODO merge with above
+}
+
+void mergeToExistingTracks(int parsed_track, int& track_num, int& track_denum) {
+  // TODO handle various track cases
+}
+
 }  // namespace
 
 void parseTag(const Bytes& tag, std::string& title, std::string& artist,
@@ -74,10 +84,10 @@ void parseTag(const Bytes& tag, std::string& title, std::string& artist,
   Sanitiser::sanitiseString(parsed_artist);
   Sanitiser::sanitiseString(parsed_album);
 
-  // Id3v1 is treated as a truncated version of the full tag.
-  // If id3v1 differs, it is appended to any existing field data.
-  // TODO merge with above
-  // TODO handle various track cases
+  mergeToExistingField(parsed_title, title);
+  mergeToExistingField(parsed_artist, artist);
+  mergeToExistingField(parsed_album, album);
+  mergeToExistingTracks(parsed_track_num, track_num, track_denum);
 }
 
 Bytes extractTag(Filesystem::FileStream& file_stream,
