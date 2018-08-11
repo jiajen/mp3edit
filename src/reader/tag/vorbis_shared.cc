@@ -63,8 +63,9 @@ class SafeReader {
     if (seek_end_ + size > tag_size_) throw SafeReaderException();
     seek_end_ += size;
   }
+  // Skips padding until end of page or encounters the first non 0x00 byte.
   void skipPadding() {
-    // TODO
+    while (seek_end_ < tag_size_ && tag_[seek_end_] == 0x00) seek_end_++;
   }
   inline int bytesRead() {
     return seek_end_ - seek_start_;
