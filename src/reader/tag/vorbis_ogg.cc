@@ -71,6 +71,12 @@ int segmentTableToSize(const Bytes& segment_table) {
   return size;
 }
 
+Bytes generateSegmentTable(int size) {
+  Bytes segment_table;
+  // TODO
+  return segment_table;
+}
+
 }  // namespace
 
 void parseTag(const Bytes& tag, std::string& title, std::string& artist,
@@ -161,6 +167,9 @@ Bytes generateTag(Filesystem::FileStream& file_stream, int seek_audio_start,
   readBytes(file_stream, seek_audio_start, vorbis_setup_size, page_audio_data);
 
   // TODO
+  segment_table = generateSegmentTable(kCommonVorbisHeaderSize +
+                                       vorbis_tag.size() + vorbis_setup_size);
+
   // add 0x03 vorbis in header_second_page + segment_table + <here> + vorbis_tag
   // when compiling
 }
