@@ -23,6 +23,8 @@ const int kCommonVorbisHeaderSize = 7;
 const int kPageCrcPos = 22;
 const int kPageCrcLength = 4;
 
+const char* kVorbisCommentHeader = "\x03\x76\x6F\x72\x62\x69\x73";
+
 bool verifyValidOggVorbisHeader(unsigned char type, const Bytes& tag,
                                 int seek) {
   if (tag[seek] != type) return false;
@@ -79,6 +81,13 @@ Bytes generateSegmentTable(int size) {
   if (segment_table.size() > 255)
     throw std::system_error(std::error_code(), "Tag too large.");
   return segment_table;
+}
+
+Bytes calculateCrc(const Bytes& page_header, const Bytes& segment_table,
+                   const char* vorbis_header, const Bytes& vorbis_tag,
+                   const Bytes& audio_data) {
+  // TODO
+  return Bytes();
 }
 
 }  // namespace
@@ -175,9 +184,13 @@ Bytes generateTag(Filesystem::FileStream& file_stream, int seek_audio_start,
   segment_table = generateSegmentTable(kCommonVorbisHeaderSize +
                                        vorbis_tag.size() + vorbis_setup_size);
   header_second_page[kNumberPageSegmentsPos] = segment_table.size();
-  // TODO
-  // add 0x03 vorbis in header_second_page + segment_table + <here> + vorbis_tag
-  // when compiling
+
+  Bytes crc = calculateCrc(header_second_page, segment_table,
+                           kVorbisCommentHeader, vorbis_tag, page_audio_data);
+
+  // TODO replace blank crc with calculated crc
+  // then return header_second_page + segment_table + kVorbisCommentHeader +
+  //                    vorbis_tag
 }
 
 }  // namespace VorbisOgg
