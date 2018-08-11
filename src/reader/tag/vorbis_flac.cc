@@ -82,7 +82,18 @@ int seekFooterStart(Filesystem::FileStream&, int seek) {
 
 Bytes generateTag(const std::string& title, const std::string& artist,
                   const std::string& album, int track_num, int track_denum) {
+  if (title.empty() && artist.empty() && album.empty() &&
+      track_num == -1 && track_denum == -1) return Bytes();
+
+  using VorbisShared::generateTag;
+  Bytes vorbis_tag = generateTag(title, artist, album,
+                                 track_num, track_denum, false);
+
+  Bytes tag;
+  tag.reserve(vorbis_tag.size() + kBlockHeaderLength);
   // TODO
+  tag.insert(tag.end(), vorbis_tag.begin(), vorbis_tag.end());
+  return tag;
 }
 
 }  // namespace VorbisFlac
