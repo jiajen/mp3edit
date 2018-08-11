@@ -46,7 +46,7 @@ int skipMetadataBlock(Filesystem::FileStream& file_stream, int seek,
                         false);
 
     if (extact_vorbis && ((header[0]&kBlockTypeVorbis) == kBlockTypeVorbis))
-      readBytes(file_stream, seek, size, header);
+      readBytes(file_stream, seek, size, tag);
 
     seek += size;
   } while (!(header[kBlockTypePos]&(1<<kBlockFlagLastBlockBitPos)));
