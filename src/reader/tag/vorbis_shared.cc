@@ -144,7 +144,8 @@ void markVorbisData(int field, int field_header_size,
 void addVorbisField(const std::string& field, const char* field_header,
                     int field_header_size, Bytes& tag) {
   if (field.empty()) return;
-  Bytes size_bytes = intToLEndian(field.length(), kLengthSize, false);
+  Bytes size_bytes = intToLEndian(field.length() + field_header_size,
+                                  kLengthSize, false);
   tag.insert(tag.end(), size_bytes.begin(), size_bytes.end());
   tag.insert(tag.end(), field_header, field_header + field_header_size);
   tag.insert(tag.end(), field.begin(), field.end());
