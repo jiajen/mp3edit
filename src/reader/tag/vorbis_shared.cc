@@ -23,8 +23,11 @@ int kCommentArtistHeaderSize = 7;
 const char* kCommentArtistHeader = "ARTIST=";
 int kCommentAlbumHeaderSize = 6;
 const char* kCommentAlbumHeader = "ALBUM=";
-int kCommentTrackHeaderSize = 12;
-const char* kCommentTrackHeader = "TRACKNUMBER=";
+int kCommentTrackNumHeaderSize = 12;
+const char* kCommentTrackNumHeader = "TRACKNUMBER=";
+int kCommentTrackTotalHeaderSize = 11;
+const char* kCommentTrackTotalHeader = "TRACKTOTAL=";
+
 
 // Custom exception to throw when there is nothing else to read.
 class SafeReaderException: public std::exception {
@@ -87,6 +90,18 @@ bool matchComment(const std::string& comment, const char* header,
     return false;
   }
 }
+bool matchTrackComment(const std::string& comment, const char* header,
+                       int header_size, int& value) {
+  std::string str;
+  if (!matchComment(comment, header, header_size, str)) return false;
+  try {
+    value = std::atoi(str.c_str());
+  } catch (const std::exception&) {
+    // Ignore exception
+  }
+  if (value <= 0) value = -1;
+  return true;
+}
 inline bool checkCommentIsTitle(const std::string& comment,
                                 std::string& value) {
   return matchComment(comment, kCommentTitleHeader,
@@ -102,27 +117,15 @@ inline bool checkCommentIsAlbum(const std::string& comment,
   return matchComment(comment, kCommentAlbumHeader,
                       kCommentAlbumHeaderSize, value);
 }
-inline bool checkCommentIsTrack(const std::string& comment,
-                                std::string& value) {
-  return matchComment(comment, kCommentTrackHeader,
-                      kCommentTrackHeaderSize, value);
+inline bool checkCommentIsTrackNum(const std::string& comment,
+                                   int& value) {
+  return matchTrackComment(comment, kCommentTrackNumHeader,
+                           kCommentTrackNumHeaderSize, value);
 }
-
-void parseTrack(const std::string& track, int& track_num, int& track_denum) {
-  try {
-    std::string::size_type pos = track.find_first_of('/');
-    if (pos != std::string::npos) {
-      track_num = std::atoi(track.substr(0, pos).c_str());
-      track_denum = std::atoi(track.substr(pos+1,
-                                           track.length()-pos-1).c_str());
-    } else {
-      track_num = std::atoi(track.c_str());
-    }
-  } catch (const std::exception&) {
-    // Ignore exception
-  }
-  if (track_num <= 0) track_num = -1;
-  if (track_denum <= 0) track_denum = -1;
+inline bool checkCommentIsTrackTotal(const std::string& comment,
+                                     int& value) {
+  return matchTrackComment(comment, kCommentTrackTotalHeader,
+                           kCommentTrackTotalHeaderSize, value);
 }
 
 }  // namespace
@@ -154,12 +157,11 @@ int parseTag(const Bytes& tag, int seek,
     while (comment_list_length--) {
       int comment_length = reader.readInt(kLengthSize);
       std::string comment = reader.readString(comment_length);
-      if (!checkCommentIsTitle(comment, title) &&
-          !checkCommentIsArtist(comment, artist) &&
-          !checkCommentIsAlbum(comment, album) &&
-          checkCommentIsTrack(comment, track)) {
-        parseTrack(track, track_num, track_denum);
-      }
+      if (checkCommentIsTitle(comment, title) ||
+          checkCommentIsArtist(comment, artist) ||
+          checkCommentIsAlbum(comment, album) ||
+          checkCommentIsTrackNum(comment, track_num) ||
+          checkCommentIsTrackTotal(comment, track_denum)) continue;
     }
     if (has_framing_bit && reader.readInt(1) != 0x01) return -1;
     if (remove_padding) reader.skipPadding();
