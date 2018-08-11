@@ -12,7 +12,7 @@ void parseTag(const Bytes& tag, std::string& title, std::string& artist,
 
 // Returns the metadata tag portion of an audio file.
 Bytes extractTag(Filesystem::FileStream& file_stream,
-                 int seek_tag_start, int seek_tag_end);
+                 int seek_tag_start, int);
 
 int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek);
 

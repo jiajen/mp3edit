@@ -75,11 +75,12 @@ int segmentTableToSize(const Bytes& segment_table) {
 
 void parseTag(const Bytes& tag, std::string& title, std::string& artist,
               std::string& album, int& track_num, int& track_denum) {
-  // TODO
+  VorbisShared::parseTag(tag, kCommonVorbisHeaderSize, true, false,
+                         title, artist, album, track_num, track_denum);
 }
 
 Bytes extractTag(Filesystem::FileStream& file_stream,
-                 int seek_tag_start, int seek_tag_end) {
+                 int seek_tag_start, int) {
   Bytes number_segments_raw, segment_table, second_page;
   int seek = seek_tag_start + kFirstPageLength + kNumberPageSegmentsPos;
 
