@@ -14,6 +14,7 @@ namespace VorbisShared {
 namespace {
 
 using Filesystem::readBytes;
+using Reader::Utility::intToLEndian;
 
 const int kLengthSize = 4;
 
@@ -27,7 +28,6 @@ int kCommentTrackNumHeaderSize = 12;
 const char* kCommentTrackNumHeader = "TRACKNUMBER=";
 int kCommentTrackTotalHeaderSize = 11;
 const char* kCommentTrackTotalHeader = "TRACKTOTAL=";
-
 
 // Custom exception to throw when there is nothing else to read.
 class SafeReaderException: public std::exception {
@@ -128,6 +128,34 @@ inline bool checkCommentIsTrackTotal(const std::string& comment,
                            kCommentTrackTotalHeaderSize, value);
 }
 
+void markVorbisData(const std::string& field, int field_header_size,
+                    int& field_count, int& size) {
+  if (field.empty()) return;
+  size += kLengthSize + field_header_size + field.length();
+  field_count++;
+}
+
+void markVorbisData(int field, int field_header_size,
+                    int& field_count, int& size) {
+  if (field == -1) return;
+  markVorbisData(std::to_string(field), field_header_size, field_count, size);
+}
+
+void addVorbisField(const std::string& field, const char* field_header,
+                    int field_header_size, Bytes& tag) {
+  if (field.empty()) return;
+  Bytes size_bytes = intToLEndian(field.length(), kLengthSize, false);
+  tag.insert(tag.end(), size_bytes.begin(), size_bytes.end());
+  tag.insert(tag.end(), field_header, field_header + field_header_size);
+  tag.insert(tag.end(), field.begin(), field.end());
+}
+
+void addVorbisField(int field, const char* field_header,
+                    int field_header_size, Bytes& tag) {
+  if (field == -1) return;
+  addVorbisField(std::to_string(field), field_header, field_header_size, tag);
+}
+
 }  // namespace
 
 int parseTag(const Bytes& tag, int seek,
@@ -169,6 +197,39 @@ int parseTag(const Bytes& tag, int seek,
     return -1;
   }
   return reader.bytesRead();
+}
+
+Bytes generateTag(const std::string& title, const std::string& artist,
+                  const std::string& album, int track_num, int track_denum,
+                  bool has_framing_bit) {
+  int num_fields = 0;
+  int size = (int)has_framing_bit + 2*kLengthSize;  // Vendor Length and
+                                                    // Number of Comments
+
+  markVorbisData(title, kCommentTitleHeaderSize, num_fields, size);
+  markVorbisData(artist, kCommentArtistHeaderSize, num_fields, size);
+  markVorbisData(album, kCommentAlbumHeaderSize, num_fields, size);
+  markVorbisData(track_num, kCommentTrackNumHeaderSize, num_fields, size);
+  markVorbisData(track_denum, kCommentTrackTotalHeaderSize, num_fields, size);
+
+  Bytes tag;
+  tag.reserve(size);
+
+  tag.insert(tag.end(), kLengthSize, 0x00);
+  Bytes tag_size_bytes = intToLEndian(num_fields, kLengthSize, false);
+  tag.insert(tag.end(), tag_size_bytes.begin(), tag_size_bytes.end());
+
+  addVorbisField(title, kCommentTitleHeader, kCommentTitleHeaderSize, tag);
+  addVorbisField(artist, kCommentArtistHeader, kCommentArtistHeaderSize, tag);
+  addVorbisField(album, kCommentAlbumHeader, kCommentAlbumHeaderSize, tag);
+  addVorbisField(track_num,
+                 kCommentTrackNumHeader, kCommentTrackNumHeaderSize, tag);
+  addVorbisField(track_denum,
+                 kCommentTrackTotalHeader, kCommentTrackTotalHeaderSize, tag);
+
+  if (has_framing_bit) tag.push_back(0x01);
+
+  return tag;
 }
 
 }  // namespace VorbisShared
