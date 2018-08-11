@@ -103,7 +103,10 @@ void File::readMetaData(Filesystem::FileStream& file_stream,
         seek_end = VorbisFlac::seekFooterStart(file_stream, seek_end);
         seek = VorbisFlac::seekHeaderEnd(file_stream, seek_start);
         if (seek != seek_start) {
-          // TODO parse vorbis flac
+          using VorbisFlac::parseTag;
+          using VorbisFlac::extractTag;
+          parseTag(extractTag(file_stream, seek_start, seek),
+                   title_, artist_, album_, track_num_, track_denum_);
           audio_start_ = seek;
           return;
         } else {
