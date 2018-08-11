@@ -63,6 +63,9 @@ class SafeReader {
     if (seek_end_ + size > tag_size_) throw SafeReaderException();
     seek_end_ += size;
   }
+  void skipPadding() {
+    // TODO
+  }
   inline int bytesRead() {
     return seek_end_ - seek_start_;
   }
@@ -123,14 +126,16 @@ void parseTrack(const std::string& track, int& track_num, int& track_denum) {
 
 }  // namespace
 
-int parseTag(const Bytes& tag, int seek, bool has_framing_bit) {
+int parseTag(const Bytes& tag, int seek,
+             bool has_framing_bit, bool remove_padding) {
   std::string unused_s1, unused_s2, unused_s3;
   int unused_i1, unused_i2;
-  return parseTag(tag, seek, has_framing_bit,
+  return parseTag(tag, seek, has_framing_bit, remove_padding,
                   unused_s1, unused_s2, unused_s3, unused_i1, unused_i2);
 }
 
-int parseTag(const Bytes& tag, int seek, bool has_framing_bit,
+int parseTag(const Bytes& tag, int seek,
+             bool has_framing_bit, bool remove_padding,
              std::string& title, std::string& artist, std::string& album,
              int& track_num, int& track_denum) {
   title.clear();
@@ -155,8 +160,8 @@ int parseTag(const Bytes& tag, int seek, bool has_framing_bit,
         parseTrack(track, track_num, track_denum);
       }
     }
-    if (has_framing_bit && reader.readInt(1) != 0x01)
-      return -1;
+    if (has_framing_bit && reader.readInt(1) != 0x01) return -1;
+    if (remove_padding) reader.skipPadding();
   } catch (const SafeReaderException&) {
     return -1;
   }
