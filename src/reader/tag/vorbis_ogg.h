@@ -7,6 +7,14 @@ namespace Mp3Edit {
 namespace ReaderTag {
 namespace VorbisOgg {
 
+void parseTag(const Bytes& tag, std::string& title, std::string& artist,
+              std::string& album, int& track_num, int& track_denum);
+
+// Returns the entire vorbis second page
+// (with 0x03 and vorbis but without Ogg encapsulation).
+Bytes extractTag(Filesystem::FileStream& file_stream,
+                 int seek_tag_start, int);
+
 int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek);
 
 int seekFooterStart(Filesystem::FileStream&, int seek);

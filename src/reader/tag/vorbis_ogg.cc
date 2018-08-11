@@ -73,6 +73,28 @@ int segmentTableToSize(const Bytes& segment_table) {
 
 }  // namespace
 
+void parseTag(const Bytes& tag, std::string& title, std::string& artist,
+              std::string& album, int& track_num, int& track_denum) {
+  VorbisShared::parseTag(tag, kCommonVorbisHeaderSize, true, false,
+                         title, artist, album, track_num, track_denum);
+}
+
+Bytes extractTag(Filesystem::FileStream& file_stream,
+                 int seek_tag_start, int) {
+  Bytes number_segments_raw, segment_table, second_page;
+  int seek = seek_tag_start + kFirstPageLength + kNumberPageSegmentsPos;
+
+  readBytes(file_stream, seek++, 1, number_segments_raw);
+
+  int number_segments = number_segments_raw[0];
+  readBytes(file_stream, seek, number_segments, segment_table);
+  seek += number_segments;
+  int page_size = segmentTableToSize(segment_table);
+
+  readBytes(file_stream, seek, page_size, second_page);
+  return second_page;
+}
+
 // Warning: Limited functionality. Although the official specification states
 // that an OGG structure can have its vorbis comment span more than a single
 // page, this function assumes that the vorbis comment is entirely encapsulated

@@ -114,7 +114,10 @@ void File::readMetaData(Filesystem::FileStream& file_stream,
         seek_end = VorbisOgg::seekFooterStart(file_stream, seek_end);
         seek = VorbisOgg::seekHeaderEnd(file_stream, seek_start);
         if (seek != seek_start) {
-          // TODO parse vorbis ogg
+          using VorbisOgg::parseTag;
+          using VorbisOgg::extractTag;
+          parseTag(extractTag(file_stream, seek_start, seek),
+                   title_, artist_, album_, track_num_, track_denum_);
           audio_start_ = seek;
           return;
         } else {
