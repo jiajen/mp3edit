@@ -73,6 +73,16 @@ int segmentTableToSize(const Bytes& segment_table) {
 
 }  // namespace
 
+void parseTag(const Bytes& tag, std::string& title, std::string& artist,
+              std::string& album, int& track_num, int& track_denum) {
+  // TODO
+}
+
+Bytes extractTag(Filesystem::FileStream& file_stream,
+                 int seek_tag_start, int seek_tag_end) {
+  // TODO
+}
+
 // Warning: Limited functionality. Although the official specification states
 // that an OGG structure can have its vorbis comment span more than a single
 // page, this function assumes that the vorbis comment is entirely encapsulated
