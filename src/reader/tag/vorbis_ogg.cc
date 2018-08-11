@@ -189,8 +189,16 @@ Bytes generateTag(Filesystem::FileStream& file_stream, int seek_audio_start,
                            kVorbisCommentHeader, vorbis_tag, page_audio_data);
 
   memcpy(header_second_page.data() + kPageCrcPos, crc.data(), crc.size());
-  // TODO then return header_second_page + segment_table +
-  //                  kVorbisCommentHeader + vorbis_tag
+
+  Bytes tag;
+  tag.reserve(kPageHeaderPrefixLength + segment_table.size() +
+              kCommonVorbisHeaderSize + vorbis_tag.size());
+  tag.insert(tag.end(), header_second_page.begin(), header_second_page.end());
+  tag.insert(tag.end(), segment_table.begin(), segment_table.end());
+  tag.insert(tag.end(), kVorbisCommentHeader, kVorbisCommentHeader +
+                                              kCommonVorbisHeaderSize);
+  tag.insert(tag.end(), vorbis_tag.begin(), vorbis_tag.end());
+  return tag;
 }
 
 }  // namespace VorbisOgg
