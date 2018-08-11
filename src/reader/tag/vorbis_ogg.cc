@@ -77,7 +77,17 @@ int segmentTableToSize(const Bytes& segment_table) {
 
 Bytes generateSegmentTable(int size) {
   Bytes segment_table;
-  // TODO
+  segment_table.reserve(1 + size/255);
+
+  unsigned char block;
+  while (size > 0) {
+    block = (size > 255) ? 255 : size;
+    segment_table.push_back(block);
+    size -= block;
+  }
+  if (segment_table.size() > 0 && segment_table.back() == 255)
+    segment_table.push_back(0);
+
   if (segment_table.size() > 255)
     throw std::system_error(std::error_code(), "Tag too large.");
   return segment_table;
