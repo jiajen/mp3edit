@@ -22,20 +22,8 @@ const int kBlockTypeVorbisBitMask = 4;
 const int kBlockSizeStartPos = 1;
 const int kBlockSizeSize = 3;
 
-}  // namespace
-
-void parseTag(const Bytes& tag, std::string& title, std::string& artist,
-              std::string& album, int& track_num, int& track_denum) {
-  // TODO
-  if (tag.empty()) return;
-}
-
-Bytes extractTag(Filesystem::FileStream& file_stream,
-                 int seek_tag_start, int) {
-  // TODO
-}
-
-int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek) {
+int skipMetadataBlock(Filesystem::FileStream& file_stream, int seek,
+                      bool extact_vorbis, Bytes& tag) {
   Bytes header;
   readBytes(file_stream, seek, kPreambleLength, header);
 
@@ -58,6 +46,24 @@ int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek) {
   } while (!(header[kBlockTypePos]&(1<<kBlockFlagLastBlockBitPos)));
 
   return seek;
+}
+
+}  // namespace
+
+void parseTag(const Bytes& tag, std::string& title, std::string& artist,
+              std::string& album, int& track_num, int& track_denum) {
+  // TODO
+  if (tag.empty()) return;
+}
+
+Bytes extractTag(Filesystem::FileStream& file_stream,
+                 int seek_tag_start, int) {
+  // TODO
+}
+
+int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek) {
+  Bytes unused;
+  return skipMetadataBlock(file_stream, seek, false, unused);
 }
 
 int seekFooterStart(Filesystem::FileStream&, int seek) {
