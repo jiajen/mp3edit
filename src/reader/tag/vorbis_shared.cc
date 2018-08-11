@@ -128,18 +128,32 @@ inline bool checkCommentIsTrackTotal(const std::string& comment,
                            kCommentTrackTotalHeaderSize, value);
 }
 
-void markVorbisData(int field, int field_header_size,
-                    int& field_count, int& size) {
-  if (field == -1) return;
-  size += kLengthSize + field_header_size + std::to_string(field).length();
-  field_count++;
-}
-
 void markVorbisData(const std::string& field, int field_header_size,
                     int& field_count, int& size) {
   if (field.empty()) return;
   size += kLengthSize + field_header_size + field.length();
   field_count++;
+}
+
+void markVorbisData(int field, int field_header_size,
+                    int& field_count, int& size) {
+  if (field == -1) return;
+  markVorbisData(std::to_string(field), field_header_size, field_count, size);
+}
+
+void addVorbisField(const std::string& field, const char* field_header,
+                    int field_header_size, Bytes& tag) {
+  if (field.empty()) return;
+  Bytes size_bytes = intToLEndian(field.length(), kLengthSize, false);
+  tag.insert(tag.end(), size_bytes.begin(), size_bytes.end());
+  tag.insert(tag.end(), field_header, field_header + field_header_size);
+  tag.insert(tag.end(), field.begin(), field.end());
+}
+
+void addVorbisField(int field, const char* field_header,
+                    int field_header_size, Bytes& tag) {
+  if (field == -1) return;
+  addVorbisField(std::to_string(field), field_header, field_header_size, tag);
 }
 
 }  // namespace
