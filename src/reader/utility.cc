@@ -34,7 +34,7 @@ int bytesToInt(Bytes::const_iterator it_begin, Bytes::const_iterator it_end,
 }
 
 // it_begin starts at the lowest significant byte.
-void intToBytes(int val, bool is_sync_safe,
+void intToBytes(unsigned int val, bool is_sync_safe,
                 Bytes::iterator it_begin, Bytes::iterator it_end) {
   int jmp = (is_sync_safe ? 7:8);
   while (it_begin != it_end && val > 0) {
@@ -59,13 +59,13 @@ int bEndianToInt(Bytes::const_iterator it_begin, Bytes::const_iterator it_end,
   return bytesToInt(it_end-1, it_begin-1, is_sync_safe);
 }
 
-Bytes intToBEndian(int val, int length, bool is_sync_safe) {
+Bytes intToBEndian(unsigned int val, int length, bool is_sync_safe) {
   Bytes size(length, 0x00);
   intToBytes(val, is_sync_safe, size.end()-1, size.begin()-1);
   return size;
 }
 
-Bytes intToLEndian(int val, int length, bool is_sync_safe) {
+Bytes intToLEndian(unsigned int val, int length, bool is_sync_safe) {
   Bytes size(length, 0x00);
   intToBytes(val, is_sync_safe, size.begin(), size.end());
   return size;

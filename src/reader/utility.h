@@ -18,10 +18,10 @@ int bEndianToInt(Bytes::const_iterator it_begin, Bytes::const_iterator it_end,
                  bool is_sync_safe);
 
 // Throws an exception on failure.
-Bytes intToBEndian(int val, int length, bool is_sync_safe);
+Bytes intToBEndian(unsigned int val, int length, bool is_sync_safe);
 
 // Throws an exception on failure.
-Bytes intToLEndian(int val, int length, bool is_sync_safe);
+Bytes intToLEndian(unsigned int val, int length, bool is_sync_safe);
 
 void bytesToString(Bytes::const_iterator it_begin, Bytes::const_iterator it_end,
                    std::string& output);
