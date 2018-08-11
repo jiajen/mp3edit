@@ -171,6 +171,14 @@ int parseTag(const Bytes& tag, int seek,
   return reader.bytesRead();
 }
 
+Bytes generateTag(const std::string& title, const std::string& artist,
+                  const std::string& album, int track_num, int track_denum,
+                  bool has_framing_bit) {
+  Bytes tag;
+  // TODO
+  return tag;
+}
+
 }  // namespace VorbisShared
 }  // namespace ReaderTag
 }  // namespace Mp3Edit
