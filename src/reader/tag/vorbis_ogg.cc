@@ -105,6 +105,10 @@ int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek) {
     throw std::system_error(std::error_code(), "Unsupported OGG.");
   seek += kCommonVorbisHeaderSize + vorbis_tag_size;
 
+  if (!verifyValidOggVorbisSetupHeader(second_page, kCommonVorbisHeaderSize +
+                                                    vorbis_tag_size))
+    throw std::system_error(std::error_code(), "Unsupported OGG.");
+
   return seek;
 }
 
