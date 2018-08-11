@@ -64,7 +64,9 @@ void parseTag(const Bytes& tag, std::string& title, std::string& artist,
 
 Bytes extractTag(Filesystem::FileStream& file_stream,
                  int seek_tag_start, int) {
-  // TODO
+  Bytes tag;
+  skipMetadataBlock(file_stream, seek_tag_start, true, tag);
+  return tag;
 }
 
 int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek) {
