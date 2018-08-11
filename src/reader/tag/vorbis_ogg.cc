@@ -21,14 +21,31 @@ const int kPageNumberStartPos = 18;
 const int kNumberPageSegmentsPos = 26;
 const int kCommonVorbisHeaderSize = 7;
 
+bool verifyValidOggVorbisHeader(unsigned char type, const Bytes& tag,
+                                int seek) {
+  if (tag[seek] != type) return false;
+  if (strncmp((const char*)tag.data()+seek+1, "vorbis", 6) != 0) return false;
+  return true;
+}
+
+inline bool verifyValidOggVorbisIdHeader(const Bytes& tag, int seek) {
+  return verifyValidOggVorbisHeader(0x01, tag, seek);
+}
+
+inline bool verifyValidOggVorbisCommentHeader(const Bytes& tag, int seek) {
+  return verifyValidOggVorbisHeader(0x03, tag, seek);
+}
+
+inline bool verifyValidOggVorbisSetupHeader(const Bytes& tag, int seek) {
+  return verifyValidOggVorbisHeader(0x05, tag, seek);
+}
+
 // Checks the validity of an ogg file's first page
 // and the second page's header.
 bool verifyValidOggHeaderPrefix(const Bytes& header) {
   // First Page (Identification Header)
   if (strncmp((const char*)header.data(), "OggS", 4) != 0) return false;
-  if (header[kFirstPageDataStartPos] != 0x01) return false;
-  if (strncmp((const char*)header.data() + kFirstPageDataStartPos + 1,
-              "vorbis", 6) != 0)
+  if (!verifyValidOggVorbisIdHeader(header, kFirstPageDataStartPos))
     return false;
 
   // Second Page (Must fulfill a template as program makes an assumption)
@@ -52,12 +69,6 @@ int segmentTableToSize(const Bytes& segment_table) {
   for (int i = 0; i < n; i++)
     size += (int)segment_table[i];
   return size;
-}
-
-bool verifyValidOggVorbisCommentHeader(const Bytes& tag) {
-  if (tag[0] != 0x03) return false;
-  if (strncmp((const char*)tag.data()+1, "vorbis", 6) != 0) return false;
-  return true;
 }
 
 }  // namespace
@@ -85,14 +96,18 @@ int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek) {
   int page_size = segmentTableToSize(segment_table);
 
   readBytes(file_stream, seek, page_size, second_page);
-  if (!verifyValidOggVorbisCommentHeader(second_page))
+  if (!verifyValidOggVorbisCommentHeader(second_page, 0))
     throw std::system_error(std::error_code(), "Invalid OGG.");
   int vorbis_tag_size = VorbisShared::parseTag(second_page,
                                                kCommonVorbisHeaderSize,
-                                               true);
+                                               true, true);
   if (vorbis_tag_size == -1)
     throw std::system_error(std::error_code(), "Unsupported OGG.");
   seek += kCommonVorbisHeaderSize + vorbis_tag_size;
+
+  if (!verifyValidOggVorbisSetupHeader(second_page, kCommonVorbisHeaderSize +
+                                                    vorbis_tag_size))
+    throw std::system_error(std::error_code(), "Unsupported OGG.");
 
   return seek;
 }
