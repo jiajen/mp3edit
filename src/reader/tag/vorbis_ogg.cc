@@ -4,7 +4,10 @@
 
 #include <system_error>
 
+#include "Poco/Checksum.h"
+
 #include "mp3edit/src/reader/tag/vorbis_shared.h"
+#include "mp3edit/src/reader/utility.h"
 
 namespace Mp3Edit {
 namespace ReaderTag {
@@ -96,8 +99,14 @@ Bytes generateSegmentTable(int size) {
 Bytes calculateCrc(const Bytes& page_header, const Bytes& segment_table,
                    const char* vorbis_header, const Bytes& vorbis_tag,
                    const Bytes& audio_data) {
-  // TODO
-  return Bytes();
+  Poco::Checksum checksum(Poco::Checksum::TYPE_CRC32);
+  checksum.update((const char*)page_header.data(), page_header.size());
+  checksum.update((const char*)segment_table.data(), segment_table.size());
+  checksum.update(vorbis_header, kCommonVorbisHeaderSize);
+  checksum.update((const char*)vorbis_tag.data(), vorbis_tag.size());
+  checksum.update((const char*)audio_data.data(), audio_data.size());
+  return Reader::Utility::intToLEndian((unsigned int)checksum.checksum(),
+                                       kPageCrcLength, false);
 }
 
 }  // namespace
