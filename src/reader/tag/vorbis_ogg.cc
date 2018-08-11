@@ -188,9 +188,9 @@ Bytes generateTag(Filesystem::FileStream& file_stream, int seek_audio_start,
   Bytes crc = calculateCrc(header_second_page, segment_table,
                            kVorbisCommentHeader, vorbis_tag, page_audio_data);
 
-  // TODO replace blank crc with calculated crc
-  // then return header_second_page + segment_table + kVorbisCommentHeader +
-  //                    vorbis_tag
+  memcpy(header_second_page.data() + kPageCrcPos, crc.data(), crc.size());
+  // TODO then return header_second_page + segment_table +
+  //                  kVorbisCommentHeader + vorbis_tag
 }
 
 }  // namespace VorbisOgg
