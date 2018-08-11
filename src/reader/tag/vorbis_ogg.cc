@@ -138,6 +138,12 @@ int seekFooterStart(Filesystem::FileStream&, int seek) {
   return seek;
 }
 
+Bytes generateTag(Filesystem::FileStream& file_stream, int seek_audio_start,
+                  const std::string& title, const std::string& artist,
+                  const std::string& album, int track_num, int track_denum) {
+  // TODO
+}
+
 }  // namespace VorbisOgg
 }  // namespace ReaderTag
 }  // namespace Mp3Edit
