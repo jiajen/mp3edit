@@ -20,6 +20,8 @@ const int kPageHeaderPrefixLength = 27;
 const int kPageNumberStartPos = 18;
 const int kNumberPageSegmentsPos = 26;
 const int kCommonVorbisHeaderSize = 7;
+const int kPageCrcPos = 22;
+const int kPageCrcLength = 4;
 
 bool verifyValidOggVorbisHeader(unsigned char type, const Bytes& tag,
                                 int seek) {
@@ -74,6 +76,8 @@ int segmentTableToSize(const Bytes& segment_table) {
 Bytes generateSegmentTable(int size) {
   Bytes segment_table;
   // TODO
+  if (segment_table.size() > 255)
+    throw std::system_error(std::error_code(), "Tag too large.");
   return segment_table;
 }
 
@@ -166,10 +170,12 @@ Bytes generateTag(Filesystem::FileStream& file_stream, int seek_audio_start,
   Bytes page_audio_data;
   readBytes(file_stream, seek_audio_start, vorbis_setup_size, page_audio_data);
 
-  // TODO
+  // Generation
+  memset(header_second_page.data() + kPageCrcPos, 0x00, kPageCrcLength);
   segment_table = generateSegmentTable(kCommonVorbisHeaderSize +
                                        vorbis_tag.size() + vorbis_setup_size);
-
+  header_second_page[kNumberPageSegmentsPos] = segment_table.size();
+  // TODO
   // add 0x03 vorbis in header_second_page + segment_table + <here> + vorbis_tag
   // when compiling
 }
