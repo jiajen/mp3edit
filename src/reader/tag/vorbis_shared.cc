@@ -28,7 +28,6 @@ const char* kCommentTrackNumHeader = "TRACKNUMBER=";
 int kCommentTrackTotalHeaderSize = 11;
 const char* kCommentTrackTotalHeader = "TRACKTOTAL=";
 
-
 // Custom exception to throw when there is nothing else to read.
 class SafeReaderException: public std::exception {
   virtual const char* what() const throw() {
@@ -128,6 +127,20 @@ inline bool checkCommentIsTrackTotal(const std::string& comment,
                            kCommentTrackTotalHeaderSize, value);
 }
 
+void markVorbisData(int field, int field_header_size,
+                    int& field_count, int& size) {
+  if (field == -1) return;
+  size += kLengthSize + field_header_size + std::to_string(field).length();
+  field_count++;
+}
+
+void markVorbisData(const std::string& field, int field_header_size,
+                    int& field_count, int& size) {
+  if (field.empty()) return;
+  size += kLengthSize + field_header_size + field.length();
+  field_count++;
+}
+
 }  // namespace
 
 int parseTag(const Bytes& tag, int seek,
@@ -174,8 +187,21 @@ int parseTag(const Bytes& tag, int seek,
 Bytes generateTag(const std::string& title, const std::string& artist,
                   const std::string& album, int track_num, int track_denum,
                   bool has_framing_bit) {
+  int num_fields = 0;
+  int size = (int)has_framing_bit + 2*kLengthSize;  // Vendor Length and
+                                                    // Number of Comments
+
+  markVorbisData(title, kCommentTitleHeaderSize, num_fields, size);
+  markVorbisData(artist, kCommentArtistHeaderSize, num_fields, size);
+  markVorbisData(album, kCommentAlbumHeaderSize, num_fields, size);
+  markVorbisData(track_num, kCommentTrackNumHeaderSize, num_fields, size);
+  markVorbisData(track_denum, kCommentTrackTotalHeaderSize, num_fields, size);
+
   Bytes tag;
+  tag.reserve(size);
+
   // TODO
+
   return tag;
 }
 
