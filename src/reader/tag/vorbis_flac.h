@@ -18,6 +18,9 @@ int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek);
 
 int seekFooterStart(Filesystem::FileStream&, int seek);
 
+Bytes generateTag(const std::string& title, const std::string& artist,
+                  const std::string& album, int track_num, int track_denum);
+
 }  // namespace VorbisFlac
 }  // namespace ReaderTag
 }  // namespace Mp3Edit
