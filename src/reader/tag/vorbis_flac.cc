@@ -22,6 +22,8 @@ const int kBlockTypeVorbisBitMask = 4;
 const int kBlockSizeStartPos = 1;
 const int kBlockSizeSize = 3;
 
+const unsigned char kBlockTypeVorbis = 0x04;
+
 int skipMetadataBlock(Filesystem::FileStream& file_stream, int seek,
                       bool extact_vorbis, Bytes& tag) {
   Bytes header;
@@ -42,6 +44,10 @@ int skipMetadataBlock(Filesystem::FileStream& file_stream, int seek,
            bEndianToInt(header.begin() + kBlockSizeStartPos,
                         header.begin() + kBlockSizeStartPos + kBlockSizeSize,
                         false);
+
+    if (extact_vorbis && ((header[0]&kBlockTypeVorbis) == kBlockTypeVorbis))
+      readBytes(file_stream, seek, size, header);
+
     seek += size;
   } while (!(header[kBlockTypePos]&(1<<kBlockFlagLastBlockBitPos)));
 
