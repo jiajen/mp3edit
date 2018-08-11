@@ -5,6 +5,7 @@
 #include <system_error>
 
 #include "mp3edit/src/reader/utility.h"
+#include "mp3edit/src/reader/tag/vorbis_shared.h"
 
 namespace Mp3Edit {
 namespace ReaderTag {
@@ -58,8 +59,9 @@ int skipMetadataBlock(Filesystem::FileStream& file_stream, int seek,
 
 void parseTag(const Bytes& tag, std::string& title, std::string& artist,
               std::string& album, int& track_num, int& track_denum) {
-  // TODO
   if (tag.empty()) return;
+  VorbisShared::parseTag(tag, kBlockHeaderLength, false, false,
+                         title, artist, album, track_num, track_denum);
 }
 
 Bytes extractTag(Filesystem::FileStream& file_stream,
