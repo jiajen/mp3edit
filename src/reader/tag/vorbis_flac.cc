@@ -14,6 +14,7 @@ namespace VorbisFlac {
 namespace {
 
 using Filesystem::readBytes;
+using Reader::Utility::intToBEndian;
 
 const int kPreambleLength = 4;
 const int kBlockHeaderLength = 4;
@@ -91,8 +92,13 @@ Bytes generateTag(const std::string& title, const std::string& artist,
 
   Bytes tag;
   tag.reserve(vorbis_tag.size() + kBlockHeaderLength);
-  // TODO
+
+  tag.push_back(0x84);
+  Bytes size_bytes = intToBEndian(vorbis_tag.size(), kBlockSizeSize, false);
+  tag.insert(tag.end(), size_bytes.begin(), size_bytes.end());
+
   tag.insert(tag.end(), vorbis_tag.begin(), vorbis_tag.end());
+
   return tag;
 }
 
