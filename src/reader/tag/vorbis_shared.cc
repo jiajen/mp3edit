@@ -14,6 +14,7 @@ namespace VorbisShared {
 namespace {
 
 using Filesystem::readBytes;
+using Reader::Utility::intToLEndian;
 
 const int kLengthSize = 4;
 
@@ -200,7 +201,13 @@ Bytes generateTag(const std::string& title, const std::string& artist,
   Bytes tag;
   tag.reserve(size);
 
-  // TODO
+  tag.insert(tag.end(), kLengthSize, 0x00);
+  Bytes tag_size_bytes = intToLEndian(num_fields, kLengthSize, false);
+  tag.insert(tag.end(), tag_size_bytes.begin(), tag_size_bytes.end());
+
+  // TODO add each field
+
+  if (has_framing_bit) tag.push_back(0x01);
 
   return tag;
 }
