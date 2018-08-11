@@ -24,6 +24,16 @@ const int kBlockSizeSize = 3;
 
 }  // namespace
 
+void parseTag(const Bytes& tag, std::string& title, std::string& artist,
+              std::string& album, int& track_num, int& track_denum) {
+  // TODO
+}
+
+Bytes extractTag(Filesystem::FileStream& file_stream,
+                 int seek_tag_start, int) {
+  // TODO
+}
+
 int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek) {
   Bytes header;
   readBytes(file_stream, seek, kPreambleLength, header);
