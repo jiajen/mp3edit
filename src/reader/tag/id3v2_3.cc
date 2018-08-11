@@ -29,7 +29,6 @@ const char* kTagFrameIdTitle = "TIT2";
 const char* kTagFrameIdArtist = "TPE1";
 const char* kTagFrameIdAlbum = "TALB";
 const char* kTagFrameIdTrack = "TRCK";
-const char* kTagFrameIdAlbumArtist = "TPE2";
 
 const char* kHeaderTemplate = "\x49\x44\x33\x03\x00\x00";
 
@@ -142,12 +141,6 @@ void parseTag(const Bytes& raw_tag, std::string& title, std::string& artist,
       bytesToTrack(frame_data_ptr, frame_data_ptr + frame_size,
                    track_num, track_denum);
       Sanitiser::sanitiseTrack(track_num, track_denum);
-    } else if (strncmp(frame_ptr, kTagFrameIdAlbumArtist, frame_id_len) == 0) {
-      std::string album_artist;
-      bytesToString(frame_data_ptr, frame_data_ptr + frame_size,
-                    album_artist);
-      Sanitiser::sanitiseString(album_artist);
-      if (artist != album_artist) artist += " + " + album_artist;
     } else if (*frame_ptr == 0x00) {
       break;
     }
@@ -185,7 +178,6 @@ Bytes generateTag(const std::string& title, const std::string& artist,
   if (track_num != -1) appendFrame(kTagFrameIdTrack,
                                    generateTrackString(track_num, track_denum),
                                    tag);
-  if (!artist.empty()) appendFrame(kTagFrameIdAlbumArtist, artist, tag);
 
   return tag;
 }
