@@ -27,6 +27,7 @@ const int kBlockSizeSize = 3;
 void parseTag(const Bytes& tag, std::string& title, std::string& artist,
               std::string& album, int& track_num, int& track_denum) {
   // TODO
+  if (tag.empty()) return;
 }
 
 Bytes extractTag(Filesystem::FileStream& file_stream,
