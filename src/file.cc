@@ -65,7 +65,7 @@ File::File(const std::string& filepath, FileType filetype,
   file_stream.close();
 }
 
-void File::saveFileChanges() {
+void File::saveFileChanges(bool rename_file) {
   using Filesystem::readBytes;
   Filesystem::FileStream file_stream(filepath_, std::ios::in | std::ios::out |
                                                 std::ifstream::binary);
@@ -111,7 +111,7 @@ void File::saveFileChanges() {
         return;
       }
     }
-    // TODO generate new file here
+    // TODO generate new file here and rename file if needed
   } catch (const std::exception& ex) {
     file_stream.close();
     throw ex;

@@ -40,7 +40,7 @@ class File {
   inline int getTrackNum() const { return track_num_; }
   inline int getTrackDenum() const { return track_denum_; }
   inline std::string getFilepath() const { return filepath_; }
-  void saveFileChanges();
+  void saveFileChanges(bool rename_file);
  private:
   void readMetaData(Filesystem::FileStream& file_stream);
   // Sets is_valid_ to false if file appears invalid
