@@ -56,7 +56,8 @@ std::filesystem::path generateTargetPath(const std::string& filepath,
 std::string renameFile(const std::string& input_path,
                        const std::filesystem::path& output_path) {
   if (input_path == output_path.string()) return input_path;
-  std::filesystem::rename(input_path, output_path);
+  std::filesystem::copy_file(input_path, output_path);
+  std::filesystem::remove(input_path);
   return output_path.string();
 }
 
