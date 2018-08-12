@@ -65,8 +65,37 @@ File::File(const std::string& filepath, FileType filetype,
 }
 
 void File::saveFileChanges() {
-  // TODO only overwrite if metadata changed
-  // (if same size then only read raw metadata from file to compare)
+  Filesystem::FileStream file_stream(filepath_, std::ios::in | std::ios::out |
+                                                std::ifstream::binary);
+  if (!file_stream) {
+    throw std::system_error(std::error_code(), "Error accessing file.");
+  }
+
+  try {
+    Bytes metadata_front, metadata_back;
+    switch (filetype_) {
+      case FileType::kMp3:
+        //metadata_front = generateTag();
+        //metadata_back = ;
+        break;
+      case FileType::kFlac:
+        //metadata_front = VorbisFlac::generateTag();
+        break;
+      case FileType::kOgg:
+        //metadata_front = VorbisOgg::generateTag();
+        break;
+      default:
+        break;
+    }
+
+    // TODO only overwrite if metadata changed
+    // (if same size then only read raw metadata from file to compare)
+
+  } catch (const std::exception& ex) {
+    file_stream.close();
+    throw ex;
+  }
+  file_stream.close();
 }
 
 void File::readMetaData(Filesystem::FileStream& file_stream) {
