@@ -13,7 +13,6 @@ namespace VorbisShared {
 
 namespace {
 
-using Filesystem::readBytes;
 using Reader::Utility::intToLEndian;
 
 const int kLengthSize = 4;
