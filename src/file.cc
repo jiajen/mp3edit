@@ -137,7 +137,7 @@ bool File::writeFile(const Bytes& audio_raw,
   }
 
   if (target_path != current_path) {
-    for (int i = 2; !target_path.empty(); i++) {
+    for (int i = 2; std::filesystem::exists(target_path); i++) {
       target_path.replace_filename(new_filename +
                                    " (" + std::to_string(i) + ")");
       target_path.replace_extension(kFileSupportedFileTypes[(int)filetype_]);
@@ -147,7 +147,7 @@ bool File::writeFile(const Bytes& audio_raw,
   std::filesystem::path tmp_path = std::filesystem::temp_directory_path() /
                                    target_path.filename();
 
-  for (int i = 0; !tmp_path.empty(); i++) {
+  for (int i = 0; std::filesystem::exists(tmp_path); i++) {
     tmp_path.replace_filename(new_filename + "-" + std::to_string(i));
     tmp_path.replace_extension(kFileSupportedFileTypes[(int)filetype_]);
   }
@@ -159,8 +159,10 @@ bool File::writeFile(const Bytes& audio_raw,
   file_writer.close();
 
   try {
-    if (!target_path.empty()) std::filesystem::remove(target_path);
-      std::filesystem::copy_file(tmp_path, target_path);
+    if (std::filesystem::exists(target_path)) {
+      std::filesystem::remove(target_path);
+    }
+    std::filesystem::copy_file(tmp_path, target_path);
   } catch(const std::exception& ex) {
     throw ex;
   }
