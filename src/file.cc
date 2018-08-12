@@ -137,23 +137,5 @@ void File::readAudioData(Filesystem::FileStream& file_stream,
   // TODO Read audio
 }
 
-Bytes File::generateMetadataFront() {
-  // TODO generate proper metadata using meeber data and based on filetpe
-  return Bytes();
-}
-
-Bytes File::generateMetadataBack() {
-  // TODO generate proper metadata using meeber data and based on filetpe
-  return Bytes();
-}
-
-void File::updateMetadataFromId3v2Tag() {
-
-}
-
-void File::updateMetadataFromVorbis() {
-
-}
-
 }  // namespace File
 }  // namespace Mp3Edit

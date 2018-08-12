@@ -46,12 +46,6 @@ class File {
   // Sets is_valid_ to false if file appears invalid
   void readAudioData(Filesystem::FileStream& file_stream, FileType filetype);
 
-  Bytes generateMetadataFront();
-  Bytes generateMetadataBack();
-
-  void updateMetadataFromId3v2Tag();
-  void updateMetadataFromVorbis();
-
   std::string title_;
   std::string artist_;
   std::string album_;
