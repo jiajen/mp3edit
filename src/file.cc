@@ -4,7 +4,9 @@
 
 #include <exception>
 #include <system_error>
+#include <filesystem>
 
+#include "mp3edit/src/sanitiser.h"
 #include "mp3edit/src/reader/tag/ape.h"
 #include "mp3edit/src/reader/tag/id3v1.h"
 #include "mp3edit/src/reader/tag/id3v2.h"
@@ -113,7 +115,7 @@ void File::saveFileChanges(bool rename_file) {
     }
 
     if (!writeFile(file_stream, metadata_front, metadata_back,
-                   rename_file ?  title_ : ""))
+                   rename_file ?  Sanitiser::toValidFilename(title_) : ""))
       throw std::system_error(std::error_code(), "Unable to write.");
   } catch (const std::exception& ex) {
     file_stream.close();
@@ -129,7 +131,24 @@ bool File::writeFile(Filesystem::FileStream& file_stream,
   readBytes(file_stream, audio_start_, audio_end_ - audio_start_, audio_raw);
   file_stream.close();
 
-  // TODO
+  std::filesystem::path current_path = filepath_;
+  std::filesystem::path target_path = filepath_;
+  if (!new_filename.empty()) {
+    target_path.replace_filename(new_filename);
+    target_path.replace_extension(kFileSupportedFileTypes[(int)filetype_]);
+  }
+
+  if (target_path != current_path) {
+    for (int i = 2; !target_path.empty(); i++) {
+      target_path.replace_filename(new_filename +
+                                   "(" + std::to_string(i) + ")");
+      target_path.replace_extension(kFileSupportedFileTypes[(int)filetype_]);
+    }
+  }
+
+
+
+  // TODO write
 
   return true;
 }
