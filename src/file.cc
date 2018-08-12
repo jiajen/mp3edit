@@ -74,9 +74,12 @@ void File::saveFileChanges() {
   try {
     Bytes metadata_front, metadata_back;
     switch (filetype_) {
+      using namespace ReaderTag;
       case FileType::kMp3:
-        //metadata_front = generateTag();
-        //metadata_back = ;
+        metadata_front = Id3v2_3::generateTag(title_, artist_, album_,
+                                              track_num_, track_denum_);
+        metadata_back = Id3v1::generateTag(title_, artist_, album_,
+                                           track_num_, track_denum_);
         break;
       case FileType::kFlac:
         //metadata_front = VorbisFlac::generateTag();
