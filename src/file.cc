@@ -131,7 +131,7 @@ void File::readMetaData(Filesystem::FileStream& file_stream) {
   } while (seek_end != audio_end_);
 }
 
-void File::readAudioData(Filesystem::FileStream& file_stream) {
+void File::readAudioData(Filesystem::FileStream&) {
   // TODO Read audio
 }
 
