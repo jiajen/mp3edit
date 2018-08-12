@@ -50,6 +50,14 @@ std::filesystem::path generateTargetPath(const std::string& filepath,
   return target_path;
 }
 
+// Output path must be empty.
+// Throws an exception on failure.
+void renameFile(const std::string& input_path,
+                const std::filesystem::path& output_path) {
+  if (input_path == output_path.string()) return;
+  // TODO rename
+}
+
 }  // namespace
 
 FileType getAudioExtension(const std::string& filename) {
@@ -150,8 +158,8 @@ void File::saveFileChanges(bool rename_file) {
     if (!writeFile(audio_raw, metadata_front, metadata_back,
                    rename_file ?  title_ : ""))
       throw std::system_error(std::error_code(), "Unable to write.");
-  } else {
-    // TODO
+  } else if (rename_file) {
+    renameFile(filepath_, generateTargetPath(filepath_, title_, filetype_));
   }
 }
 
@@ -181,12 +189,11 @@ bool File::writeFile(const Bytes& audio_raw,
     if (std::filesystem::exists(target_path)) {
       std::filesystem::remove(target_path);
     }
-    std::filesystem::copy_file(tmp_path, target_path);
+    renameFile(tmp_path.string(), target_path);
   } catch(const std::exception& ex) {
     throw ex;
   }
 
-  std::filesystem::remove(tmp_path);
   if (target_path != current_path) std::filesystem::remove(current_path);
 
   return true;
