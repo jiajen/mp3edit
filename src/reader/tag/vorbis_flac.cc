@@ -23,6 +23,7 @@ const int kBlockFlagLastBlockBitPos = 7;
 const int kBlockTypeVorbisBitMask = 4;
 const int kBlockSizeStartPos = 1;
 const int kBlockSizeSize = 3;
+const int kBlockPostMetadataPos = 42;
 
 const unsigned char kBlockTypeVorbis = 0x04;
 
@@ -81,17 +82,25 @@ int seekFooterStart(Filesystem::FileStream&, int seek) {
   return seek;
 }
 
-Bytes generateTag(const std::string& title, const std::string& artist,
+Bytes generateTag(Filesystem::FileStream& file_stream, int seek_flac_start,
+                  const std::string& title, const std::string& artist,
                   const std::string& album, int track_num, int track_denum) {
+  Bytes tag;
+  readBytes(file_stream, seek_flac_start, kBlockPostMetadataPos, tag);
+
   if (title.empty() && artist.empty() && album.empty() &&
-      track_num == -1 && track_denum == -1) return Bytes();
+      track_num == -1 && track_denum == -1) {
+    tag[kPreambleLength+kBlockTypePos] = (1<<kBlockFlagLastBlockBitPos);
+    return tag;
+  } else {
+    tag[kPreambleLength+kBlockTypePos] = 0;
+  }
 
   using VorbisShared::generateTag;
   Bytes vorbis_tag = generateTag(title, artist, album,
                                  track_num, track_denum, false);
 
-  Bytes tag;
-  tag.reserve(vorbis_tag.size() + kBlockHeaderLength);
+  tag.reserve(kBlockPostMetadataPos + kBlockHeaderLength + vorbis_tag.size());
 
   tag.push_back(0x84);
   Bytes size_bytes = intToBEndian(vorbis_tag.size(), kBlockSizeSize, false);
