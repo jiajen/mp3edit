@@ -42,9 +42,9 @@ class File {
   inline std::string getFilepath() const { return filepath_; }
   void saveFileChanges();
  private:
-  void readMetaData(Filesystem::FileStream& file_stream, FileType filetype);
+  void readMetaData(Filesystem::FileStream& file_stream);
   // Sets is_valid_ to false if file appears invalid
-  void readAudioData(Filesystem::FileStream& file_stream, FileType filetype);
+  void readAudioData(Filesystem::FileStream& file_stream);
 
   std::string title_;
   std::string artist_;

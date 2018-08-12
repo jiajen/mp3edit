@@ -56,8 +56,8 @@ File::File(const std::string& filepath, FileType filetype,
     file_stream.seekg(0, file_stream.end);
     filesize_ = file_stream.tellg();
 
-    readMetaData(file_stream, filetype);
-    if (read_audio_data) readAudioData(file_stream, filetype);
+    readMetaData(file_stream);
+    if (read_audio_data) readAudioData(file_stream);
   } catch (const std::exception&) {
     is_valid_ = false;
   }
@@ -69,8 +69,7 @@ void File::saveFileChanges() {
   // (if same size then only read raw metadata from file to compare)
 }
 
-void File::readMetaData(Filesystem::FileStream& file_stream,
-                        FileType filetype) {
+void File::readMetaData(Filesystem::FileStream& file_stream) {
   using namespace ReaderTag;
   int seek_start = 0, seek_end = filesize_, seek;
 
@@ -78,7 +77,7 @@ void File::readMetaData(Filesystem::FileStream& file_stream,
     audio_start_ = seek_start;
     seek = Id3v2::seekHeaderEnd(file_stream, seek_start);
     if (seek != seek_start) {
-      if (filetype == FileType::kMp3) {
+      if (filetype_ == FileType::kMp3) {
         Id3v2_3::parseTag(Id3v2_3::extractTag(file_stream, seek_start, seek),
                           title_, artist_, album_, track_num_, track_denum_);
       }
@@ -87,7 +86,7 @@ void File::readMetaData(Filesystem::FileStream& file_stream,
     seek_start = Ape::seekHeaderEnd(file_stream, seek_start);
   } while (seek_start != audio_start_);
 
-  switch (filetype) {
+  switch (filetype_) {
     case FileType::kFlac:
       seek = VorbisFlac::seekHeaderEnd(file_stream, audio_start_);
       if (seek != audio_start_) {
@@ -120,7 +119,7 @@ void File::readMetaData(Filesystem::FileStream& file_stream,
     audio_end_ = seek_end;
     seek = Id3v1::seekFooterStart(file_stream, seek_end);
     if (seek != seek_end) {
-      if (filetype == FileType::kMp3) {
+      if (filetype_ == FileType::kMp3) {
         Id3v1::parseTag(Id3v1::extractTag(file_stream, seek, seek_end),
                         title_, artist_, album_, track_num_, track_denum_);
       }
@@ -132,8 +131,7 @@ void File::readMetaData(Filesystem::FileStream& file_stream,
   } while (seek_end != audio_end_);
 }
 
-void File::readAudioData(Filesystem::FileStream& file_stream,
-                         FileType filetype) {
+void File::readAudioData(Filesystem::FileStream& file_stream) {
   // TODO Read audio
 }
 
