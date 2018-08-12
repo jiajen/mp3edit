@@ -17,8 +17,6 @@ Bytes extractTag(Filesystem::FileStream& file_stream,
 Bytes generateTag(const std::string& title, const std::string& artist,
                   const std::string& album, int track_num, int);
 
-int seekHeaderEnd(Filesystem::FileStream&, int seek);
-
 int seekFooterStart(Filesystem::FileStream& file_stream, int seek);
 
 }  // Id3v1

@@ -16,8 +16,6 @@ Bytes extractTag(Filesystem::FileStream& file_stream,
 
 int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek);
 
-int seekFooterStart(Filesystem::FileStream&, int seek);
-
 Bytes generateTag(Filesystem::FileStream& file_stream, int seek_flac_start,
                   const std::string& title, const std::string& artist,
                   const std::string& album, int track_num, int track_denum);

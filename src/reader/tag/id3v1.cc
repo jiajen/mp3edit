@@ -132,10 +132,6 @@ Bytes generateTag(const std::string& title, const std::string& artist,
   return tag;
 }
 
-int seekHeaderEnd(Filesystem::FileStream&, int seek) {
-  return seek;
-}
-
 int seekFooterStart(Filesystem::FileStream& file_stream, int seek) {
   typedef const char cc;
   Bytes header;
