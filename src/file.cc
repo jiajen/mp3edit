@@ -83,10 +83,17 @@ void File::saveFileChanges() {
                                            track_num_, track_denum_);
         break;
       case FileType::kFlac:
-        //metadata_front = VorbisFlac::generateTag();
+        metadata_front = VorbisFlac::generateTag(file_stream,
+                                                 file_container_start_seek_,
+                                                 title_, artist_, album_,
+                                                 track_num_, track_denum_);
         break;
       case FileType::kOgg:
-        //metadata_front = VorbisOgg::generateTag();
+        metadata_front = VorbisOgg::generateTag(file_stream,
+                                                file_container_start_seek_,
+                                                audio_start_,
+                                                title_, artist_, album_,
+                                                track_num_, track_denum_);
         break;
       default:
         break;
