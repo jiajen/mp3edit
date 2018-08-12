@@ -44,7 +44,8 @@ FileType getAudioExtension(const std::string& filename) {
 File::File(const std::string& filepath, FileType filetype,
            bool read_audio_data):
     track_num_(-1), track_denum_(-1), filepath_(filepath),
-    filetype_(filetype), filesize_(0), is_valid_(true) {
+    filetype_(filetype), filesize_(0), file_container_start_seek_(0),
+    is_valid_(true) {
   Filesystem::FileStream file_stream(filepath_,
                                      std::ios::in | std::ifstream::binary);
   try {
@@ -124,6 +125,7 @@ void File::readMetaData(Filesystem::FileStream& file_stream) {
       if (seek != audio_start_) {
         using VorbisFlac::parseTag;
         using VorbisFlac::extractTag;
+        file_container_start_seek_ = audio_start_;
         parseTag(extractTag(file_stream, audio_start_, seek),
                  title_, artist_, album_, track_num_, track_denum_);
         audio_start_ = seek;
@@ -136,6 +138,7 @@ void File::readMetaData(Filesystem::FileStream& file_stream) {
       if (seek != audio_start_) {
         using VorbisOgg::parseTag;
         using VorbisOgg::extractTag;
+        file_container_start_seek_ = audio_start_;
         parseTag(extractTag(file_stream, audio_start_, seek),
                  title_, artist_, album_, track_num_, track_denum_);
         audio_start_ = seek;

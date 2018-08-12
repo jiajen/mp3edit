@@ -63,6 +63,12 @@ class File {
   int sampling_rate_;
   ChannelMode channel_mode_;
 
+  // For ogg and flac metadata generation.
+  // Some files have stray tags outside the container.
+  // This points to the start of the container.
+  // This can =/= to audio_start_ as the container can contain metadata.
+  int file_container_start_seek_;
+
   // True if valid audio (e.g. reading of properties appeared valid)
   bool is_valid_;
 };
