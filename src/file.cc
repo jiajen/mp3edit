@@ -144,29 +144,18 @@ void File::saveFileChanges(bool rename_file) {
     throw ex;
   }
   if (!writeFile(audio_raw, metadata_front, metadata_back,
-                 rename_file ?  Sanitiser::toValidFilename(title_) : ""))
+                 rename_file ?  title_ : ""))
     throw std::system_error(std::error_code(), "Unable to write.");
 }
 
 bool File::writeFile(const Bytes& audio_raw,
                      const Bytes& metadata_front, const Bytes& metadata_back,
                      const std::string& new_filename) {
-// start
   std::filesystem::path current_path = filepath_;
-  std::filesystem::path target_path = filepath_;
-  if (!new_filename.empty()) {
-    target_path.replace_filename(new_filename);
-    target_path.replace_extension(kFileSupportedFileTypes[(int)filetype_]);
-  }
+  std::filesystem::path target_path = generateTargetPath(filepath_,
+                                                         new_filename,
+                                                         filetype_);
 
-  if (target_path != current_path) {
-    for (int i = 2; std::filesystem::exists(target_path); i++) {
-      target_path.replace_filename(new_filename +
-                                   " (" + std::to_string(i) + ")");
-      target_path.replace_extension(kFileSupportedFileTypes[(int)filetype_]);
-    }
-  }
-// end
   std::filesystem::path tmp_path = std::filesystem::temp_directory_path() /
                                    target_path.filename();
 
