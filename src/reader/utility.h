@@ -9,6 +9,21 @@ namespace Mp3Edit {
 namespace Reader {
 namespace Utility {
 
+class Crc32 {
+ public:
+  enum class CrcPolynomial {
+    kCode0x04c11db7 = 0,
+  };
+  Crc32(CrcPolynomial polynomial, unsigned int initial_val,
+        unsigned int final_xor);
+  void update(const unsigned char* data, int size);
+  unsigned int checksum();
+ private:
+  unsigned int _crc32;
+  unsigned int _final_xor;
+  const unsigned int* _crc_table;
+};
+
 // Returns -1 on failure.
 int lEndianToInt(Bytes::const_iterator it_begin, Bytes::const_iterator it_end,
                  bool is_sync_safe);
@@ -18,10 +33,10 @@ int bEndianToInt(Bytes::const_iterator it_begin, Bytes::const_iterator it_end,
                  bool is_sync_safe);
 
 // Throws an exception on failure.
-Bytes intToBEndian(int val, int length, bool is_sync_safe);
+Bytes intToBEndian(unsigned int val, int length, bool is_sync_safe);
 
 // Throws an exception on failure.
-Bytes intToLEndian(int val, int length, bool is_sync_safe);
+Bytes intToLEndian(unsigned int val, int length, bool is_sync_safe);
 
 void bytesToString(Bytes::const_iterator it_begin, Bytes::const_iterator it_end,
                    std::string& output);

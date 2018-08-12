@@ -5,6 +5,7 @@
 #include <system_error>
 
 #include "mp3edit/src/reader/tag/vorbis_shared.h"
+#include "mp3edit/src/reader/utility.h"
 
 namespace Mp3Edit {
 namespace ReaderTag {
@@ -20,6 +21,10 @@ const int kPageHeaderPrefixLength = 27;
 const int kPageNumberStartPos = 18;
 const int kNumberPageSegmentsPos = 26;
 const int kCommonVorbisHeaderSize = 7;
+const int kPageCrcPos = 22;
+const int kPageCrcLength = 4;
+
+const char* kVorbisCommentHeader = "\x03\x76\x6F\x72\x62\x69\x73";
 
 bool verifyValidOggVorbisHeader(unsigned char type, const Bytes& tag,
                                 int seek) {
@@ -69,6 +74,41 @@ int segmentTableToSize(const Bytes& segment_table) {
   for (int i = 0; i < n; i++)
     size += (int)segment_table[i];
   return size;
+}
+
+Bytes generateSegmentTable(int size_t1, int size_t2) {
+  Bytes segment_table;
+  segment_table.reserve(2 + size_t1/255 + size_t2/255);
+
+  unsigned char block;
+  for (int t = 0, size; t < 2; t++) {
+    size = (t == 0) ? size_t1 : size_t2;
+    while (size > 0) {
+      block = (size > 255) ? 255 : size;
+      segment_table.push_back(block);
+      size -= block;
+    }
+    if (segment_table.size() > 0 && segment_table.back() == 255)
+      segment_table.push_back(0);
+  }
+
+  if (segment_table.size() > 255)
+    throw std::system_error(std::error_code(), "Tag too large.");
+  return segment_table;
+}
+
+Bytes calculateCrc(const Bytes& page_header, const Bytes& segment_table,
+                   const char* vorbis_header, const Bytes& vorbis_tag,
+                   const Bytes& audio_data) {
+  typedef const unsigned char* ByteRef;
+  using Reader::Utility::Crc32;
+  Crc32 crc32(Crc32::CrcPolynomial::kCode0x04c11db7, 0x00000000, 0x00000000);
+  crc32.update((ByteRef)page_header.data(), page_header.size());
+  crc32.update((ByteRef)segment_table.data(), segment_table.size());
+  crc32.update((ByteRef)vorbis_header, kCommonVorbisHeaderSize);
+  crc32.update((ByteRef)vorbis_tag.data(), vorbis_tag.size());
+  crc32.update((ByteRef)audio_data.data(), audio_data.size());
+  return Reader::Utility::intToLEndian(crc32.checksum(), kPageCrcLength, false);
 }
 
 }  // namespace
@@ -136,6 +176,50 @@ int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek) {
 
 int seekFooterStart(Filesystem::FileStream&, int seek) {
   return seek;
+}
+
+Bytes generateTag(Filesystem::FileStream& file_stream, int seek_audio_start,
+                  const std::string& title, const std::string& artist,
+                  const std::string& album, int track_num, int track_denum) {
+  Bytes header_second_page;
+  readBytes(file_stream, kFirstPageLength, kPageHeaderPrefixLength,
+            header_second_page);
+
+  Bytes segment_table;
+  int number_segments = header_second_page[kNumberPageSegmentsPos];
+  readBytes(file_stream, kFirstPageLength + kPageHeaderPrefixLength,
+            number_segments, segment_table);
+  int page_size = segmentTableToSize(segment_table);
+
+  using VorbisShared::generateTag;
+  Bytes vorbis_tag = generateTag(title, artist, album,
+                                 track_num, track_denum, true);
+
+  int vorbis_setup_size = kFirstPageLength + kPageHeaderPrefixLength +
+                          number_segments + page_size - seek_audio_start;
+  Bytes page_audio_data;
+  readBytes(file_stream, seek_audio_start, vorbis_setup_size, page_audio_data);
+
+  // Generation
+  memset(header_second_page.data() + kPageCrcPos, 0x00, kPageCrcLength);
+  segment_table = generateSegmentTable(kCommonVorbisHeaderSize +
+                                       vorbis_tag.size(), vorbis_setup_size);
+  header_second_page[kNumberPageSegmentsPos] = segment_table.size();
+
+  Bytes crc = calculateCrc(header_second_page, segment_table,
+                           kVorbisCommentHeader, vorbis_tag, page_audio_data);
+
+  memcpy(header_second_page.data() + kPageCrcPos, crc.data(), crc.size());
+
+  Bytes tag;
+  tag.reserve(kPageHeaderPrefixLength + segment_table.size() +
+              kCommonVorbisHeaderSize + vorbis_tag.size());
+  tag.insert(tag.end(), header_second_page.begin(), header_second_page.end());
+  tag.insert(tag.end(), segment_table.begin(), segment_table.end());
+  tag.insert(tag.end(), kVorbisCommentHeader, kVorbisCommentHeader +
+                                              kCommonVorbisHeaderSize);
+  tag.insert(tag.end(), vorbis_tag.begin(), vorbis_tag.end());
+  return tag;
 }
 
 }  // namespace VorbisOgg
