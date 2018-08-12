@@ -182,6 +182,9 @@ Bytes generateTag(Filesystem::FileStream& file_stream,
                   int seek_ogg_start, int seek_audio_start,
                   const std::string& title, const std::string& artist,
                   const std::string& album, int track_num, int track_denum) {
+  Bytes first_page;
+  readBytes(file_stream, seek_ogg_start, kFirstPageLength, first_page);
+
   Bytes header_second_page;
   readBytes(file_stream, seek_ogg_start + kFirstPageLength,
             kPageHeaderPrefixLength, header_second_page);
@@ -215,8 +218,10 @@ Bytes generateTag(Filesystem::FileStream& file_stream,
   memcpy(header_second_page.data() + kPageCrcPos, crc.data(), crc.size());
 
   Bytes tag;
-  tag.reserve(kPageHeaderPrefixLength + segment_table.size() +
-              kCommonVorbisHeaderSize + vorbis_tag.size());
+  tag.reserve(kFirstPageLength + kPageHeaderPrefixLength +
+              segment_table.size() + kCommonVorbisHeaderSize +
+              vorbis_tag.size());
+  tag.insert(tag.end(), first_page.begin(), first_page.end());
   tag.insert(tag.end(), header_second_page.begin(), header_second_page.end());
   tag.insert(tag.end(), segment_table.begin(), segment_table.end());
   tag.insert(tag.end(), kVorbisCommentHeader, kVorbisCommentHeader +
