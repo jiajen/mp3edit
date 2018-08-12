@@ -178,16 +178,18 @@ int seekFooterStart(Filesystem::FileStream&, int seek) {
   return seek;
 }
 
-Bytes generateTag(Filesystem::FileStream& file_stream, int seek_audio_start,
+Bytes generateTag(Filesystem::FileStream& file_stream,
+                  int seek_ogg_start, int seek_audio_start,
                   const std::string& title, const std::string& artist,
                   const std::string& album, int track_num, int track_denum) {
   Bytes header_second_page;
-  readBytes(file_stream, kFirstPageLength, kPageHeaderPrefixLength,
-            header_second_page);
+  readBytes(file_stream, seek_ogg_start + kFirstPageLength,
+            kPageHeaderPrefixLength, header_second_page);
 
   Bytes segment_table;
   int number_segments = header_second_page[kNumberPageSegmentsPos];
-  readBytes(file_stream, kFirstPageLength + kPageHeaderPrefixLength,
+  readBytes(file_stream,
+            seek_ogg_start + kFirstPageLength + kPageHeaderPrefixLength,
             number_segments, segment_table);
   int page_size = segmentTableToSize(segment_table);
 
@@ -195,8 +197,9 @@ Bytes generateTag(Filesystem::FileStream& file_stream, int seek_audio_start,
   Bytes vorbis_tag = generateTag(title, artist, album,
                                  track_num, track_denum, true);
 
-  int vorbis_setup_size = kFirstPageLength + kPageHeaderPrefixLength +
-                          number_segments + page_size - seek_audio_start;
+  int vorbis_setup_size = seek_ogg_start + kFirstPageLength +
+                          kPageHeaderPrefixLength + number_segments +
+                          page_size - seek_audio_start;
   Bytes page_audio_data;
   readBytes(file_stream, seek_audio_start, vorbis_setup_size, page_audio_data);
 
