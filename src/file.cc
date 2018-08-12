@@ -161,7 +161,15 @@ bool File::writeFile(Filesystem::FileStream& file_stream,
   file_writer.write(metadata_back);
   file_writer.close();
 
-  // TODO move into target_path
+  try {
+    if (!target_path.empty()) std::filesystem::remove(target_path);
+      std::filesystem::copy_file(tmp_path, target_path);
+  } catch(const std::exception& ex) {
+    throw ex;
+  }
+
+  std::filesystem::remove(tmp_path);
+  if (target_path != current_path) std::filesystem::remove(current_path);
 
   return true;
 }
