@@ -66,6 +66,7 @@ File::File(const std::string& filepath, FileType filetype,
 }
 
 void File::saveFileChanges() {
+  using Filesystem::readBytes;
   Filesystem::FileStream file_stream(filepath_, std::ios::in | std::ios::out |
                                                 std::ifstream::binary);
   if (!file_stream) {
@@ -99,11 +100,16 @@ void File::saveFileChanges() {
         break;
     }
 
-    if (metadata_front.size() == audio_start_ &&
-        audio_end_ + metadata_back.size() == filesize_) {
-      // TODO Scan each byte and if equal then
-      file_stream.close();
-      return;
+    if ((int)metadata_front.size() == audio_start_ &&
+        audio_end_ + (int)metadata_back.size() == filesize_) {
+      Bytes front_block, back_block;
+      readBytes(file_stream, 0, metadata_front.size(), front_block);
+      readBytes(file_stream, filesize_ - metadata_back.size(),
+                metadata_back.size(), back_block);
+      if (front_block == metadata_front && back_block == metadata_back) {
+        file_stream.close();
+        return;
+      }
     }
     // TODO generate new file here
   } catch (const std::exception& ex) {
