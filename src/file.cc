@@ -99,6 +99,7 @@ void File::saveFileChanges(bool rename_file) {
   }
 
   Bytes metadata_front, metadata_back, audio_raw;
+  bool skip_writing = false;
   try {
     switch (filetype_) {
       using namespace ReaderTag;
@@ -132,20 +133,26 @@ void File::saveFileChanges(bool rename_file) {
       readBytes(file_stream, filesize_ - metadata_back.size(),
                 metadata_back.size(), back_block);
       if (front_block == metadata_front && back_block == metadata_back) {
-        file_stream.close();
-        return;
+        skip_writing = true;
       }
     }
 
-    readBytes(file_stream, audio_start_, audio_end_ - audio_start_, audio_raw);
+    if (!skip_writing) {
+      readBytes(file_stream, audio_start_,
+                audio_end_ - audio_start_, audio_raw);
+    }
     file_stream.close();
   } catch (const std::exception& ex) {
     file_stream.close();
     throw ex;
   }
-  if (!writeFile(audio_raw, metadata_front, metadata_back,
-                 rename_file ?  title_ : ""))
-    throw std::system_error(std::error_code(), "Unable to write.");
+  if (!skip_writing) {
+    if (!writeFile(audio_raw, metadata_front, metadata_back,
+                   rename_file ?  title_ : ""))
+      throw std::system_error(std::error_code(), "Unable to write.");
+  } else {
+    // TODO
+  }
 }
 
 bool File::writeFile(const Bytes& audio_raw,
