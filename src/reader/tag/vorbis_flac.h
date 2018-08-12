@@ -7,16 +7,14 @@ namespace Mp3Edit {
 namespace ReaderTag {
 namespace VorbisFlac {
 
-void parseTag(const Bytes& tag, std::string& title, std::string& artist,
-              std::string& album, int& track_num, int& track_denum);
+int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek);
 
 // Returns the metadata block corresponding to a vorbis comment.
 Bytes extractTag(Filesystem::FileStream& file_stream,
                  int seek_tag_start, int);
 
-int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek);
-
-int seekFooterStart(Filesystem::FileStream&, int seek);
+void parseTag(const Bytes& tag, std::string& title, std::string& artist,
+              std::string& album, int& track_num, int& track_denum);
 
 Bytes generateTag(Filesystem::FileStream& file_stream, int seek_flac_start,
                   const std::string& title, const std::string& artist,

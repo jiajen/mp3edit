@@ -8,14 +8,14 @@ namespace Mp3Edit {
 namespace ReaderTag {
 namespace Id3v2 {
 
+int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek);
+
+int seekFooterStart(Filesystem::FileStream& file_stream, int seek);
+
 // Returns true if it is a valid id3v2 tag.
 // Size is the total size of the tag (including header and footer)
 bool parseTagHeader(const Bytes& header, bool is_footer, int& version,
                     int& size, bool& has_unsync, bool& has_extended_header);
-
-int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek);
-
-int seekFooterStart(Filesystem::FileStream& file_stream, int seek);
 
 }  // Id3v2
 }  // ReaderTag

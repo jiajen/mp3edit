@@ -174,10 +174,6 @@ int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek) {
   return seek;
 }
 
-int seekFooterStart(Filesystem::FileStream&, int seek) {
-  return seek;
-}
-
 Bytes generateTag(Filesystem::FileStream& file_stream,
                   int seek_ogg_start, int seek_audio_start,
                   const std::string& title, const std::string& artist,

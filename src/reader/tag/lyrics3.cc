@@ -43,10 +43,6 @@ int getLyrics3v2Size(Bytes::const_iterator it_begin,
 
 }  // namespace
 
-int seekHeaderEnd(Filesystem::FileStream&, int seek) {
-  return seek;
-}
-
 int seekFooterStart(Filesystem::FileStream& file_stream, int seek) {
   Bytes footer;
   readBytes(file_stream, seek - kTagFooterLength, kTagFooterLength, footer);

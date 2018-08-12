@@ -7,8 +7,6 @@ namespace Mp3Edit {
 namespace ReaderTag {
 namespace Lyrics3 {
 
-int seekHeaderEnd(Filesystem::FileStream&, int seek);
-
 int seekFooterStart(Filesystem::FileStream& file_stream, int seek);
 
 }  // namespace Lyrics3
