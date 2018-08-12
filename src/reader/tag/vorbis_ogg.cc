@@ -4,8 +4,6 @@
 
 #include <system_error>
 
-#include "Poco/Checksum.h"
-
 #include "mp3edit/src/reader/tag/vorbis_shared.h"
 #include "mp3edit/src/reader/utility.h"
 
@@ -99,14 +97,15 @@ Bytes generateSegmentTable(int size) {
 Bytes calculateCrc(const Bytes& page_header, const Bytes& segment_table,
                    const char* vorbis_header, const Bytes& vorbis_tag,
                    const Bytes& audio_data) {
-  Poco::Checksum checksum(Poco::Checksum::TYPE_CRC32);
-  checksum.update((const char*)page_header.data(), page_header.size());
-  checksum.update((const char*)segment_table.data(), segment_table.size());
-  checksum.update(vorbis_header, kCommonVorbisHeaderSize);
-  checksum.update((const char*)vorbis_tag.data(), vorbis_tag.size());
-  checksum.update((const char*)audio_data.data(), audio_data.size());
-  return Reader::Utility::intToLEndian((unsigned int)checksum.checksum(),
-                                       kPageCrcLength, false);
+  typedef const unsigned char* ByteRef;
+  using Reader::Utility::Crc32;
+  Crc32 crc32(Crc32::CrcPolynomial::kCode0x04c11db7, 0x00000000, 0x00000000);
+  crc32.update((ByteRef)page_header.data(), page_header.size());
+  crc32.update((ByteRef)segment_table.data(), segment_table.size());
+  crc32.update((ByteRef)vorbis_header, kCommonVorbisHeaderSize);
+  crc32.update((ByteRef)vorbis_tag.data(), vorbis_tag.size());
+  crc32.update((ByteRef)audio_data.data(), audio_data.size());
+  return Reader::Utility::intToLEndian(crc32.checksum(), kPageCrcLength, false);
 }
 
 }  // namespace

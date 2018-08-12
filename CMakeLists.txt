@@ -18,8 +18,8 @@ set(LIB_LINKED_LIBS "")
 project(mp3edit VERSION 6.0.0 LANGUAGES CXX)
 
 ## Poco
-find_library(POCO_FOUNDATION PocoFoundation)
-set(LIB_LINKED_LIBS ${LIB_LINKED_LIBS} ${POCO_FOUNDATION})
+# find_library(POCO_FOUNDATION PocoFoundation)
+# set(LIB_LINKED_LIBS ${LIB_LINKED_LIBS} ${POCO_FOUNDATION})
 
 ## Gtkmm
 find_package(PkgConfig)
