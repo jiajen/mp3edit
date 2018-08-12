@@ -141,14 +141,20 @@ bool File::writeFile(Filesystem::FileStream& file_stream,
   if (target_path != current_path) {
     for (int i = 2; !target_path.empty(); i++) {
       target_path.replace_filename(new_filename +
-                                   "(" + std::to_string(i) + ")");
+                                   " (" + std::to_string(i) + ")");
       target_path.replace_extension(kFileSupportedFileTypes[(int)filetype_]);
     }
   }
 
+  std::filesystem::path tmp_path = std::filesystem::temp_directory_path() /
+                                   target_path.filename();
 
+  for (int i = 0; !tmp_path.empty(); i++) {
+    tmp_path.replace_filename(new_filename + "-" + std::to_string(i));
+    tmp_path.replace_extension(kFileSupportedFileTypes[(int)filetype_]);
+  }
 
-  // TODO write
+  // TODO write to temp location, then move into target_path
 
   return true;
 }
