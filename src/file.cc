@@ -1,6 +1,7 @@
 #include "mp3edit/src/file.h"
 
 #include <cstring>
+#include <cstdio>
 
 #include <exception>
 #include <system_error>
@@ -56,7 +57,8 @@ std::filesystem::path generateTargetPath(const std::string& filepath,
 std::string renameFile(const std::string& input_path,
                        const std::filesystem::path& output_path) {
   if (input_path == output_path.string()) return input_path;
-  // TODO rename
+  if (rename(input_path.c_str(), output_path.c_str()) != 0)
+    throw std::system_error(std::error_code(), "Error renaming file.");
   return output_path.string();
 }
 
