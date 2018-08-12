@@ -99,9 +99,13 @@ void File::saveFileChanges() {
         break;
     }
 
-    // TODO only overwrite if metadata changed
-    // (if same size then only read raw metadata from file to compare)
-
+    if (metadata_front.size() == audio_start_ &&
+        audio_end_ + metadata_back.size() == filesize_) {
+      // TODO Scan each byte and if equal then
+      file_stream.close();
+      return;
+    }
+    // TODO generate new file here
   } catch (const std::exception& ex) {
     file_stream.close();
     throw ex;
