@@ -76,8 +76,8 @@ void File::saveFileChanges(bool rename_file) {
     throw std::system_error(std::error_code(), "Error accessing file.");
   }
 
+  Bytes metadata_front, metadata_back, audio_raw;
   try {
-    Bytes metadata_front, metadata_back;
     switch (filetype_) {
       using namespace ReaderTag;
       case FileType::kMp3:
@@ -115,23 +115,20 @@ void File::saveFileChanges(bool rename_file) {
       }
     }
 
-    if (!writeFile(file_stream, metadata_front, metadata_back,
-                   rename_file ?  Sanitiser::toValidFilename(title_) : ""))
-      throw std::system_error(std::error_code(), "Unable to write.");
+    readBytes(file_stream, audio_start_, audio_end_ - audio_start_, audio_raw);
+    file_stream.close();
   } catch (const std::exception& ex) {
     file_stream.close();
     throw ex;
   }
+  if (!writeFile(audio_raw, metadata_front, metadata_back,
+                 rename_file ?  Sanitiser::toValidFilename(title_) : ""))
+    throw std::system_error(std::error_code(), "Unable to write.");
 }
 
-bool File::writeFile(Filesystem::FileStream& file_stream,
+bool File::writeFile(const Bytes& audio_raw,
                      const Bytes& metadata_front, const Bytes& metadata_back,
                      const std::string& new_filename) {
-  using Filesystem::readBytes;
-  Bytes audio_raw;
-  readBytes(file_stream, audio_start_, audio_end_ - audio_start_, audio_raw);
-  file_stream.close();
-
   std::filesystem::path current_path = filepath_;
   std::filesystem::path target_path = filepath_;
   if (!new_filename.empty()) {

@@ -48,9 +48,8 @@ class File {
 
   // Assumes file_stream points to filepath_.
   // Responsible for closing the stream.
-  bool writeFile(Filesystem::FileStream& file_stream,
-                 const Bytes& metadata_front, const Bytes& metadata_back,
-                 const std::string& new_filename);
+  bool writeFile(const Bytes& audio_raw, const Bytes& metadata_front,
+                 const Bytes& metadata_back, const std::string& new_filename);
 
   std::string title_;
   std::string artist_;
