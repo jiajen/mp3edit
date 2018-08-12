@@ -46,6 +46,12 @@ class File {
   // Sets is_valid_ to false if file appears invalid
   void readAudioData(Filesystem::FileStream& file_stream);
 
+  // Assumes file_stream points to filepath_.
+  // Responsible for closing the stream.
+  bool writeFile(Filesystem::FileStream& file_stream,
+                 const Bytes& metadata_front, const Bytes& metadata_back,
+                 const std::string& new_filename);
+
   std::string title_;
   std::string artist_;
   std::string album_;

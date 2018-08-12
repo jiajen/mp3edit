@@ -67,7 +67,7 @@ File::File(const std::string& filepath, FileType filetype,
 
 void File::saveFileChanges(bool rename_file) {
   using Filesystem::readBytes;
-  Filesystem::FileStream file_stream(filepath_, std::ios::in | std::ios::out |
+  Filesystem::FileStream file_stream(filepath_, std::ios::in |
                                                 std::ifstream::binary);
   if (!file_stream) {
     throw std::system_error(std::error_code(), "Error accessing file.");
@@ -111,12 +111,22 @@ void File::saveFileChanges(bool rename_file) {
         return;
       }
     }
-    // TODO generate new file here and rename file if needed
+
+    if (!writeFile(file_stream, metadata_front, metadata_back,
+                   rename_file ?  title_ : ""))
+      throw std::system_error(std::error_code(), "Unable to write.");
   } catch (const std::exception& ex) {
     file_stream.close();
     throw ex;
   }
+}
+
+bool File::writeFile(Filesystem::FileStream& file_stream,
+                     const Bytes& metadata_front, const Bytes& metadata_back,
+                     const std::string& new_filename) {
+  // TODO
   file_stream.close();
+  return true;
 }
 
 void File::readMetaData(Filesystem::FileStream& file_stream) {
