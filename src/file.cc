@@ -6,6 +6,7 @@
 #include <system_error>
 #include <filesystem>
 
+#include "mp3edit/src/filesystem.h"
 #include "mp3edit/src/sanitiser.h"
 #include "mp3edit/src/reader/tag/ape.h"
 #include "mp3edit/src/reader/tag/id3v1.h"
@@ -154,7 +155,13 @@ bool File::writeFile(Filesystem::FileStream& file_stream,
     tmp_path.replace_extension(kFileSupportedFileTypes[(int)filetype_]);
   }
 
-  // TODO write to temp location, then move into target_path
+  Filesystem::FileWriter file_writer(tmp_path);
+  file_writer.write(metadata_front);
+  file_writer.write(audio_raw);
+  file_writer.write(metadata_back);
+  file_writer.close();
+
+  // TODO move into target_path
 
   return true;
 }
