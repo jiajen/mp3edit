@@ -64,8 +64,7 @@ int calculateTagDataSize(const std::string& title, const std::string& artist,
   int size = kTagHeaderLength;
   // +2 for leading and trailing 0x00 needed for ISO-8859 encoding.
   if (!title.empty()) size += kTagFrameHeaderLength + 2 + title.length();
-  // 2* for artist and album artist.
-  if (!artist.empty()) size += 2*(kTagFrameHeaderLength + 2 + artist.length());
+  if (!artist.empty()) size += kTagFrameHeaderLength + 2 + artist.length();
   if (!album.empty()) size += kTagFrameHeaderLength + 2 + album.length();
   if (track_num != -1) {
     std::string track_num_str = std::to_string(track_num);
