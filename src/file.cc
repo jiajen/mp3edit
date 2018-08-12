@@ -101,7 +101,7 @@ void File::saveFileChanges() {
     }
 
     if ((int)metadata_front.size() == audio_start_ &&
-        audio_end_ + (int)metadata_back.size() == filesize_) {
+        filesize_ - (int)metadata_back.size() == audio_end_) {
       Bytes front_block, back_block;
       readBytes(file_stream, 0, metadata_front.size(), front_block);
       readBytes(file_stream, filesize_ - metadata_back.size(),
