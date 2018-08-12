@@ -40,17 +40,16 @@ class File {
   inline int getTrackNum() const { return track_num_; }
   inline int getTrackDenum() const { return track_denum_; }
   inline std::string getFilepath() const { return filepath_; }
-  void saveFileChanges();
+  void saveFileChanges(bool rename_file);
  private:
-  void readMetaData(Filesystem::FileStream& file_stream, FileType filetype);
+  void readMetaData(Filesystem::FileStream& file_stream);
   // Sets is_valid_ to false if file appears invalid
-  void readAudioData(Filesystem::FileStream& file_stream, FileType filetype);
+  void readAudioData(Filesystem::FileStream& file_stream);
 
-  Bytes generateMetadataFront();
-  Bytes generateMetadataBack();
-
-  void updateMetadataFromId3v2Tag();
-  void updateMetadataFromVorbis();
+  // Assumes file_stream points to filepath_.
+  // Responsible for closing the stream.
+  bool writeFile(const Bytes& audio_raw, const Bytes& metadata_front,
+                 const Bytes& metadata_back, const std::string& new_filename);
 
   std::string title_;
   std::string artist_;
@@ -68,6 +67,12 @@ class File {
   int bitrate_;
   int sampling_rate_;
   ChannelMode channel_mode_;
+
+  // For ogg and flac metadata generation.
+  // Some files have stray tags outside the container.
+  // This points to the start of the container.
+  // This can =/= to audio_start_ as the container can contain metadata.
+  int file_container_start_seek_;
 
   // True if valid audio (e.g. reading of properties appeared valid)
   bool is_valid_;
