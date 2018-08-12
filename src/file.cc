@@ -124,8 +124,13 @@ void File::saveFileChanges(bool rename_file) {
 bool File::writeFile(Filesystem::FileStream& file_stream,
                      const Bytes& metadata_front, const Bytes& metadata_back,
                      const std::string& new_filename) {
-  // TODO
+  using Filesystem::readBytes;
+  Bytes audio_raw;
+  readBytes(file_stream, audio_start_, audio_end_ - audio_start_, audio_raw);
   file_stream.close();
+
+  // TODO
+
   return true;
 }
 
