@@ -42,6 +42,7 @@ std::filesystem::path generateTargetPath(const std::string& filepath,
 
   if (target_path != current_path) {
     for (int i = 2; std::filesystem::exists(target_path); i++) {
+      if (target_path == current_path) break;
       target_path.replace_filename(new_filename +
                                    " (" + std::to_string(i) + ")");
       target_path.replace_extension(kFileSupportedFileTypes[(int)filetype]);
