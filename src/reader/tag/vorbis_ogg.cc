@@ -76,18 +76,21 @@ int segmentTableToSize(const Bytes& segment_table) {
   return size;
 }
 
-Bytes generateSegmentTable(int size) {
+Bytes generateSegmentTable(int size_t1, int size_t2) {
   Bytes segment_table;
-  segment_table.reserve(1 + size/255);
+  segment_table.reserve(2 + size_t1/255 + size_t2/255);
 
   unsigned char block;
-  while (size > 0) {
-    block = (size > 255) ? 255 : size;
-    segment_table.push_back(block);
-    size -= block;
+  for (int t = 0, size; t < 2; t++) {
+    size = (t == 0) ? size_t1 : size_t2;
+    while (size > 0) {
+      block = (size > 255) ? 255 : size;
+      segment_table.push_back(block);
+      size -= block;
+    }
+    if (segment_table.size() > 0 && segment_table.back() == 255)
+      segment_table.push_back(0);
   }
-  if (segment_table.size() > 0 && segment_table.back() == 255)
-    segment_table.push_back(0);
 
   if (segment_table.size() > 255)
     throw std::system_error(std::error_code(), "Tag too large.");
@@ -200,7 +203,7 @@ Bytes generateTag(Filesystem::FileStream& file_stream, int seek_audio_start,
   // Generation
   memset(header_second_page.data() + kPageCrcPos, 0x00, kPageCrcLength);
   segment_table = generateSegmentTable(kCommonVorbisHeaderSize +
-                                       vorbis_tag.size() + vorbis_setup_size);
+                                       vorbis_tag.size(), vorbis_setup_size);
   header_second_page[kNumberPageSegmentsPos] = segment_table.size();
 
   Bytes crc = calculateCrc(header_second_page, segment_table,
