@@ -190,7 +190,7 @@ Bytes generateTag(Filesystem::FileStream& file_stream, int seek_audio_start,
 
   using VorbisShared::generateTag;
   Bytes vorbis_tag = generateTag(title, artist, album,
-                                 track_num, track_denum, false);
+                                 track_num, track_denum, true);
 
   int vorbis_setup_size = kFirstPageLength + kPageHeaderPrefixLength +
                           number_segments + page_size - seek_audio_start;
