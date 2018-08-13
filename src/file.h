@@ -20,6 +20,7 @@ enum class BitrateType {
   kConstant = 0,
   kVbr = 1,
   kLossless = 2,
+  kInvalid = 3,
 };
 
 enum class ChannelMode {

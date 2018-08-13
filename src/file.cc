@@ -15,6 +15,7 @@
 #include "mp3edit/src/reader/tag/lyrics3.h"
 #include "mp3edit/src/reader/tag/vorbis_flac.h"
 #include "mp3edit/src/reader/tag/vorbis_ogg.h"
+#include "mp3edit/src/reader/audio/mp3.h"
 
 namespace Mp3Edit {
 namespace File {
@@ -267,7 +268,23 @@ void File::readMetaData(Filesystem::FileStream& file_stream) {
   } while (seek_end != audio_end_);
 }
 
-void File::readAudioData(Filesystem::FileStream&) {
+void File::readAudioData(Filesystem::FileStream& file_stream) {
+  switch (filetype_) {
+    case FileType::kMp3:
+      if (!ReaderAudio::Mp3::getAudioProperties(file_stream, audio_start_,
+                                                filesize_, bitrate_type_,
+                                                bitrate_, sampling_rate_,
+                                                channel_mode_)) {
+        is_valid_ = false;
+      }
+      break;
+    default:
+      bitrate_type_ = BitrateType::kInvalid;
+      bitrate_ = -1;
+      sampling_rate_ = -1;
+      channel_mode_ = ChannelMode::kInvalid;
+      break;
+  }
   // TODO Read audio
 }
 
