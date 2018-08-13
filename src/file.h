@@ -27,6 +27,7 @@ enum class ChannelMode {
   kJointStereo = 1,
   kDualChannel = 2,
   kMono = 3,
+  kInvalid = 4,
 };
 
 FileType getAudioExtension(const std::string& filename);
