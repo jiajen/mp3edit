@@ -9,9 +9,11 @@ bool getAudioProperties(Filesystem::FileStream& file_stream,
                         File::BitrateType& bitrate_type, int& bitrate,
                         int& sampling_rate, File::ChannelMode& channel_mode) {
   while (seek < audio_end) {
-    // TODO
+    // TODO read each frame
   }
-  // TODO
+
+  // TODO compile bitrate
+  return (seek == audio_end);
 }
 
 }  // namespace Mp3
