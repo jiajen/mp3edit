@@ -272,7 +272,7 @@ void File::readAudioData(Filesystem::FileStream& file_stream) {
   switch (filetype_) {
     case FileType::kMp3:
       if (!ReaderAudio::Mp3::getAudioProperties(file_stream, audio_start_,
-                                                filesize_, bitrate_type_,
+                                                audio_end_, bitrate_type_,
                                                 bitrate_, sampling_rate_,
                                                 channel_mode_)) {
         is_valid_ = false;
@@ -287,7 +287,7 @@ void File::readAudioData(Filesystem::FileStream& file_stream) {
     case FileType::kOgg:
       /* TODO Handle OGG reading.
       if (!ReaderAudio::Ogg::getAudioProperties(file_stream, audio_start_,
-                                                filesize_, bitrate_type_,
+                                                audio_end_, bitrate_type_,
                                                 bitrate_, sampling_rate_,
                                                 channel_mode_)) {
         is_valid_ = false;

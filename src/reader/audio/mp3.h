@@ -9,7 +9,7 @@ namespace ReaderAudio {
 namespace Mp3 {
 
 bool getAudioProperties(Filesystem::FileStream& file_stream,
-                        int seek, int filesize,
+                        int seek, int audio_end,
                         File::BitrateType& bitrate_type, int& bitrate,
                         int& sampling_rate, File::ChannelMode& channel_mode);
 
