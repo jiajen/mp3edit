@@ -278,6 +278,22 @@ void File::readAudioData(Filesystem::FileStream& file_stream) {
         is_valid_ = false;
       }
       break;
+    case FileType::kFlac:
+      bitrate_type_ = BitrateType::kLossless;
+      bitrate_ = -1;
+      sampling_rate_ = -1;
+      channel_mode_ = ChannelMode::kLossless;
+      break;
+    case FileType::kOgg:
+      /* TODO Handle OGG reading.
+      if (!ReaderAudio::Ogg::getAudioProperties(file_stream, audio_start_,
+                                                filesize_, bitrate_type_,
+                                                bitrate_, sampling_rate_,
+                                                channel_mode_)) {
+        is_valid_ = false;
+      }
+      */
+      break;
     default:
       bitrate_type_ = BitrateType::kInvalid;
       bitrate_ = -1;
