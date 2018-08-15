@@ -120,7 +120,7 @@ bool getAudioProperties(Filesystem::FileStream& file_stream,
   ChannelMode channel_mode_read = ChannelMode::kUnset;
 
   Bytes header;
-  while (seek < audio_end) {
+  for (int size; seek < audio_end; seek += size) {
     readBytes(file_stream, seek, kFrameHeaderLength, header);
 
     // TODO read each frame
