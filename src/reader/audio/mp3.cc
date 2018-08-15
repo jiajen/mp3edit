@@ -114,7 +114,8 @@ bool getLayer(const Bytes& header, Layer& layer) {
 
 }
 
-bool getBitrate(const Bytes& header, int& bitrate) {
+bool getBitrate(const Bytes& header, int& bitrate,
+                long long& bitrate_sum, File::BitrateType bitrate_type) {
 
 }
 
@@ -143,16 +144,23 @@ bool getAudioProperties(Filesystem::FileStream& file_stream,
   ChannelMode channel_mode_read = ChannelMode::kUnset;
 
   Bytes header;
+  bitrate_type = File::BitrateType::kConstant;
+  int n_frames = 0;
+  long long bitrate_sum = 0;
   for (int size; seek < audio_end; seek += size) {
     readBytes(file_stream, seek, kFrameHeaderLength, header);
     if (!getVersion(header, version)) return false;
     if (!getLayer(header, layer)) return false;
-    if (!getBitrate(header, bitrate)) return false;
+    if (!getBitrate(header, bitrate, bitrate_sum, bitrate_type)) return false;
     if (!getSampling(header, sampling_rate)) return false;
     if (!getChannelMode(header, channel_mode_read)) return false;
     size = (144 * bitrate) / sampling_rate;
     if (hasPadding(header)) size++;
+    n_frames++;
   }
+
+  if (bitrate_type == File::BitrateType::kVbr)
+    bitrate = (bitrate_sum)/n_frames;
 
   switch (channel_mode_read) {
     case ChannelMode::kStereo:
