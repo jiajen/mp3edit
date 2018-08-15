@@ -147,10 +147,9 @@ bool getAudioProperties(Filesystem::FileStream& file_stream,
   for (int size; seek < audio_end; seek += size) {
     readBytes(file_stream, seek, kFrameHeaderLength, header);
     // TODO read each frame
+    if (hasPadding(header)) size++;
   }
 
-
-  // TODO check validity of bitrate
   // TODO compile bitrate
 
   switch (channel_mode_read) {
@@ -170,6 +169,9 @@ bool getAudioProperties(Filesystem::FileStream& file_stream,
       return false;
       break;
   }
+
+  if (!checkIsValidBitrate(bitrate, layer, channel_mode_read)) return false;
+
   return (seek == audio_end);
 }
 
