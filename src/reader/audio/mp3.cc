@@ -1,7 +1,5 @@
 #include "mp3edit/src/reader/audio/mp3.h"
 
-#include <cstring>
-
 namespace Mp3Edit {
 namespace ReaderAudio {
 namespace Mp3 {
@@ -98,7 +96,11 @@ bool checkIsValidBitrate(int bitrate, Layer layer, ChannelMode channel_mode) {
 }
 
 bool checkValidSync(const Bytes& header) {
-  // TODO
+  for (int i = 0; i < kSyncSize; i++) {
+    if ((header[kSyncPos+i]&kSyncBitMask[i]) != kSyncBitMask[i])
+      return false;
+  }
+  return true;
 }
 
 inline int extractVal(const Bytes& header, int pos, char bitmask, int shift) {
@@ -195,6 +197,7 @@ bool getAudioProperties(Filesystem::FileStream& file_stream,
   long long bitrate_sum = 0;
   for (int size; seek < audio_end; seek += size) {
     readBytes(file_stream, seek, kFrameHeaderLength, header);
+    if (!checkValidSync(header)) return false;
     if (!getVersion(header, version)) return false;
     if (!getLayer(header, layer)) return false;
     if (!getSampling(header, version, sampling_rate)) return false;
