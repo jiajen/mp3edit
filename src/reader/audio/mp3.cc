@@ -73,7 +73,6 @@ const int kFrequencyTable[][4] = { // [Version][Frequency]
 
 const int kPaddingPos = 2;
 const char kPaddingBitMask = '\x02';
-const int kPaddingShift = 1;
 
 const int kChannelPos = 3;
 const char kChannelBitMask = '\xC0';
@@ -140,7 +139,7 @@ bool getSampling(const Bytes& header, int& sampling_rate) {
 }
 
 bool hasPadding(const Bytes& header) {
-
+  return ((header[kPaddingPos]&kPaddingBitMask) > 0);
 }
 
 bool getChannelMode(const Bytes& header, ChannelMode& channel_mode) {
