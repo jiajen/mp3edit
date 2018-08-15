@@ -98,8 +98,8 @@ bool checkValidSync(const Bytes& header) {
   // TODO
 }
 
-int extractVal(const Bytes& header, int pos, char bitmask, int shift) {
-  // TODO
+inline int extractVal(const Bytes& header, int pos, char bitmask, int shift) {
+  return ((header[pos]&bitmask) >> shift);
 }
 
 }  // namespace
