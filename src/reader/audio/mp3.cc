@@ -106,19 +106,19 @@ inline int extractVal(const Bytes& header, int pos, char bitmask, int shift) {
   return ((header[pos]&bitmask) >> shift);
 }
 
-bool getVersion(const Bytes& header) {
+bool getVersion(const Bytes& header, MpegVersion& version) {
 
 }
 
-bool getLayer(const Bytes& header) {
+bool getLayer(const Bytes& header, Layer& layer) {
 
 }
 
-bool getBitrate(const Bytes& header) {
+bool getBitrate(const Bytes& header, int& bitrate) {
 
 }
 
-bool getSampling(const Bytes& header) {
+bool getSampling(const Bytes& header, int& sampling_rate) {
 
 }
 
@@ -126,7 +126,7 @@ bool hasPadding(const Bytes& header) {
 
 }
 
-bool getChannelMode(const Bytes& header) {
+bool getChannelMode(const Bytes& header, ChannelMode& channel_mode) {
 
 }
 
