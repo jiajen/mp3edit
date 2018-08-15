@@ -97,7 +97,7 @@ bool checkIsValidBitrate(int bitrate, Layer layer, ChannelMode channel_mode) {
 
 bool checkValidSync(const Bytes& header) {
   for (int i = 0; i < kSyncSize; i++) {
-    if ((header[kSyncPos+i]&kSyncBitMask[i]) != kSyncBitMask[i])
+    if ((header[kSyncPos+i]&kSyncBitMask[i]) != (unsigned char)kSyncBitMask[i])
       return false;
   }
   return true;
@@ -145,12 +145,12 @@ bool getBitrate(const Bytes& header, MpegVersion version, Layer layer,
   if (!checkIsValidBitrate(frame_bitrate, layer, channel_mode)) return false;
 
   if (bitrate == kUnsetValue) {
-    bitrate = frame_bitrate;
     bitrate_type = BitrateType::kConstant;
   } else if (bitrate_type != BitrateType::kVbr && frame_bitrate != bitrate) {
     bitrate_type = BitrateType::kVbr;
   }
 
+  bitrate = frame_bitrate;
   bitrate_sum += frame_bitrate;
   return true;
 }
@@ -205,7 +205,7 @@ bool getAudioProperties(Filesystem::FileStream& file_stream,
     if (!getBitrate(header, version, layer, channel_mode_read,
                     bitrate, bitrate_sum, bitrate_type))
       return false;
-    size = (144 * bitrate) / sampling_rate;
+    size = (144000 * bitrate) / sampling_rate;
     if (hasPadding(header)) size++;
     n_frames++;
   }
