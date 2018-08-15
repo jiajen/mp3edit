@@ -112,6 +112,13 @@ bool getAudioProperties(Filesystem::FileStream& file_stream,
                         int seek, int audio_end,
                         File::BitrateType& bitrate_type, int& bitrate,
                         int& sampling_rate, File::ChannelMode& channel_mode) {
+  MpegVersion version = MpegVersion::kUnset;
+  Layer layer = Layer::kUnset;
+  sampling_rate = kUnsetValue;
+  bitrate = kUnsetValue;
+  sampling_rate = kUnsetValue;
+  ChannelMode channel_mode_read = ChannelMode::kUnset;
+
   Bytes header;
   while (seek < audio_end) {
     readBytes(file_stream, seek, kFrameHeaderLength, header);
@@ -120,6 +127,24 @@ bool getAudioProperties(Filesystem::FileStream& file_stream,
   }
 
   // TODO compile bitrate
+
+  switch (channel_mode_read) {
+    case ChannelMode::kStereo:
+      channel_mode = File::ChannelMode::kStereo;
+      break;
+    case ChannelMode::kJointStereo:
+      channel_mode = File::ChannelMode::kJointStereo;
+      break;
+    case ChannelMode::kDualChannel:
+      channel_mode = File::ChannelMode::kDualChannel;
+      break;
+    case ChannelMode::kMono:
+      channel_mode = File::ChannelMode::kMono;
+      break;
+    default:
+      return false;
+      break;
+  }
   return (seek == audio_end);
 }
 
