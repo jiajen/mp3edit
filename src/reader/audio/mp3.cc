@@ -147,6 +147,7 @@ bool getAudioProperties(Filesystem::FileStream& file_stream,
   for (int size; seek < audio_end; seek += size) {
     readBytes(file_stream, seek, kFrameHeaderLength, header);
     // TODO read each frame
+    size = (144 * bitrate) / sampling_rate;
     if (hasPadding(header)) size++;
   }
 
