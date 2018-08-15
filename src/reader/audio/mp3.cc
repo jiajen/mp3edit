@@ -106,6 +106,30 @@ inline int extractVal(const Bytes& header, int pos, char bitmask, int shift) {
   return ((header[pos]&bitmask) >> shift);
 }
 
+bool getVersion(const Bytes& header) {
+
+}
+
+bool getLayer(const Bytes& header) {
+
+}
+
+bool getBitrate(const Bytes& header) {
+
+}
+
+bool getSampling(const Bytes& header) {
+
+}
+
+bool hasPadding(const Bytes& header) {
+
+}
+
+bool getChannelMode(const Bytes& header) {
+
+}
+
 }  // namespace
 
 bool getAudioProperties(Filesystem::FileStream& file_stream,
@@ -122,10 +146,11 @@ bool getAudioProperties(Filesystem::FileStream& file_stream,
   Bytes header;
   for (int size; seek < audio_end; seek += size) {
     readBytes(file_stream, seek, kFrameHeaderLength, header);
-
     // TODO read each frame
   }
 
+
+  // TODO check validity of bitrate
   // TODO compile bitrate
 
   switch (channel_mode_read) {
