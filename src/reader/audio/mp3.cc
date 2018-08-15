@@ -155,8 +155,6 @@ bool getAudioProperties(Filesystem::FileStream& file_stream,
     if (hasPadding(header)) size++;
   }
 
-  // TODO compile bitrate
-
   switch (channel_mode_read) {
     case ChannelMode::kStereo:
       channel_mode = File::ChannelMode::kStereo;
