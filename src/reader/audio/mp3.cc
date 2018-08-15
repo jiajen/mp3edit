@@ -17,18 +17,36 @@ const char* kSyncBitMask = "\xFF\xE0";
 const int kVersionPos = 1;
 const char kVersionBitMask = '\x18';
 const int kVersionShift = 3;
+enum class MpegVersion {
+  kV2_5 = 0,
+  kReserved = 1,
+  kV2 = 2,
+  kV1 = 3,
+  kUnset = 4,
+  kInvalid = 5,
+};
 
 const int kLayerPos = 1;
 const char kLayerBitMask = '\x06';
 const int kLayerShift = 1;
+enum class Layer {
+  kReserved = 0,
+  kIII = 1,
+  kII = 2,
+  kI = 3,
+  kUnset = 4,
+  kInvalid = 5,
+};
 
 const int kBitratePos = 2;
 const char kBitrateBitMask = '\xF0';
 const int kBitrateShift = 4;
+// TODO
 
 const int kSamplingPos = 2;
 const char kSamplingBitMask = '\x0C';
 const int kSamplingShift = 2;
+// TODO
 
 const int kPaddingPos = 2;
 const char kPaddingBitMask = '\x02';
@@ -37,6 +55,14 @@ const int kPaddingShift = 1;
 const int kChannelPos = 3;
 const char kChannelBitMask = '\xC0';
 const int kChannelShift = 6;
+enum class ChannelMode {
+  kStereo = 0,
+  kJointStereo = 1,
+  kDualChannel = 2,
+  kMono = 3,
+  kUnset = 4,
+  kInvalid = 5,
+};
 
 }  // namespace
 
