@@ -1,5 +1,7 @@
 #include "mp3edit/src/reader/audio/mp3.h"
 
+#include <cstring>
+
 namespace Mp3Edit {
 namespace ReaderAudio {
 namespace Mp3 {
@@ -90,6 +92,14 @@ bool checkIsValidBitrate(int bitrate, Layer layer, ChannelMode channel_mode) {
     if (bitrate == 80 || (bitrate >= 32 && bitrate <= 56)) return false;
   }
   return true;
+}
+
+bool checkValidSync(const Bytes& header) {
+  // TODO
+}
+
+int extractVal(const Bytes& header, int pos, char bitmask, int shift) {
+  // TODO
 }
 
 }  // namespace
