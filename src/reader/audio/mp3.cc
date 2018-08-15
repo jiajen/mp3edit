@@ -120,12 +120,14 @@ bool getVal(const Bytes& header, T val_new, T& val) {
 bool getVersion(const Bytes& header, MpegVersion& version) {
   MpegVersion val = (MpegVersion)extractVal(header, kVersionPos,
                                             kVersionBitMask, kVersionShift);
+  if (val == MpegVersion::kReserved) return false;
   return getVal(header, val, version);
 }
 
 bool getLayer(const Bytes& header, Layer& layer) {
   Layer val = (Layer)extractVal(header, kLayerPos,
                                 kLayerBitMask, kLayerShift);
+  if (val == Layer::kReserved) return false;
   return getVal(header, val, layer);
 }
 
