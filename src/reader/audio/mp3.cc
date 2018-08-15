@@ -129,13 +129,15 @@ bool getLayer(const Bytes& header, Layer& layer) {
   return getVal(header, val, layer);
 }
 
-bool getBitrate(const Bytes& header, int& bitrate,
-                long long& bitrate_sum, File::BitrateType bitrate_type) {
-
+bool getBitrate(const Bytes& header, Layer layer, ChannelMode channel_mode,
+                int& bitrate, long long& bitrate_sum,
+                File::BitrateType& bitrate_type) {
+  //if (!checkIsValidBitrate(bitrate, layer, channel_mode_read)) return false;
+  // TODO
 }
 
 bool getSampling(const Bytes& header, int& sampling_rate) {
-
+  // TODO
 }
 
 bool hasPadding(const Bytes& header) {
@@ -168,9 +170,11 @@ bool getAudioProperties(Filesystem::FileStream& file_stream,
     readBytes(file_stream, seek, kFrameHeaderLength, header);
     if (!getVersion(header, version)) return false;
     if (!getLayer(header, layer)) return false;
-    if (!getBitrate(header, bitrate, bitrate_sum, bitrate_type)) return false;
     if (!getSampling(header, sampling_rate)) return false;
     if (!getChannelMode(header, channel_mode_read)) return false;
+    if (!getBitrate(header, layer, channel_mode_read,
+                    bitrate, bitrate_sum, bitrate_type))
+      return false;
     size = (144 * bitrate) / sampling_rate;
     if (hasPadding(header)) size++;
     n_frames++;
@@ -199,7 +203,6 @@ bool getAudioProperties(Filesystem::FileStream& file_stream,
   if (version == MpegVersion::kUnset) return false;
   if (layer == Layer::kUnset) return false;
   if (bitrate == kUnsetValue) return false;
-  if (!checkIsValidBitrate(bitrate, layer, channel_mode_read)) return false;
   if (sampling_rate == kUnsetValue) return false;
 
   return (seek == audio_end);
