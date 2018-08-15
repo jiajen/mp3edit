@@ -140,7 +140,6 @@ bool getAudioProperties(Filesystem::FileStream& file_stream,
   Layer layer = Layer::kUnset;
   sampling_rate = kUnsetValue;
   bitrate = kUnsetValue;
-  sampling_rate = kUnsetValue;
   ChannelMode channel_mode_read = ChannelMode::kUnset;
 
   Bytes header;
