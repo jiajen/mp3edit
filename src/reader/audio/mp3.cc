@@ -153,7 +153,7 @@ bool getBitrate(const Bytes& header, MpegVersion version, Layer layer,
   return true;
 }
 
-bool getSampling(const Bytes& header, int& sampling_rate) {
+bool getSampling(const Bytes& header, MpegVersion version, int& sampling_rate) {
   // TODO
 }
 
@@ -187,7 +187,7 @@ bool getAudioProperties(Filesystem::FileStream& file_stream,
     readBytes(file_stream, seek, kFrameHeaderLength, header);
     if (!getVersion(header, version)) return false;
     if (!getLayer(header, layer)) return false;
-    if (!getSampling(header, sampling_rate)) return false;
+    if (!getSampling(header, version, sampling_rate)) return false;
     if (!getChannelMode(header, channel_mode_read)) return false;
     if (!getBitrate(header, version, layer, channel_mode_read,
                     bitrate, bitrate_sum, bitrate_type))
