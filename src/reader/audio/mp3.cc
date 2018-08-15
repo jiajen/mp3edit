@@ -165,12 +165,20 @@ bool getAudioProperties(Filesystem::FileStream& file_stream,
     case ChannelMode::kMono:
       channel_mode = File::ChannelMode::kMono;
       break;
-    default:
+    default:  // kUnset & kInvalid
       return false;
       break;
   }
 
+  if (version == MpegVersion::kUnset || version == MpegVersion::kInvalid)
+    return false;
+  if (layer == Layer::kUnset || layer == Layer::kInvalid)
+    return false;
+  if (bitrate == kUnsetValue || bitrate == kInvalidValue)
+    return false;
   if (!checkIsValidBitrate(bitrate, layer, channel_mode_read)) return false;
+  if (sampling_rate == kUnsetValue || sampling_rate == kInvalidValue)
+    return false;
 
   return (seek == audio_end);
 }
