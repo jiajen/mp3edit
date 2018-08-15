@@ -64,7 +64,7 @@ const int* kBitrateRefTable[][4] = { // [Version][Layer]
 const int kSamplingPos = 2;
 const char kSamplingBitMask = '\x0C';
 const int kSamplingShift = 2;
-const int kFrequencyTable[][4] = { // [Version][Frequency]
+const int kSamplingTable[][4] = { // [Version][Sampling]
   {11025, 12000, 8000, -1},
   {-1, -1, -1, -1},
   {22050, 24000, 16000, -1},
@@ -106,7 +106,7 @@ inline int extractVal(const Bytes& header, int pos, char bitmask, int shift) {
 }
 
 template<class T>
-bool getVal(const Bytes& header, T val_new, T& val) {
+bool getVal(T val_new, T& val) {
   if (val_new != val) {
     if (val == T::kUnset) {
       val = (T)val_new;
@@ -121,14 +121,14 @@ bool getVersion(const Bytes& header, MpegVersion& version) {
   MpegVersion val = (MpegVersion)extractVal(header, kVersionPos,
                                             kVersionBitMask, kVersionShift);
   if (val == MpegVersion::kReserved) return false;
-  return getVal(header, val, version);
+  return getVal(val, version);
 }
 
 bool getLayer(const Bytes& header, Layer& layer) {
   Layer val = (Layer)extractVal(header, kLayerPos,
                                 kLayerBitMask, kLayerShift);
   if (val == Layer::kReserved) return false;
-  return getVal(header, val, layer);
+  return getVal(val, layer);
 }
 
 bool getBitrate(const Bytes& header, MpegVersion version, Layer layer,
@@ -154,7 +154,17 @@ bool getBitrate(const Bytes& header, MpegVersion version, Layer layer,
 }
 
 bool getSampling(const Bytes& header, MpegVersion version, int& sampling_rate) {
-  // TODO
+  int idx = extractVal(header, kSamplingPos,
+                       kSamplingBitMask, kSamplingShift);
+  int frame_sampling_rate = kSamplingTable[(int)version][idx];
+
+  if (frame_sampling_rate == -1) return false;
+  if (sampling_rate == kUnsetValue) {
+    sampling_rate = frame_sampling_rate;
+  } else if (sampling_rate != frame_sampling_rate) {
+    return false;
+  }
+  return true;
 }
 
 bool hasPadding(const Bytes& header) {
@@ -164,7 +174,7 @@ bool hasPadding(const Bytes& header) {
 bool getChannelMode(const Bytes& header, ChannelMode& channel_mode) {
   ChannelMode val = (ChannelMode)extractVal(header, kChannelPos,
                                             kChannelBitMask, kChannelShift);
-  return getVal(header, val, channel_mode);
+  return getVal(val, channel_mode);
 }
 
 }  // namespace
