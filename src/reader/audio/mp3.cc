@@ -106,12 +106,28 @@ inline int extractVal(const Bytes& header, int pos, char bitmask, int shift) {
   return ((header[pos]&bitmask) >> shift);
 }
 
-bool getVersion(const Bytes& header, MpegVersion& version) {
+template<class T>
+bool getVal(const Bytes& header, T val_new, T& val) {
+  if (val_new != val) {
+    if (val == T::kUnset) {
+      val = (T)val_new;
+    } else {
+      return false;
+    }
+  }
+  return true;
+}
 
+bool getVersion(const Bytes& header, MpegVersion& version) {
+  MpegVersion val = (MpegVersion)extractVal(header, kVersionPos,
+                                            kVersionBitMask, kVersionShift);
+  return getVal(header, val, version);
 }
 
 bool getLayer(const Bytes& header, Layer& layer) {
-
+  Layer val = (Layer)extractVal(header, kLayerPos,
+                                kLayerBitMask, kLayerShift);
+  return getVal(header, val, layer);
 }
 
 bool getBitrate(const Bytes& header, int& bitrate,
@@ -128,7 +144,9 @@ bool hasPadding(const Bytes& header) {
 }
 
 bool getChannelMode(const Bytes& header, ChannelMode& channel_mode) {
-
+  ChannelMode val = (ChannelMode)extractVal(header, kChannelPos,
+                                            kChannelBitMask, kChannelShift);
+  return getVal(header, val, channel_mode);
 }
 
 }  // namespace
