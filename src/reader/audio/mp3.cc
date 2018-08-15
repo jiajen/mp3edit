@@ -129,11 +129,17 @@ bool getLayer(const Bytes& header, Layer& layer) {
   return getVal(header, val, layer);
 }
 
-bool getBitrate(const Bytes& header, Layer layer, ChannelMode channel_mode,
-                int& bitrate, long long& bitrate_sum,
+bool getBitrate(const Bytes& header, MpegVersion version, Layer layer,
+                ChannelMode channel_mode, int& bitrate, long long& bitrate_sum,
                 File::BitrateType& bitrate_type) {
-  //if (!checkIsValidBitrate(bitrate, layer, channel_mode_read)) return false;
+  int idx = extractVal(header, kBitratePos, kBitrateBitMask, kBitrateShift);
+  const int* idx_table = kBitrateRefTable[(int)version][(int)layer];
+  int frame_bitrate = *(idx_table + idx);
+
+
   // TODO
+  //if (!checkIsValidBitrate(val, layer, channel_mode)) return false;
+  return true;
 }
 
 bool getSampling(const Bytes& header, int& sampling_rate) {
@@ -172,7 +178,7 @@ bool getAudioProperties(Filesystem::FileStream& file_stream,
     if (!getLayer(header, layer)) return false;
     if (!getSampling(header, sampling_rate)) return false;
     if (!getChannelMode(header, channel_mode_read)) return false;
-    if (!getBitrate(header, layer, channel_mode_read,
+    if (!getBitrate(header, version, layer, channel_mode_read,
                     bitrate, bitrate_sum, bitrate_type))
       return false;
     size = (144 * bitrate) / sampling_rate;
