@@ -48,12 +48,12 @@ const int kBitrateTable[][16] = {
   {-1, 32, 48, 56, 64, 80, 96, 112, 128, 144, 160, 176, 192, 224, 256, -1},
   {-1, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160, -1}
 };
-const int kBitrateRefTable[][4] = { // [Version][Layer]
-  {},
-  {},
-  {},
-  {},
-}; // TODO
+const int* kBitrateRefTable[][4] = { // [Version][Layer]
+  {0,kBitrateTable[4],kBitrateTable[4],kBitrateTable[3]},
+  {0,0,0,0},
+  {0,kBitrateTable[4],kBitrateTable[4],kBitrateTable[3]},
+  {0,kBitrateTable[2],kBitrateTable[1],kBitrateTable[0]}
+};
 
 const int kSamplingPos = 2;
 const char kSamplingBitMask = '\x0C';
