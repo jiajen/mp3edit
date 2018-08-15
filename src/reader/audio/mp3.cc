@@ -81,6 +81,17 @@ enum class ChannelMode {
   kInvalid = 5,
 };
 
+// Layer II only allows certain combinations of channel mode and bitrates.
+bool checkIsValidBitrate(int bitrate, Layer layer, ChannelMode channel_mode) {
+  if (layer != Layer::kII) return true;
+  if (channel_mode == ChannelMode::kMono) {
+    if (bitrate > 192) return false;
+  } else {
+    if (bitrate == 80 || (bitrate >= 32 && bitrate <= 56)) return false;
+  }
+  return true;
+}
+
 }  // namespace
 
 bool getAudioProperties(Filesystem::FileStream& file_stream,
