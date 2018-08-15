@@ -41,7 +41,13 @@ enum class Layer {
 const int kBitratePos = 2;
 const char kBitrateBitMask = '\xF0';
 const int kBitrateShift = 4;
-// TODO
+const int kBitrateTable[][16] = {
+{-1, 32, 64, 96, 128, 160, 192, 224, 256, 288, 320, 352, 384, 416, 448, -1},
+{-1, 32, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 384, -1},
+{-1, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, -1},
+{-1, 32, 48, 56, 64, 80, 96, 112, 128, 144, 160, 176, 192, 224, 256, -1},
+{-1, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160, -1}
+};
 
 const int kSamplingPos = 2;
 const char kSamplingBitMask = '\x0C';
