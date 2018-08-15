@@ -46,7 +46,10 @@ const int kBitrateShift = 4;
 const int kSamplingPos = 2;
 const char kSamplingBitMask = '\x0C';
 const int kSamplingShift = 2;
-// TODO
+const int kFrequencyTable[][4] = {{11025, 12000, 8000, -1},
+                                  {-1, -1, -1, -1},
+                                  {22050, 24000, 16000, -1},
+                                  {44100, 48000, 32000, -1}};
 
 const int kPaddingPos = 2;
 const char kPaddingBitMask = '\x02';
