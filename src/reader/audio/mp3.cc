@@ -132,13 +132,22 @@ bool getLayer(const Bytes& header, Layer& layer) {
 bool getBitrate(const Bytes& header, MpegVersion version, Layer layer,
                 ChannelMode channel_mode, int& bitrate, long long& bitrate_sum,
                 File::BitrateType& bitrate_type) {
+  using File::BitrateType;
+
   int idx = extractVal(header, kBitratePos, kBitrateBitMask, kBitrateShift);
   const int* idx_table = kBitrateRefTable[(int)version][(int)layer];
   int frame_bitrate = *(idx_table + idx);
+  if (frame_bitrate == -1) return false;
+  if (!checkIsValidBitrate(frame_bitrate, layer, channel_mode)) return false;
 
+  if (bitrate == kUnsetValue) {
+    bitrate = frame_bitrate;
+    bitrate_type = BitrateType::kConstant;
+  } else if (bitrate_type != BitrateType::kVbr && frame_bitrate != bitrate) {
+    bitrate_type = BitrateType::kVbr;
+  }
 
-  // TODO
-  //if (!checkIsValidBitrate(val, layer, channel_mode)) return false;
+  bitrate_sum += frame_bitrate;
   return true;
 }
 
@@ -169,7 +178,7 @@ bool getAudioProperties(Filesystem::FileStream& file_stream,
   ChannelMode channel_mode_read = ChannelMode::kUnset;
 
   Bytes header;
-  bitrate_type = File::BitrateType::kConstant;
+  bitrate_type = File::BitrateType::kInvalid;
   int n_frames = 0;
   long long bitrate_sum = 0;
   for (int size; seek < audio_end; seek += size) {
