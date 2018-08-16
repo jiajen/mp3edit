@@ -195,7 +195,7 @@ bool getChannelMode(const Bytes& header, ChannelMode& channel_mode) {
 // Returns true if Xing frame was found.
 bool skipXingFrame(const Bytes& header, Filesystem::FileStream& file_stream,
                    MpegVersion version, ChannelMode channel_mode, Layer layer,
-                   int& seek) {
+                   int seek) {
   const int len1 = kSideInfoLengthV1Stereo;
   const int len2 = kSideInfoLengthV1Mono;
   const int len3 = kSideInfoLengthV2Mono;
@@ -212,6 +212,8 @@ bool skipXingFrame(const Bytes& header, Filesystem::FileStream& file_stream,
   offset += kFrameHeaderLength;
 
   if ((header[kCrcPos]&kCrcBitMask) == 0) offset += kCrcLength;
+
+
 
   // TODO check whether xing exists.
   return true;
