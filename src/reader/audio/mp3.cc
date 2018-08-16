@@ -1,5 +1,7 @@
 #include "mp3edit/src/reader/audio/mp3.h"
 
+#include <cstring>
+
 namespace Mp3Edit {
 namespace ReaderAudio {
 namespace Mp3 {
@@ -90,7 +92,7 @@ const int kCrcLength = 2;
 
 const char* kXingHeaderVbr = "Xing";
 const char* kXingHeaderCbr = "Info";
-const int kXingHeaderStartLength = 4;
+const int kXingHeaderPreambleLength = 4;
 
 const int kSideInfoLengthV1Stereo = 32;
 const int kSideInfoLengthV1Mono = 17;
@@ -213,10 +215,11 @@ bool skipXingFrame(const Bytes& header, Filesystem::FileStream& file_stream,
 
   if ((header[kCrcPos]&kCrcBitMask) == 0) offset += kCrcLength;
 
-
-
-  // TODO check whether xing exists.
-  return true;
+  Bytes xing_header;
+  readBytes(file_stream, seek+offset, kXingHeaderPreambleLength, xing_header);
+  const char* header_ptr = (const char*)xing_header.data();
+  return (strncmp(header_ptr, kXingHeaderCbr, kXingHeaderPreambleLength) == 0 ||
+          strncmp(header_ptr, kXingHeaderVbr, kXingHeaderPreambleLength) == 0);
 }
 
 }  // namespace
