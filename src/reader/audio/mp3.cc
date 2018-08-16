@@ -179,6 +179,12 @@ bool getChannelMode(const Bytes& header, ChannelMode& channel_mode) {
   return getVal(val, channel_mode);
 }
 
+// Returns true if Xing frame was found.
+bool skipXingFrame(Filesystem::FileStream& file_stream, int& seek) {
+  // TODO check whether xing exists.
+  return true;
+}
+
 }  // namespace
 
 bool getAudioProperties(Filesystem::FileStream& file_stream,
@@ -195,6 +201,7 @@ bool getAudioProperties(Filesystem::FileStream& file_stream,
   bitrate_type = File::BitrateType::kInvalid;
   int n_frames = 0;
   long long bitrate_sum = 0;
+  bool is_first_frame = true;
   for (int size; seek < audio_end; seek += size) {
     readBytes(file_stream, seek, kFrameHeaderLength, header);
     if (!checkValidSync(header)) return false;
@@ -208,6 +215,19 @@ bool getAudioProperties(Filesystem::FileStream& file_stream,
     size = (144000 * bitrate) / sampling_rate;
     if (hasPadding(header)) size++;
     n_frames++;
+    if (is_first_frame) {
+      is_first_frame = false;
+      if (skipXingFrame(file_stream, seek)) {
+        version = MpegVersion::kUnset;
+        layer = Layer::kUnset;
+        sampling_rate = kUnsetValue;
+        bitrate = kUnsetValue;
+        channel_mode_read = ChannelMode::kUnset;
+        bitrate_type = File::BitrateType::kInvalid;
+        bitrate_sum = 0;
+        n_frames = 0;
+      }
+    }
   }
 
   if (bitrate_type == File::BitrateType::kVbr)
