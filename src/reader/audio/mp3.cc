@@ -84,6 +84,11 @@ enum class ChannelMode {
   kMono = 3,
 };
 
+const int kSideInfoLengthV1Stereo = 32;
+const int kSideInfoLengthV1Mono = 17;
+const int kSideInfoLengthV2Stereo = 17;
+const int kSideInfoLengthV2Mono = 9;
+
 // Layer II only allows certain combinations of channel mode and bitrates.
 bool checkIsValidBitrate(int bitrate, Layer layer, ChannelMode channel_mode) {
   if (layer != Layer::kII) return true;
@@ -180,7 +185,23 @@ bool getChannelMode(const Bytes& header, ChannelMode& channel_mode) {
 }
 
 // Returns true if Xing frame was found.
-bool skipXingFrame(Filesystem::FileStream& file_stream, int& seek) {
+bool skipXingFrame(Filesystem::FileStream& file_stream, MpegVersion version,
+                   ChannelMode channel_mode, Layer layer, int& seek) {
+  const int len1 = kSideInfoLengthV1Stereo;
+  const int len2 = kSideInfoLengthV1Mono;
+  const int len3 = kSideInfoLengthV2Mono;
+  if (layer == Layer::kReserved || layer == Layer::kII) return false;
+  int offset;
+  if (version == MpegVersion::kV1) {
+    offset = (channel_mode == ChannelMode::kMono) ? len2 : len1;
+  } else if (version == MpegVersion::kV2 || version == MpegVersion::kV2_5) {
+    offset = (channel_mode == ChannelMode::kMono) ? len3 : len2;
+  } else {
+    return false;
+  }
+  offset += kFrameHeaderLength;
+
+  // TODO check crc if got +2;
   // TODO check whether xing exists.
   return true;
 }
@@ -217,7 +238,7 @@ bool getAudioProperties(Filesystem::FileStream& file_stream,
     n_frames++;
     if (is_first_frame) {
       is_first_frame = false;
-      if (skipXingFrame(file_stream, seek)) {
+      if (skipXingFrame(file_stream, version, channel_mode_read, layer, seek)) {
         version = MpegVersion::kUnset;
         layer = Layer::kUnset;
         sampling_rate = kUnsetValue;
