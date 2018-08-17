@@ -17,6 +17,7 @@
 #include "mp3edit/src/reader/tag/vorbis_ogg.h"
 #include "mp3edit/src/reader/tag/mp3_padding.h"
 #include "mp3edit/src/reader/audio/mp3.h"
+#include "mp3edit/src/reader/audio/ogg.h"
 
 namespace Mp3Edit {
 namespace File {
@@ -289,14 +290,13 @@ void File::readAudioData(Filesystem::FileStream& file_stream) {
       channel_mode_ = ChannelMode::kLossless;
       break;
     case FileType::kOgg:
-      /* TODO Handle OGG reading.
-      if (!ReaderAudio::Ogg::getAudioProperties(file_stream, audio_start_,
-                                                audio_end_, bitrate_type_,
+      if (!ReaderAudio::Ogg::getAudioProperties(file_stream,
+                                                file_container_start_seek_,
+                                                bitrate_type_,
                                                 bitrate_, sampling_rate_,
                                                 channel_mode_)) {
         is_valid_ = false;
       }
-      */
       break;
     default:
       bitrate_type_ = BitrateType::kInvalid;
@@ -305,7 +305,6 @@ void File::readAudioData(Filesystem::FileStream& file_stream) {
       channel_mode_ = ChannelMode::kInvalid;
       break;
   }
-  // TODO Read audio
 }
 
 }  // namespace File
