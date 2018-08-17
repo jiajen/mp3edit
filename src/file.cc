@@ -42,6 +42,7 @@ const char* kChannelModeStereo = "Stereo";
 const char* kChannelModeMono = "Mono";
 const char* kChannelModeDualChannel = "Dual Channel";
 const char* kChannelModeJointStereo = "Joint Stereo";
+const char* kChannelModeLossless = "Lossless";
 
 std::filesystem::path generateTargetPath(const std::string& filepath,
                                          const std::string& raw_filename,
@@ -133,7 +134,7 @@ std::string File::getBitrate() const {
       break;
   }
   if (bitrate_ <= 0) return kInvalidText;
-  return std::to_string(bitrate_) + bitrate;
+  return std::to_string(bitrate_) + kBitrateUnits + std::string(" ") + bitrate;
 }
 
 std::string File::getSamplingRate() const {
@@ -142,7 +143,27 @@ std::string File::getSamplingRate() const {
 }
 
 std::string File::getChannelMode() const {
-
+  switch (channel_mode_) {
+    case ChannelMode::kStereo:
+      return kChannelModeStereo;
+      break;
+    case ChannelMode::kJointStereo:
+      return kChannelModeJointStereo;
+      break;
+    case ChannelMode::kDualChannel:
+      return kChannelModeDualChannel;
+      break;
+    case ChannelMode::kMono:
+      return kChannelModeMono;
+      break;
+    case ChannelMode::kLossless:
+      return kChannelModeLossless;
+      break;
+    case ChannelMode::kInvalid:
+    default:
+      return kInvalidText;
+      break;
+  }
 }
 
 void File::saveFileChanges(bool rename_file) {
