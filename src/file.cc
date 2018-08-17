@@ -2,6 +2,7 @@
 
 #include <cstring>
 
+#include <algorithm>
 #include <exception>
 #include <system_error>
 #include <filesystem>
@@ -35,6 +36,7 @@ const char* kInvalidText = "-";
 const char* kBitrateUnits = "kbps";
 const char* kBitrateTypeCbr = "CBR";
 const char* kBitrateTypeVbr = "VBR";
+const char* kBitrateTypeLossless = "Lossless";
 const char* kSamplingRateUnits = "Hz";
 const char* kChannelModeStereo = "Stereo";
 const char* kChannelModeMono = "Mono";
@@ -115,8 +117,23 @@ File::File(const std::string& filepath, FileType filetype,
 }
 
 std::string File::getBitrate() const {
-  if (bitrate_type_ == BitrateType::kInvalid) return kInvalidText;
-  // TODO
+  std::string bitrate;
+  switch (bitrate_type_) {
+    case BitrateType::kConstant:
+      bitrate = std::string(" ") + kBitrateTypeCbr;
+      break;
+    case BitrateType::kVbr:
+      bitrate = std::string(" ") + kBitrateTypeVbr;
+      break;
+    case BitrateType::kLossless:
+      return kBitrateTypeLossless;
+      break;
+    case BitrateType::kInvalid:
+      return kInvalidText;
+      break;
+  }
+  if (bitrate_ <= 0) return kInvalidText;
+  return std::to_string(bitrate_) + bitrate;
 }
 
 std::string File::getSamplingRate() const {
