@@ -72,7 +72,7 @@ bool getAudioProperties(Filesystem::FileStream& file_stream, int seek,
                                  false);
 
   if (bitrate_nominal > 0) {
-    bitrate = bitrate_nominal;
+    bitrate = bitrate_nominal/1000;
     if (bitrate_nominal == bitrate_min && bitrate_nominal == bitrate_max) {
       bitrate_type = File::BitrateType::kConstant;
     } else {
