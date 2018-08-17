@@ -31,6 +31,16 @@ const char* kFileSupportedFileTypes[] = {
   ".ogg"
 };
 
+const char* kInvalidText = "-";
+const char* kBitrateUnits = "kbps";
+const char* kBitrateTypeCbr = "CBR";
+const char* kBitrateTypeVbr = "VBR";
+const char* kSamplingRateUnits = "Hz";
+const char* kChannelModeStereo = "Stereo";
+const char* kChannelModeMono = "Mono";
+const char* kChannelModeDualChannel = "Dual Channel";
+const char* kChannelModeJointStereo = "Joint Stereo";
+
 std::filesystem::path generateTargetPath(const std::string& filepath,
                                          const std::string& raw_filename,
                                          FileType filetype) {
@@ -102,6 +112,19 @@ File::File(const std::string& filepath, FileType filetype,
     is_valid_ = false;
   }
   file_stream.close();
+}
+
+std::string File::getBitrate() const {
+  if (bitrate_type_ == BitrateType::kInvalid) return kInvalidText;
+  // TODO
+}
+
+std::string File::getSamplingRate() const {
+
+}
+
+std::string File::getChannelMode() const {
+
 }
 
 void File::saveFileChanges(bool rename_file) {

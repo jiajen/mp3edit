@@ -43,6 +43,9 @@ class File {
   inline int getTrackNum() const { return track_num_; }
   inline int getTrackDenum() const { return track_denum_; }
   inline std::string getFilepath() const { return filepath_; }
+  std::string getBitrate() const;
+  std::string getSamplingRate() const;
+  std::string getChannelMode() const;
   void saveFileChanges(bool rename_file);
  private:
   void readMetaData(Filesystem::FileStream& file_stream);
