@@ -39,7 +39,7 @@ void WindowMain::openDirDialog() {
 }
 
 void WindowMain::loadEntryDir() {
-  std::vector<File> files = Directory::getFiles(entry_dir_->get_text(), false);
+  files_ = Directory::getFiles(entry_dir_->get_text(), false);
   // TODO update gui
   // TODO pass value of checkbox (read audio data) to getFiles
 }
