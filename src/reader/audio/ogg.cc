@@ -71,7 +71,18 @@ bool getAudioProperties(Filesystem::FileStream& file_stream,
                                  header.begin() + kBitrateMinPos +
                                                   kBitrateMinSize,
                                  false);
-  // TODO convert ints to file types
+
+  if (bitrate_nominal > 0) {
+    bitrate = bitrate_nominal;
+    if (bitrate_nominal == bitrate_min && bitrate_nominal == bitrate_max) {
+      bitrate_type = File::BitrateType::kConstant;
+    } else {
+      bitrate_type = File::BitrateType::kVbr;
+    }
+  } else {
+    return false;
+  }
+
   return true;
 }
 
