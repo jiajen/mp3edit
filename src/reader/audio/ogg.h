@@ -9,7 +9,7 @@ namespace ReaderAudio {
 namespace Ogg {
 
 bool getAudioProperties(Filesystem::FileStream& file_stream,
-                        int seek, int audio_end,
+                        int seek, int,
                         File::BitrateType& bitrate_type, int& bitrate,
                         int& sampling_rate, File::ChannelMode& channel_mode);
 
