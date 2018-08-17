@@ -120,10 +120,10 @@ std::string File::getBitrate() const {
   std::string bitrate;
   switch (bitrate_type_) {
     case BitrateType::kConstant:
-      bitrate = std::string(" ") + kBitrateTypeCbr;
+      bitrate = kBitrateTypeCbr;
       break;
     case BitrateType::kVbr:
-      bitrate = std::string(" ") + kBitrateTypeVbr;
+      bitrate =  kBitrateTypeVbr;
       break;
     case BitrateType::kLossless:
       return kBitrateTypeLossless;
@@ -137,7 +137,8 @@ std::string File::getBitrate() const {
 }
 
 std::string File::getSamplingRate() const {
-
+  if (sampling_rate_ <= 0) return kInvalidText;
+  return std::to_string(sampling_rate_) + kSamplingRateUnits;
 }
 
 std::string File::getChannelMode() const {
