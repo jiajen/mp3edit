@@ -2,6 +2,7 @@
 
 #include <cstring>
 
+#include <algorithm>
 #include <exception>
 #include <system_error>
 #include <filesystem>
@@ -30,6 +31,18 @@ const char* kFileSupportedFileTypes[] = {
   ".flac",
   ".ogg"
 };
+
+const char* kInvalidText = "-";
+const char* kBitrateUnits = "kbps";
+const char* kBitrateTypeCbr = "CBR";
+const char* kBitrateTypeVbr = "VBR";
+const char* kBitrateTypeLossless = "Lossless";
+const char* kSamplingRateUnits = "Hz";
+const char* kChannelModeStereo = "Stereo";
+const char* kChannelModeMono = "Mono";
+const char* kChannelModeDualChannel = "Dual Channel";
+const char* kChannelModeJointStereo = "Joint Stereo";
+const char* kChannelModeLossless = "Lossless";
 
 std::filesystem::path generateTargetPath(const std::string& filepath,
                                          const std::string& raw_filename,
@@ -102,6 +115,66 @@ File::File(const std::string& filepath, FileType filetype,
     is_valid_ = false;
   }
   file_stream.close();
+}
+
+std::string File::getTrack() const {
+  if (track_num_ > 0) {
+    if (track_denum_ > 0) {
+      return std::to_string(track_num_) + "/" + std::to_string(track_denum_);
+    } else {
+      return std::to_string(track_num_);
+    }
+  }
+  return std::string();
+}
+
+std::string File::getBitrate() const {
+  std::string bitrate;
+  switch (bitrate_type_) {
+    case BitrateType::kConstant:
+      bitrate = kBitrateTypeCbr;
+      break;
+    case BitrateType::kVbr:
+      bitrate =  kBitrateTypeVbr;
+      break;
+    case BitrateType::kLossless:
+      return kBitrateTypeLossless;
+      break;
+    case BitrateType::kInvalid:
+      return kInvalidText;
+      break;
+  }
+  if (bitrate_ <= 0) return kInvalidText;
+  return std::to_string(bitrate_) + kBitrateUnits + std::string(" ") + bitrate;
+}
+
+std::string File::getSamplingRate() const {
+  if (sampling_rate_ <= 0) return kInvalidText;
+  return std::to_string(sampling_rate_) + kSamplingRateUnits;
+}
+
+std::string File::getChannelMode() const {
+  switch (channel_mode_) {
+    case ChannelMode::kStereo:
+      return kChannelModeStereo;
+      break;
+    case ChannelMode::kJointStereo:
+      return kChannelModeJointStereo;
+      break;
+    case ChannelMode::kDualChannel:
+      return kChannelModeDualChannel;
+      break;
+    case ChannelMode::kMono:
+      return kChannelModeMono;
+      break;
+    case ChannelMode::kLossless:
+      return kChannelModeLossless;
+      break;
+    case ChannelMode::kInvalid:
+    default:
+      return kInvalidText;
+      break;
+  }
 }
 
 void File::saveFileChanges(bool rename_file) {
