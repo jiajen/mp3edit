@@ -225,7 +225,7 @@ bool skipXingFrame(const Bytes& header, Filesystem::FileStream& file_stream,
 }  // namespace
 
 bool getAudioProperties(Filesystem::FileStream& file_stream,
-                        int seek, int audio_end,
+                        int seek, int& audio_end,
                         File::BitrateType& bitrate_type, int& bitrate,
                         int& sampling_rate, File::ChannelMode& channel_mode) {
   MpegVersion version = MpegVersion::kUnset;
@@ -241,7 +241,14 @@ bool getAudioProperties(Filesystem::FileStream& file_stream,
   bool is_first_frame = true;
   for (int size; seek < audio_end; seek += size) {
     readBytes(file_stream, seek, kFrameHeaderLength, header);
-    if (!checkValidSync(header)) return false;
+    if (!checkValidSync(header)) {
+      if (n_frames > 0) {
+        audio_end = seek;
+        break;
+      } else {
+        return false;
+      }
+    }
     if (!getVersion(header, version)) return false;
     if (!getLayer(header, layer)) return false;
     if (!getSampling(header, version, sampling_rate)) return false;

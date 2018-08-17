@@ -8,8 +8,9 @@ namespace Mp3Edit {
 namespace ReaderAudio {
 namespace Mp3 {
 
+// This changes audio_end to the end of the last frame if needed.
 bool getAudioProperties(Filesystem::FileStream& file_stream,
-                        int seek, int audio_end,
+                        int seek, int& audio_end,
                         File::BitrateType& bitrate_type, int& bitrate,
                         int& sampling_rate, File::ChannelMode& channel_mode);
 
