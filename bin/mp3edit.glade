@@ -221,8 +221,8 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="btn_song_convert_vbr">
-                <property name="label" translatable="yes">Convert to VBR</property>
+              <object class="GtkButton" id="btn_song_trim_all">
+                <property name="label" translatable="yes">Trim Metadata</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -246,7 +246,7 @@
             </child>
             <child>
               <object class="GtkButton" id="btn_song_save_all">
-                <property name="label" translatable="yes">Trim/Save All Files</property>
+                <property name="label" translatable="yes">Save All Files</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
