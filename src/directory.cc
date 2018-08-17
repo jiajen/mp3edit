@@ -9,7 +9,9 @@ namespace Mp3Edit {
 namespace Directory {
 
 std::vector<File::File> getFiles(const std::string& directory,
+                                 bool recurse,
                                  bool read_audio_data) {
+  // TODO handle recurse
   std::vector<File::File> files;
   for (const auto& entry: std::filesystem::directory_iterator(directory)) {
     if (!entry.is_regular_file()) continue;

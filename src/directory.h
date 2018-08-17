@@ -10,6 +10,7 @@ namespace Mp3Edit {
 namespace Directory {
 
 std::vector<File::File> getFiles(const std::string& directory,
+                                 bool recurse,
                                  bool read_audio_data);
 
 }  // namespace Directory

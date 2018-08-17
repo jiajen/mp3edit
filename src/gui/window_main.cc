@@ -44,9 +44,9 @@ void WindowMain::openDirDialog() {
 
 void WindowMain::loadEntryDir() {
   files_ = Directory::getFiles(entry_dir_->get_text(),
+                               checkbox_read_subdir_->get_active(),
                                checkbox_read_audio_->get_active());
   // TODO update gui
-  // TODO pass value of checkbox (read audio data) to getFiles
 }
 
 }  // namespace Gui
