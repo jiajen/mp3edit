@@ -13,9 +13,13 @@ using File::File;
 WindowMain::WindowMain(BaseObjectType* cobject,
                        const Glib::RefPtr<Gtk::Builder>& builder)
     : Gtk::Window(cobject), builder_(builder) {
+  builder_->get_widget("checkbox_read_subdir", checkbox_read_subdir_);
+  builder_->get_widget("checkbox_read_audio", checkbox_read_audio_);
+
   builder_->get_widget("btn_dir_open", btn_dir_open_);
   btn_dir_open_->signal_clicked().connect(
     sigc::mem_fun(*this, &WindowMain::openDirDialog));
+
   builder_->get_widget("btn_dir_refresh", btn_dir_refresh_);
   btn_dir_refresh_->signal_clicked().connect(
     sigc::mem_fun(*this, &WindowMain::loadEntryDir));
@@ -39,7 +43,8 @@ void WindowMain::openDirDialog() {
 }
 
 void WindowMain::loadEntryDir() {
-  files_ = Directory::getFiles(entry_dir_->get_text(), false);
+  files_ = Directory::getFiles(entry_dir_->get_text(),
+                               checkbox_read_audio_->get_active());
   // TODO update gui
   // TODO pass value of checkbox (read audio data) to getFiles
 }

@@ -4,9 +4,10 @@
 #include <vector>
 
 #include <gtkmm/builder.h>
+#include <gtkmm/window.h>
+#include <gtkmm/checkbutton.h>
 #include <gtkmm/button.h>
 #include <gtkmm/entry.h>
-#include <gtkmm/window.h>
 
 #include "mp3edit/src/file.h"
 
@@ -24,6 +25,8 @@ class WindowMain: public Gtk::Window {
   std::vector<File::File> files_;
 
   Glib::RefPtr<Gtk::Builder> builder_;
+  Gtk::CheckButton* checkbox_read_subdir_;
+  Gtk::CheckButton* checkbox_read_audio_;
   Gtk::Button* btn_dir_open_;
   Gtk::Button* btn_dir_refresh_;
   Gtk::Entry* entry_dir_;
