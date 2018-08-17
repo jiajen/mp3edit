@@ -7,6 +7,8 @@ namespace Mp3Edit {
 namespace ReaderTag {
 namespace Mp3Padding {
 
+// This searches until the first instance of the sync byte which
+// indicates the start of the first MP3 frame.
 int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek);
 
 }  // Mp3Padding
