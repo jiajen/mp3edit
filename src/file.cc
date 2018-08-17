@@ -290,8 +290,9 @@ void File::readAudioData(Filesystem::FileStream& file_stream) {
       channel_mode_ = ChannelMode::kLossless;
       break;
     case FileType::kOgg:
-      if (!ReaderAudio::Ogg::getAudioProperties(file_stream, audio_start_,
-                                                audio_end_, bitrate_type_,
+      if (!ReaderAudio::Ogg::getAudioProperties(file_stream,
+                                                file_container_start_seek_,
+                                                bitrate_type_,
                                                 bitrate_, sampling_rate_,
                                                 channel_mode_)) {
         is_valid_ = false;

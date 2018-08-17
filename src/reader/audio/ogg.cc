@@ -32,8 +32,7 @@ const int kFramingFlagPos = 22;
 
 }  // namespace
 
-bool getAudioProperties(Filesystem::FileStream& file_stream,
-                        int seek, int,
+bool getAudioProperties(Filesystem::FileStream& file_stream, int seek,
                         File::BitrateType& bitrate_type, int& bitrate,
                         int& sampling_rate, File::ChannelMode& channel_mode) {
   Bytes header;

@@ -8,8 +8,7 @@ namespace Mp3Edit {
 namespace ReaderAudio {
 namespace Ogg {
 
-bool getAudioProperties(Filesystem::FileStream& file_stream,
-                        int seek, int,
+bool getAudioProperties(Filesystem::FileStream& file_stream, int seek,
                         File::BitrateType& bitrate_type, int& bitrate,
                         int& sampling_rate, File::ChannelMode& channel_mode);
 
