@@ -15,6 +15,7 @@
 #include "mp3edit/src/reader/tag/lyrics3.h"
 #include "mp3edit/src/reader/tag/vorbis_flac.h"
 #include "mp3edit/src/reader/tag/vorbis_ogg.h"
+#include "mp3edit/src/reader/tag/mp3_padding.h"
 #include "mp3edit/src/reader/audio/mp3.h"
 
 namespace Mp3Edit {
@@ -222,6 +223,9 @@ void File::readMetaData(Filesystem::FileStream& file_stream) {
   } while (seek_start != audio_start_);
 
   switch (filetype_) {
+    case FileType::kMp3:
+      audio_start_ = Mp3Padding::seekHeaderEnd(file_stream, audio_start_);
+      break;
     case FileType::kFlac:
       seek = VorbisFlac::seekHeaderEnd(file_stream, audio_start_);
       if (seek != audio_start_) {
