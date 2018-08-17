@@ -117,6 +117,17 @@ File::File(const std::string& filepath, FileType filetype,
   file_stream.close();
 }
 
+std::string File::getTrack() const {
+  if (track_num_ > 0) {
+    if (track_denum_ > 0) {
+      return std::to_string(track_num_) + "/" + std::to_string(track_denum_);
+    } else {
+      return std::to_string(track_num_);
+    }
+  }
+  return std::string();
+}
+
 std::string File::getBitrate() const {
   std::string bitrate;
   switch (bitrate_type_) {

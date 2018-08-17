@@ -37,12 +37,13 @@ FileType getAudioExtension(const std::string& filename);
 class File {
  public:
   File(const std::string& filepath, FileType filetype, bool read_audio_data);
+  inline std::string getFilepath() const { return filepath_; }
   inline std::string getTitle() const { return title_; }
   inline std::string getArtist() const { return artist_; }
   inline std::string getAlbum() const { return album_; }
   inline int getTrackNum() const { return track_num_; }
   inline int getTrackDenum() const { return track_denum_; }
-  inline std::string getFilepath() const { return filepath_; }
+  std::string getTrack() const;
   std::string getBitrate() const;
   std::string getSamplingRate() const;
   std::string getChannelMode() const;
