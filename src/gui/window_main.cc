@@ -1,5 +1,8 @@
 #include "mp3edit/src/gui/window_main.h"
 
+#include <glib.h>
+#include <gtkmm/filechooserdialog.h>
+
 #include "mp3edit/src/directory.h"
 
 namespace Mp3Edit {
@@ -21,7 +24,18 @@ WindowMain::WindowMain(BaseObjectType* cobject,
 }
 
 void WindowMain::openDirDialog() {
-  // TODO
+  Gtk::FileChooserDialog dir_chooser("Select a directory",
+                                     Gtk::FILE_CHOOSER_ACTION_SELECT_FOLDER);
+  dir_chooser.set_transient_for(*this);
+
+  dir_chooser.add_button("Open", Gtk::RESPONSE_OK);
+  dir_chooser.add_button("Cancel", Gtk::RESPONSE_CANCEL);
+  dir_chooser.set_filename(g_get_home_dir());
+
+  if (dir_chooser.run() == Gtk::RESPONSE_OK) {
+    entry_dir_->set_text(dir_chooser.get_filename());
+    loadEntryDir();
+  }
 }
 
 void WindowMain::loadEntryDir() {
