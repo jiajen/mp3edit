@@ -20,6 +20,7 @@ enum class BitrateType {
   kConstant = 0,
   kVbr = 1,
   kLossless = 2,
+  kInvalid = 3,
 };
 
 enum class ChannelMode {
@@ -27,6 +28,8 @@ enum class ChannelMode {
   kJointStereo = 1,
   kDualChannel = 2,
   kMono = 3,
+  kLossless = 4,
+  kInvalid = 5,
 };
 
 FileType getAudioExtension(const std::string& filename);

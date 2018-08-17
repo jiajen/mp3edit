@@ -15,6 +15,8 @@
 #include "mp3edit/src/reader/tag/lyrics3.h"
 #include "mp3edit/src/reader/tag/vorbis_flac.h"
 #include "mp3edit/src/reader/tag/vorbis_ogg.h"
+#include "mp3edit/src/reader/tag/mp3_padding.h"
+#include "mp3edit/src/reader/audio/mp3.h"
 
 namespace Mp3Edit {
 namespace File {
@@ -221,6 +223,9 @@ void File::readMetaData(Filesystem::FileStream& file_stream) {
   } while (seek_start != audio_start_);
 
   switch (filetype_) {
+    case FileType::kMp3:
+      audio_start_ = Mp3Padding::seekHeaderEnd(file_stream, audio_start_);
+      break;
     case FileType::kFlac:
       seek = VorbisFlac::seekHeaderEnd(file_stream, audio_start_);
       if (seek != audio_start_) {
@@ -267,7 +272,39 @@ void File::readMetaData(Filesystem::FileStream& file_stream) {
   } while (seek_end != audio_end_);
 }
 
-void File::readAudioData(Filesystem::FileStream&) {
+void File::readAudioData(Filesystem::FileStream& file_stream) {
+  switch (filetype_) {
+    case FileType::kMp3:
+      if (!ReaderAudio::Mp3::getAudioProperties(file_stream, audio_start_,
+                                                audio_end_, bitrate_type_,
+                                                bitrate_, sampling_rate_,
+                                                channel_mode_)) {
+        is_valid_ = false;
+      }
+      break;
+    case FileType::kFlac:
+      bitrate_type_ = BitrateType::kLossless;
+      bitrate_ = -1;
+      sampling_rate_ = -1;
+      channel_mode_ = ChannelMode::kLossless;
+      break;
+    case FileType::kOgg:
+      /* TODO Handle OGG reading.
+      if (!ReaderAudio::Ogg::getAudioProperties(file_stream, audio_start_,
+                                                audio_end_, bitrate_type_,
+                                                bitrate_, sampling_rate_,
+                                                channel_mode_)) {
+        is_valid_ = false;
+      }
+      */
+      break;
+    default:
+      bitrate_type_ = BitrateType::kInvalid;
+      bitrate_ = -1;
+      sampling_rate_ = -1;
+      channel_mode_ = ChannelMode::kInvalid;
+      break;
+  }
   // TODO Read audio
 }
 
