@@ -16,6 +16,19 @@ const char* kSamplingRate = "Sampling Rate";
 const char* kChannelMode = "Channel Mode";
 const char* kFilepath = "Path";
 
+inline void appendColumn(TreeViewFiles* tree_view, const char* column_title,
+                         Gtk::TreeModelColumn<std::string>& column) {
+  tree_view->get_column(tree_view->append_column(
+    column_title, column)-1)->set_sort_column(column);
+}
+
+inline void appendColumnEditable(TreeViewFiles* tree_view,
+                                 const char* column_title,
+                                 Gtk::TreeModelColumn<std::string>& column) {
+  tree_view->get_column(tree_view->append_column_editable(
+    column_title, column)-1)->set_sort_column(column);
+}
+
 }  // namespace
 
 TreeViewFiles::Columns::Columns() {
@@ -36,14 +49,14 @@ TreeViewFiles::TreeViewFiles(BaseObjectType* cobject,
     : Gtk::TreeView(cobject), files_(files) {
   liststore_ = Gtk::ListStore::create(columns_);
   this->set_model(liststore_);
-  this->append_column_editable(kTitle, columns_.title());
-  this->append_column_editable(kArtist, columns_.artist());
-  this->append_column_editable(kAlbum, columns_.album());
-  this->append_column_editable(kTrack, columns_.track());
-  this->append_column(kBitrate, columns_.bitrate());
-  this->append_column(kSamplingRate, columns_.samplingRate());
-  this->append_column(kChannelMode, columns_.channelMode());
-  this->append_column(kFilepath, columns_.filepath());
+  appendColumnEditable(this, kTitle, columns_.title());
+  appendColumnEditable(this, kArtist, columns_.artist());
+  appendColumnEditable(this, kAlbum, columns_.album());
+  appendColumnEditable(this, kTrack, columns_.track());
+  appendColumn(this, kBitrate, columns_.bitrate());
+  appendColumn(this, kSamplingRate, columns_.samplingRate());
+  appendColumn(this, kChannelMode, columns_.channelMode());
+  appendColumn(this, kFilepath, columns_.filepath());
 }
 
 void TreeViewFiles::populateTreeView() {
