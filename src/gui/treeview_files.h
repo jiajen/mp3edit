@@ -5,6 +5,7 @@
 
 #include <gtkmm/builder.h>
 #include <gtkmm/treeview.h>
+#include <gtkmm/liststore.h>
 
 #include "mp3edit/src/file.h"
 
@@ -17,7 +18,12 @@ class TreeViewFiles: public Gtk::TreeView {
                 std::vector<File::File>& files);
   void populateTreeView();
  private:
+  class Columns;
+
   std::vector<File::File>& files_;
+
+  Glib::RefPtr<Gtk::ListStore> liststore_;
+  Columns columns_;
 };
 
 }  // namespace Gui

@@ -6,7 +6,9 @@ namespace Gui {
 TreeViewFiles::TreeViewFiles(BaseObjectType* cobject,
                              const Glib::RefPtr<Gtk::Builder>&,
                              std::vector<File::File>& files)
-    : Gtk::TreeView(cobject), files_(files) {}
+    : Gtk::TreeView(cobject), files_(files) {
+  liststore_ = Gtk::ListStore::create(columns_);
+}
 
 void TreeViewFiles::populateTreeView() {
   // TODO fill
