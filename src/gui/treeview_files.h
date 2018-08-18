@@ -24,6 +24,7 @@ class TreeViewFiles: public Gtk::TreeView {
     typedef Gtk::TreeModelColumn<std::string> Column;
    public:
     Columns();
+    inline Gtk::TreeModelColumn<int>& pos() { return pos_; }
     inline Column& title() { return title_; }
     inline Column& artist() { return artist_; }
     inline Column& album() { return album_; }

@@ -32,6 +32,7 @@ inline void appendColumnEditable(TreeViewFiles* tree_view,
 }  // namespace
 
 TreeViewFiles::Columns::Columns() {
+  add(pos_);
   add(title_);
   add(artist_);
   add(album_);
@@ -40,7 +41,6 @@ TreeViewFiles::Columns::Columns() {
   add(sampling_rate_);
   add(channel_mode_);
   add(filepath_);
-  add(pos_);
 }
 
 TreeViewFiles::TreeViewFiles(BaseObjectType* cobject,
@@ -49,10 +49,10 @@ TreeViewFiles::TreeViewFiles(BaseObjectType* cobject,
     : Gtk::TreeView(cobject), files_(files) {
   liststore_ = Gtk::ListStore::create(columns_);
   this->set_model(liststore_);
+  appendColumnEditable(this, kTrack, columns_.track());
   appendColumnEditable(this, kTitle, columns_.title());
   appendColumnEditable(this, kArtist, columns_.artist());
   appendColumnEditable(this, kAlbum, columns_.album());
-  appendColumnEditable(this, kTrack, columns_.track());
   appendColumn(this, kBitrate, columns_.bitrate());
   appendColumn(this, kSamplingRate, columns_.samplingRate());
   appendColumn(this, kChannelMode, columns_.channelMode());
@@ -60,8 +60,10 @@ TreeViewFiles::TreeViewFiles(BaseObjectType* cobject,
 }
 
 void TreeViewFiles::populateTreeView() {
+  int n = 0;
   for (const File::File& file: files_) {
     Gtk::TreeModel::Row row = *(liststore_->append());
+    row[columns_.pos()] = n++;
     row[columns_.title()] = file.getTitle();
     row[columns_.artist()] = file.getArtist();
     row[columns_.album()] = file.getAlbum();
