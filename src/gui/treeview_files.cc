@@ -2,7 +2,8 @@
 
 #include <algorithm>
 
-#include <gtkmm/liststore.h>
+#include <gtkmm/cellrenderer.h>
+#include <gtkmm/cellrenderertext.h>
 
 namespace Mp3Edit {
 namespace Gui {
@@ -24,11 +25,18 @@ inline void appendColumn(TreeViewFiles* tree_view, const char* column_title,
     column_title, column)-1)->set_sort_column(column);
 }
 
-inline void appendColumnEditable(TreeViewFiles* tree_view,
-                                 const char* column_title,
-                                 Gtk::TreeModelColumn<std::string>& column) {
-  tree_view->get_column(tree_view->append_column_editable(
-    column_title, column)-1)->set_sort_column(column);
+void appendColumnEditable(TreeViewFiles* tree_view,
+                          const char* column_title,
+                          Gtk::TreeModelColumn<std::string>& column,
+                          void (TreeViewFiles::*function_ptr)(
+                            const Glib::ustring&, const Glib::ustring&)) {
+  int idx = tree_view->append_column_editable(column_title, column)-1;
+  tree_view->get_column(idx)->set_sort_column(column);
+
+  Gtk::CellRenderer* renderer = tree_view->get_column_cell_renderer(idx);
+  Gtk::CellRendererText* renderer_text = (Gtk::CellRendererText*)(renderer);
+  renderer_text->signal_edited().connect(
+    sigc::mem_fun(*tree_view, function_ptr));
 }
 
 }  // namespace
@@ -73,10 +81,14 @@ TreeViewFiles::TreeViewFiles(BaseObjectType* cobject,
   liststore_ = Gtk::ListStore::create(columns_);
   this->set_model(liststore_);
 
-  appendColumnEditable(this, kTrack, columns_.track());
-  appendColumnEditable(this, kTitle, columns_.title());
-  appendColumnEditable(this, kArtist, columns_.artist());
-  appendColumnEditable(this, kAlbum, columns_.album());
+  appendColumnEditable(this, kTrack, columns_.track(),
+                       &TreeViewFiles::updateEditTypeRow);
+  appendColumnEditable(this, kTitle, columns_.title(),
+                       &TreeViewFiles::updateEditTypeRow);
+  appendColumnEditable(this, kArtist, columns_.artist(),
+                       &TreeViewFiles::updateEditTypeRow);
+  appendColumnEditable(this, kAlbum, columns_.album(),
+                       &TreeViewFiles::updateEditTypeRow);
   appendColumn(this, kBitrate, columns_.bitrate());
   appendColumn(this, kSamplingRate, columns_.samplingRate());
   appendColumn(this, kChannelMode, columns_.channelMode());
@@ -88,7 +100,8 @@ TreeViewFiles::TreeViewFiles(BaseObjectType* cobject,
   edit_type_ = EditType::kUnedited;
 }
 
-void TreeViewFiles::updateEditTypeRow() {
+void TreeViewFiles::updateEditTypeRow(const Glib::ustring&,
+                                      const Glib::ustring&) {
   if (!disable_signals && current_row_) edit_type_ = EditType::kRow;
 }
 
