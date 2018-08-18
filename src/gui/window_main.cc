@@ -26,7 +26,7 @@ WindowMain::WindowMain(BaseObjectType* cobject,
 
   builder_->get_widget("entry_dir", entry_dir_);
 
-  builder_->get_widget_derived("gtk_treeview_files", treeview_files_);
+  builder_->get_widget_derived("gtk_treeview_files", treeview_files_, files_);
 }
 
 void WindowMain::openDirDialog() {
