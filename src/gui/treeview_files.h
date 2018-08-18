@@ -85,6 +85,9 @@ class TreeViewFiles: public Gtk::TreeView {
   // To remember what was edited
   EditType edit_type_;
   Gtk::TreeModel::iterator current_row_;
+
+  // UI
+  bool disable_signals;
 };
 
 }  // namespace Gui
