@@ -36,15 +36,14 @@ TreeViewFiles::TreeViewFiles(BaseObjectType* cobject,
     : Gtk::TreeView(cobject), files_(files) {
   liststore_ = Gtk::ListStore::create(columns_);
   this->set_model(liststore_);
-  this->append_column(kTitle, columns_.title());
-  this->append_column(kArtist, columns_.artist());
-  this->append_column(kAlbum, columns_.album());
-  this->append_column(kTrack, columns_.track());
+  this->append_column_editable(kTitle, columns_.title());
+  this->append_column_editable(kArtist, columns_.artist());
+  this->append_column_editable(kAlbum, columns_.album());
+  this->append_column_editable(kTrack, columns_.track());
   this->append_column(kBitrate, columns_.bitrate());
   this->append_column(kSamplingRate, columns_.samplingRate());
   this->append_column(kChannelMode, columns_.channelMode());
   this->append_column(kFilepath, columns_.filepath());
-
 }
 
 void TreeViewFiles::populateTreeView() {
