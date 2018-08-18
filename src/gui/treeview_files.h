@@ -25,6 +25,11 @@ class TreeViewFiles: public Gtk::TreeView {
                 Gtk::Entry* entry_track_num, Gtk::Entry* entry_track_denum);
   void populateTreeView();
  private:
+  enum class EditType {
+    kRow = 0,
+    kEntry = 1,
+    kUnedited = 2,
+  };
   class Columns : public Gtk::TreeModel::ColumnRecord {
     typedef Gtk::TreeModelColumn<std::string> Column;
    public:
@@ -50,6 +55,18 @@ class TreeViewFiles: public Gtk::TreeView {
     Column filepath_;
   };
 
+  void parseTrackString(const std::string& track,
+                        int& track_num, int& track_denum);
+
+  void getRowData(const Gtk::TreeModel::Row& row,
+                  std::string& title, std::string& artist, std::string& album,
+                  int& track_num, int& track_denum);
+
+  void getEntryData(std::string& title, std::string& artist, std::string& album,
+                    int& track_num, int& track_denum);
+
+  void storeCurrentEditsInFileMem();
+
   void onRowSelect();
 
   std::vector<File::File>& files_;
@@ -58,11 +75,16 @@ class TreeViewFiles: public Gtk::TreeView {
   Glib::RefPtr<Gtk::TreeSelection> treeselection_;
   Columns columns_;
 
+
   Gtk::Entry* entry_song_title_;
   Gtk::Entry* entry_song_artist_;
   Gtk::Entry* entry_song_album_;
   Gtk::Entry* entry_song_track_num_;
   Gtk::Entry* entry_song_track_denum_;
+
+  // To remember what was edited
+  EditType edit_type_;
+  Gtk::TreeModel::iterator current_row_;
 };
 
 }  // namespace Gui
