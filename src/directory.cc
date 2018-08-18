@@ -32,7 +32,6 @@ std::vector<File::File> getFiles(const std::string& directory,
                                  bool read_audio_data) {
   using std::filesystem::directory_iterator;
   using std::filesystem::recursive_directory_iterator;
-
   std::vector<File::File> files;
   if (recurse) {
     for (const auto& entry: recursive_directory_iterator(directory))
@@ -41,12 +40,6 @@ std::vector<File::File> getFiles(const std::string& directory,
     for (const auto& entry: directory_iterator(directory))
       pushFileIfValid(entry, read_audio_data, files);
   }
-
-  using File::File;
-  sort(files.begin(), files.end(), [](const File& lhs, const File& rhs) {
-    return lhs.getFilepath() < rhs.getFilepath();
-  });
-
   return files;
 }
 
