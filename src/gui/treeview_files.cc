@@ -57,8 +57,17 @@ TreeViewFiles::TreeViewFiles(BaseObjectType* cobject,
       entry_song_track_num_(entry_track_num),
       entry_song_track_denum_(entry_track_denum) {
   treeselection_ = this->get_selection();
-  treeselection_->signal_changed().connect(
-    sigc::mem_fun(*this, &TreeViewFiles::onRowSelect));
+
+  entry_title->signal_changed().connect(
+    sigc::mem_fun(*this, &TreeViewFiles::updateEditTypeEntry));
+  entry_artist->signal_changed().connect(
+    sigc::mem_fun(*this, &TreeViewFiles::updateEditTypeEntry));
+  entry_album->signal_changed().connect(
+    sigc::mem_fun(*this, &TreeViewFiles::updateEditTypeEntry));
+  entry_track_num->signal_changed().connect(
+    sigc::mem_fun(*this, &TreeViewFiles::updateEditTypeEntry));
+  entry_track_denum->signal_changed().connect(
+    sigc::mem_fun(*this, &TreeViewFiles::updateEditTypeEntry));
 
   liststore_ = Gtk::ListStore::create(columns_);
   this->set_model(liststore_);
@@ -72,10 +81,28 @@ TreeViewFiles::TreeViewFiles(BaseObjectType* cobject,
   appendColumn(this, kChannelMode, columns_.channelMode());
   appendColumn(this, kFilepath, columns_.filepath());
 
+  treeselection_->signal_changed().connect(
+    sigc::mem_fun(*this, &TreeViewFiles::onRowSelect));
+
   edit_type_ = EditType::kUnedited;
 }
 
+void TreeViewFiles::updateEditTypeRow() {
+  if (current_row_) edit_type_ = EditType::kRow;
+}
+
+void TreeViewFiles::updateEditTypeEntry() {
+  if (current_row_) edit_type_ = EditType::kEntry;
+}
+
 void TreeViewFiles::populateTreeView() {
+  current_row_ = Gtk::TreeModel::iterator();
+  edit_type_ = EditType::kUnedited;
+  entry_song_title_->set_text(Glib::ustring());
+  entry_song_artist_->set_text(Glib::ustring());
+  entry_song_album_->set_text(Glib::ustring());
+  entry_song_track_num_->set_text(Glib::ustring());
+  entry_song_track_denum_->set_text(Glib::ustring());
   liststore_->clear();
   int n = 0;
   for (const File::File& file: files_) {

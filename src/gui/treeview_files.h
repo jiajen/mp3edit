@@ -55,6 +55,9 @@ class TreeViewFiles: public Gtk::TreeView {
     Column filepath_;
   };
 
+  void updateEditTypeRow();
+  void updateEditTypeEntry();
+
   void getRowData(const Gtk::TreeModel::Row& row,
                   std::string& title, std::string& artist,
                   std::string& album, std::string& track);
