@@ -4,8 +4,6 @@
 
 #include <gtkmm/liststore.h>
 
-#include "mp3edit/src/sanitiser.h"
-
 namespace Mp3Edit {
 namespace Gui {
 
@@ -94,19 +92,13 @@ void TreeViewFiles::populateTreeView() {
   }
 }
 
-void TreeViewFiles::parseTrackString(const std::string& track,
-                                     int& track_num, int& track_denum) {
-  // TODO
-}
-
 void TreeViewFiles::getRowData(const Gtk::TreeModel::Row& row,
                                std::string& title, std::string& artist,
-                               std::string& album, int& track_num,
-                               int& track_denum) {
+                               std::string& album, std::string& track) {
   title = row[columns_.title()];
   artist = row[columns_.artist()];
   album = row[columns_.album()];
-  parseTrackString(row[columns_.track()], track_num, track_denum);
+  track = row[columns_.track()];
 }
 
 void TreeViewFiles::getEntryData(std::string& title, std::string& artist,
@@ -128,30 +120,26 @@ void TreeViewFiles::getEntryData(std::string& title, std::string& artist,
 }
 
 void TreeViewFiles::storeCurrentEditsInFileMem() {
-  if (!current_row_) return;
+  if (!current_row_ || edit_type_ == EditType::kUnedited) return;
+  int idx = (*current_row_)[columns_.pos()];
   std::string title;
   std::string artist;
   std::string album;
+  std::string track;
   int track_num;
   int track_denum;
   switch (edit_type_) {
     case EditType::kRow:
-      getRowData(*current_row_, title, artist, album, track_num, track_denum);
+      getRowData(*current_row_, title, artist, album, track);
+      files_[idx].updateFields(title, artist, album, track);
       break;
     case EditType::kEntry:
       getEntryData(title, artist, album, track_num, track_denum);
+      files_[idx].updateFields(title, artist, album, track_num, track_denum);
       break;
-    case EditType::kUnedited:
-      return;
+    default:
       break;
   }
-  Sanitiser::sanitiseString(title);
-  Sanitiser::sanitiseString(artist);
-  Sanitiser::sanitiseString(album);
-  Sanitiser::sanitiseTrack(track_num, track_denum);
-
-  int idx = (*current_row_)[columns_.pos()];
-  // TODO store here files_[idx];
 }
 
 void TreeViewFiles::onRowSelect() {

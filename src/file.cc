@@ -77,6 +77,11 @@ std::string renameFile(const std::string& input_path,
   return output_path.string();
 }
 
+void parseTrackString(const std::string& track,
+                      int& track_num, int& track_denum) {
+  // TODO
+}
+
 }  // namespace
 
 FileType getAudioExtension(const std::string& filename) {
@@ -175,6 +180,31 @@ std::string File::getChannelMode() const {
       return kInvalidText;
       break;
   }
+}
+
+void File::updateFields(const std::string& title, const std::string& artist,
+                        const std::string& album, const std::string& track) {
+  int track_num = -1;
+  int track_denum = -1;
+  parseTrackString(track, track_num, track_denum);
+  updateFields(title, artist, album, track_num, track_denum);
+}
+
+void File::updateFields(const std::string& title, const std::string& artist,
+                        const std::string& album, int track_num,
+                        int track_denum) {
+  std::string title_sanitised = title;
+  std::string artist_sanitised = artist;
+  std::string album_sanitised = album;
+  Sanitiser::sanitiseString(title_sanitised);
+  Sanitiser::sanitiseString(artist_sanitised);
+  Sanitiser::sanitiseString(album_sanitised);
+  Sanitiser::sanitiseTrack(track_num, track_denum);
+  title_ = title_sanitised;
+  artist_ = artist_sanitised;
+  album_ = album_sanitised;
+  track_num_ = track_num;
+  track_denum_ = track_denum;
 }
 
 void File::saveFileChanges(bool rename_file) {

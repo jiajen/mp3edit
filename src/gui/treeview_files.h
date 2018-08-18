@@ -55,12 +55,9 @@ class TreeViewFiles: public Gtk::TreeView {
     Column filepath_;
   };
 
-  void parseTrackString(const std::string& track,
-                        int& track_num, int& track_denum);
-
   void getRowData(const Gtk::TreeModel::Row& row,
-                  std::string& title, std::string& artist, std::string& album,
-                  int& track_num, int& track_denum);
+                  std::string& title, std::string& artist,
+                  std::string& album, std::string& track);
 
   void getEntryData(std::string& title, std::string& artist, std::string& album,
                     int& track_num, int& track_denum);
@@ -74,7 +71,6 @@ class TreeViewFiles: public Gtk::TreeView {
   Glib::RefPtr<Gtk::ListStore> liststore_;
   Glib::RefPtr<Gtk::TreeSelection> treeselection_;
   Columns columns_;
-
 
   Gtk::Entry* entry_song_title_;
   Gtk::Entry* entry_song_artist_;
