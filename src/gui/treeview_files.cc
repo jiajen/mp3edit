@@ -142,10 +142,22 @@ void TreeViewFiles::storeCurrentEditsInFileMem() {
   }
 }
 
+void TreeViewFiles::updateCurrentRowFromFileMem() {
+  Gtk::TreeModel::Row row = *current_row_;
+  int idx = row[columns_.pos()];
+  row[columns_.title()] = files_[idx].getTitle();
+  row[columns_.artist()] = files_[idx].getArtist();
+  row[columns_.album()] = files_[idx].getAlbum();
+  row[columns_.track()] = files_[idx].getTrack();
+}
+
 void TreeViewFiles::onRowSelect() {
   storeCurrentEditsInFileMem();
+  if (edit_type_ == EditType::kEntry) updateCurrentRowFromFileMem();
+
   current_row_ = treeselection_->get_selected();
   if (!current_row_) return;
+  edit_type_ = EditType::kUnedited;
 
   using std::to_string;
   int idx = (*current_row_)[columns_.pos()];

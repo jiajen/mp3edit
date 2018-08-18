@@ -64,6 +64,7 @@ class TreeViewFiles: public Gtk::TreeView {
 
   void storeCurrentEditsInFileMem();
 
+  void updateCurrentRowFromFileMem();
   void onRowSelect();
 
   std::vector<File::File>& files_;
