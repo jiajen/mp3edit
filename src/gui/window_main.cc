@@ -26,7 +26,16 @@ WindowMain::WindowMain(BaseObjectType* cobject,
 
   builder_->get_widget("entry_dir", entry_dir_);
 
-  builder_->get_widget_derived("gtk_treeview_files", treeview_files_, files_);
+  builder_->get_widget("entry_song_title", entry_song_title_);
+  builder_->get_widget("entry_song_artist", entry_song_artist_);
+  builder_->get_widget("entry_song_album", entry_song_album_);
+  builder_->get_widget("entry_song_track_num", entry_song_track_num_);
+  builder_->get_widget("entry_song_track_denum", entry_song_track_denum_);
+
+  builder_->get_widget_derived("gtk_treeview_files", treeview_files_, files_,
+                               entry_song_title_, entry_song_artist_,
+                               entry_song_album_, entry_song_track_num_,
+                               entry_song_track_denum_);
 }
 
 void WindowMain::openDirDialog() {

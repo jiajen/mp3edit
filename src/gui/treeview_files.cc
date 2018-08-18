@@ -45,10 +45,22 @@ TreeViewFiles::Columns::Columns() {
 
 TreeViewFiles::TreeViewFiles(BaseObjectType* cobject,
                              const Glib::RefPtr<Gtk::Builder>&,
-                             std::vector<File::File>& files)
-    : Gtk::TreeView(cobject), files_(files) {
+                             std::vector<File::File>& files,
+                             Gtk::Entry* entry_title, Gtk::Entry* entry_artist,
+                             Gtk::Entry* entry_album,
+                             Gtk::Entry* entry_track_num,
+                             Gtk::Entry* entry_track_denum)
+    : Gtk::TreeView(cobject), files_(files), entry_song_title_(entry_title),
+      entry_song_artist_(entry_artist), entry_song_album_(entry_album),
+      entry_song_track_num_(entry_track_num),
+      entry_song_track_denum_(entry_track_denum) {
+  treeselection_ = this->get_selection();
+  treeselection_->signal_changed().connect(
+    sigc::mem_fun(*this, &TreeViewFiles::onRowSelect));
+
   liststore_ = Gtk::ListStore::create(columns_);
   this->set_model(liststore_);
+
   appendColumnEditable(this, kTrack, columns_.track());
   appendColumnEditable(this, kTitle, columns_.title());
   appendColumnEditable(this, kArtist, columns_.artist());
@@ -74,6 +86,16 @@ void TreeViewFiles::populateTreeView() {
     row[columns_.channelMode()] = file.getChannelMode();
     row[columns_.filepath()] = file.getFilepath();
   }
+}
+
+void TreeViewFiles::onRowSelect() {
+  Gtk::TreeModel::iterator it = treeselection_->get_selected();
+  if (!it) return;
+  Gtk::TreeModel::Row row = *it;
+  entry_song_title_->set_text((Glib::ustring)row[columns_.title()]);
+  entry_song_artist_->set_text((Glib::ustring)row[columns_.artist()]);
+  entry_song_album_->set_text((Glib::ustring)row[columns_.album()]);
+  // TODO handle num and denum by separating
 }
 
 }  // namespace Gui
