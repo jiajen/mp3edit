@@ -21,18 +21,27 @@ class TreeViewFiles: public Gtk::TreeView {
   void populateTreeView();
  private:
   class Columns : public Gtk::TreeModel::ColumnRecord {
+    typedef Gtk::TreeModelColumn<std::string> Column;
    public:
     Columns();
+    inline Column& title() { return title_; }
+    inline Column& artist() { return artist_; }
+    inline Column& album() { return album_; }
+    inline Column& track() { return track_; }
+    inline Column& bitrate() { return bitrate_; }
+    inline Column& samplingRate() { return sampling_rate_; }
+    inline Column& channelMode() { return channel_mode_; }
+    inline Column& filepath() { return filepath_; }
    private:
     Gtk::TreeModelColumn<int> pos_;
-    Gtk::TreeModelColumn<std::string> filepath_;
-    Gtk::TreeModelColumn<std::string> title_;
-    Gtk::TreeModelColumn<std::string> artist_;
-    Gtk::TreeModelColumn<std::string> album_;
-    Gtk::TreeModelColumn<std::string> track_;
-    Gtk::TreeModelColumn<std::string> bitrate_;
-    Gtk::TreeModelColumn<std::string> sampling_rate_;
-    Gtk::TreeModelColumn<std::string> channel_mode_;
+    Column title_;
+    Column artist_;
+    Column album_;
+    Column track_;
+    Column bitrate_;
+    Column sampling_rate_;
+    Column channel_mode_;
+    Column filepath_;
   };
 
   std::vector<File::File>& files_;
