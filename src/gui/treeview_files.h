@@ -15,6 +15,7 @@ class TreeViewFiles: public Gtk::TreeView {
  public:
   TreeViewFiles(BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>&,
                 std::vector<File::File>& files);
+  void populateTreeView();
  private:
   std::vector<File::File>& files_;
 };
