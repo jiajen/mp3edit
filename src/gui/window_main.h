@@ -10,6 +10,7 @@
 #include <gtkmm/entry.h>
 
 #include "mp3edit/src/file.h"
+#include "mp3edit/src/gui/treeview_files.h"
 
 namespace Mp3Edit {
 namespace Gui {
@@ -30,6 +31,7 @@ class WindowMain: public Gtk::Window {
   Gtk::Button* btn_dir_open_;
   Gtk::Button* btn_dir_refresh_;
   Gtk::Entry* entry_dir_;
+  TreeViewFiles* treeview_files_;
 };
 
 }  // namespace Gui

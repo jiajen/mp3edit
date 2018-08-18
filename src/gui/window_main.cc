@@ -25,6 +25,8 @@ WindowMain::WindowMain(BaseObjectType* cobject,
     sigc::mem_fun(*this, &WindowMain::loadEntryDir));
 
   builder_->get_widget("entry_dir", entry_dir_);
+
+  builder_->get_widget_derived("gtk_treeview_files", treeview_files_);
 }
 
 void WindowMain::openDirDialog() {
