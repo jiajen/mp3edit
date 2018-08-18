@@ -60,6 +60,7 @@ TreeViewFiles::TreeViewFiles(BaseObjectType* cobject,
 }
 
 void TreeViewFiles::populateTreeView() {
+  liststore_->clear();
   int n = 0;
   for (const File::File& file: files_) {
     Gtk::TreeModel::Row row = *(liststore_->append());
