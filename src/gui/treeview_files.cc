@@ -64,31 +64,31 @@ TreeViewFiles::TreeViewFiles(BaseObjectType* cobject,
       entry_song_artist_(entry_artist), entry_song_album_(entry_album),
       entry_song_track_num_(entry_track_num),
       entry_song_track_denum_(entry_track_denum),
-      disable_signals(true) {
+      disable_signals_(true) {
   treeselection_ = this->get_selection();
 
   entry_title->signal_changed().connect(
-    sigc::mem_fun(*this, &TreeViewFiles::updateEditTypeEntry));
+    sigc::mem_fun(*this, &TreeViewFiles::onEditTypeEntry));
   entry_artist->signal_changed().connect(
-    sigc::mem_fun(*this, &TreeViewFiles::updateEditTypeEntry));
+    sigc::mem_fun(*this, &TreeViewFiles::onEditTypeEntry));
   entry_album->signal_changed().connect(
-    sigc::mem_fun(*this, &TreeViewFiles::updateEditTypeEntry));
+    sigc::mem_fun(*this, &TreeViewFiles::onEditTypeEntry));
   entry_track_num->signal_changed().connect(
-    sigc::mem_fun(*this, &TreeViewFiles::updateEditTypeEntry));
+    sigc::mem_fun(*this, &TreeViewFiles::onEditTypeEntry));
   entry_track_denum->signal_changed().connect(
-    sigc::mem_fun(*this, &TreeViewFiles::updateEditTypeEntry));
+    sigc::mem_fun(*this, &TreeViewFiles::onEditTypeEntry));
 
   liststore_ = Gtk::ListStore::create(columns_);
   this->set_model(liststore_);
 
   appendColumnEditable(this, kTrack, columns_.track(),
-                       &TreeViewFiles::updateEditTypeRow);
+                       &TreeViewFiles::onEditTypeRow);
   appendColumnEditable(this, kTitle, columns_.title(),
-                       &TreeViewFiles::updateEditTypeRow);
+                       &TreeViewFiles::onEditTypeRow);
   appendColumnEditable(this, kArtist, columns_.artist(),
-                       &TreeViewFiles::updateEditTypeRow);
+                       &TreeViewFiles::onEditTypeRow);
   appendColumnEditable(this, kAlbum, columns_.album(),
-                       &TreeViewFiles::updateEditTypeRow);
+                       &TreeViewFiles::onEditTypeRow);
   appendColumn(this, kBitrate, columns_.bitrate());
   appendColumn(this, kSamplingRate, columns_.samplingRate());
   appendColumn(this, kChannelMode, columns_.channelMode());
@@ -100,17 +100,19 @@ TreeViewFiles::TreeViewFiles(BaseObjectType* cobject,
   edit_type_ = EditType::kUnedited;
 }
 
-void TreeViewFiles::updateEditTypeRow(const Glib::ustring&,
-                                      const Glib::ustring&) {
-  if (!disable_signals && current_row_) edit_type_ = EditType::kRow;
+void TreeViewFiles::onEditTypeRow(const Glib::ustring&,
+                                  const Glib::ustring&) {
+  if (disable_signals_ || !current_row_) return;
+  edit_type_ = EditType::kRow;
 }
 
-void TreeViewFiles::updateEditTypeEntry() {
-  if (!disable_signals && current_row_) edit_type_ = EditType::kEntry;
+void TreeViewFiles::onEditTypeEntry() {
+  if (disable_signals_ || !current_row_) return;
+  edit_type_ = EditType::kEntry;
 }
 
 void TreeViewFiles::populateTreeView() {
-  disable_signals = true;
+  disable_signals_ = true;
   current_row_ = Gtk::TreeModel::iterator();
   edit_type_ = EditType::kUnedited;
   liststore_->clear();
@@ -132,7 +134,7 @@ void TreeViewFiles::populateTreeView() {
   entry_song_album_->set_text(Glib::ustring());
   entry_song_track_num_->set_text(Glib::ustring());
   entry_song_track_denum_->set_text(Glib::ustring());
-  disable_signals = false;
+  disable_signals_ = false;
 }
 
 void TreeViewFiles::getRowData(const Gtk::TreeModel::Row& row,
@@ -195,14 +197,8 @@ void TreeViewFiles::updateCurrentRowFromFileMem() {
   row[columns_.track()] = files_[idx].getTrack();
 }
 
-void TreeViewFiles::onRowSelect() {
-  if (disable_signals) return;
-  storeCurrentEditsInFileMem();
-  updateCurrentRowFromFileMem();
-  current_row_ = treeselection_->get_selected();
+void TreeViewFiles::updateEntryFromFileMem() {
   if (!current_row_) return;
-  edit_type_ = EditType::kUnedited;
-
   using std::to_string;
   int idx = (*current_row_)[columns_.pos()];
   int track_num = files_[idx].getTrackNum();
@@ -220,6 +216,15 @@ void TreeViewFiles::onRowSelect() {
   } else {
     entry_song_track_denum_->set_text(Glib::ustring());
   }
+}
+
+void TreeViewFiles::onRowSelect() {
+  if (disable_signals_) return;
+  storeCurrentEditsInFileMem();
+  updateCurrentRowFromFileMem();
+  current_row_ = treeselection_->get_selected();
+  edit_type_ = EditType::kUnedited;
+  updateEntryFromFileMem();
 }
 
 }  // namespace Gui

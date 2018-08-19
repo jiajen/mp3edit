@@ -55,9 +55,9 @@ class TreeViewFiles: public Gtk::TreeView {
     Column filepath_;
   };
 
-  void updateEditTypeRow(const Glib::ustring&,
-                         const Glib::ustring&);
-  void updateEditTypeEntry();
+  void onEditTypeRow(const Glib::ustring&,
+                     const Glib::ustring&);
+  void onEditTypeEntry();
 
   void getRowData(const Gtk::TreeModel::Row& row,
                   std::string& title, std::string& artist,
@@ -69,6 +69,7 @@ class TreeViewFiles: public Gtk::TreeView {
   void storeCurrentEditsInFileMem();
 
   void updateCurrentRowFromFileMem();
+  void updateEntryFromFileMem();
   void onRowSelect();
 
   std::vector<File::File>& files_;
@@ -88,7 +89,7 @@ class TreeViewFiles: public Gtk::TreeView {
   Gtk::TreeModel::iterator current_row_;
 
   // UI
-  bool disable_signals;
+  bool disable_signals_;
 };
 
 }  // namespace Gui
