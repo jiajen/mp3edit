@@ -38,8 +38,8 @@ Bytes intToBEndian(unsigned int val, int length, bool is_sync_safe);
 // Throws an exception on failure.
 Bytes intToLEndian(unsigned int val, int length, bool is_sync_safe);
 
-void bytesToString(Bytes::const_iterator it_begin, Bytes::const_iterator it_end,
-                   std::string& output);
+template<class T>
+void bytesToString(T it_begin, T it_end, std::string& output);
 
 template<class T>
 void bytesToTrack(T it_begin, T it_end, int& track_num, int& track_denum);
