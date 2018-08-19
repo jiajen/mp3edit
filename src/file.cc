@@ -117,7 +117,14 @@ File::File(const std::string& filepath, FileType filetype,
     filesize_ = file_stream.tellg();
 
     readMetaData(file_stream);
-    if (read_audio_data) readAudioData(file_stream);
+    if (read_audio_data) {
+      readAudioData(file_stream);
+    } else {
+      bitrate_type_ = BitrateType::kInvalid;
+      bitrate_ = -1;
+      sampling_rate_ = -1;
+      channel_mode_ = ChannelMode::kInvalid;
+    }
   } catch (const std::exception&) {
     is_valid_ = false;
   }
