@@ -104,6 +104,9 @@ void TreeViewFiles::onEditTypeRow(const Glib::ustring&,
                                   const Glib::ustring&) {
   if (disable_signals_ || !current_row_) return;
   edit_type_ = EditType::kRow;
+  storeCurrentEditsInFileMem();
+  updateCurrentRowFromFileMem();
+  updateEntryFromFileMem();
 }
 
 void TreeViewFiles::onEditTypeEntry() {
@@ -189,7 +192,7 @@ void TreeViewFiles::storeCurrentEditsInFileMem() {
 }
 
 void TreeViewFiles::updateCurrentRowFromFileMem() {
-  if (!current_row_ || edit_type_ == EditType::kUnedited) return;
+  if (!current_row_) return;
   Gtk::TreeModel::Row row = *current_row_;
   int idx = row[columns_.pos()];
   row[columns_.title()] = files_[idx].getTitle();
