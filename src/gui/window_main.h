@@ -41,6 +41,7 @@ class WindowMain: public Gtk::Window {
   Gtk::Entry* entry_song_track_denum_;
   Gtk::Button* btn_song_save_single_;
   Gtk::Button* btn_song_save_all_;
+  Gtk::CheckButton* checkbox_rename_file_;
 };
 
 }  // namespace Gui

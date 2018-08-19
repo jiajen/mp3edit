@@ -158,7 +158,7 @@ void TreeViewFiles::populateTreeView() {
   disable_signals_ = false;
 }
 
-void TreeViewFiles::saveSelectedFile(int pos) {
+void TreeViewFiles::saveSelectedFile(int pos, bool rename_file) {
   if (pos == -1) {
     if (current_row_) {
       pos = (*current_row_)[columns_.pos()];
@@ -167,16 +167,16 @@ void TreeViewFiles::saveSelectedFile(int pos) {
       return;
     }
   }
-  files_[pos].saveFileChanges(true);
+  files_[pos].saveFileChanges(rename_file);
   // TODO update filepath
 }
 
-void TreeViewFiles::saveAllFiles() {
+void TreeViewFiles::saveAllFiles(bool rename_file) {
   if (current_row_) storeAndUpdateEntryData();
   Gtk::TreeModel::Children children = liststore_->children();
   for (auto it = children.begin(); it != children.end(); it++) {
     Gtk::TreeModel::Row row = *it;
-    saveSelectedFile(row[columns_.pos()]);
+    saveSelectedFile(row[columns_.pos()], rename_file);
   }
 }
 

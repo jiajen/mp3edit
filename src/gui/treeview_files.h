@@ -27,8 +27,8 @@ class TreeViewFiles: public Gtk::TreeView {
   // Pos corresponds to the position of the file in files_
   // If -1, this function will try to save the current selected file
   // only if it exists or else this function does nothing.
-  void saveSelectedFile(int pos);
-  void saveAllFiles();
+  void saveSelectedFile(int pos, bool rename_file);
+  void saveAllFiles(bool rename_file);
  private:
   enum class EditType {
     kRow = 0,

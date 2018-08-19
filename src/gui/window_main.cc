@@ -48,6 +48,8 @@ WindowMain::WindowMain(BaseObjectType* cobject,
   builder_->get_widget("btn_song_save_all", btn_song_save_all_);
   btn_song_save_all_->signal_clicked().connect(
     sigc::mem_fun(*this, &WindowMain::onSaveAllFilesBtnPress));
+
+  builder_->get_widget("checkbox_rename_file", checkbox_rename_file_);
 }
 
 void WindowMain::openDirDialog() {
@@ -78,11 +80,11 @@ void WindowMain::loadEntryDir() {
 }
 
 void WindowMain::onSaveFileBtnPress() {
-  treeview_files_->saveSelectedFile(-1);
+  treeview_files_->saveSelectedFile(-1, checkbox_rename_file_->get_active());
 }
 
 void WindowMain::onSaveAllFilesBtnPress() {
-  treeview_files_->saveAllFiles();
+  treeview_files_->saveAllFiles(checkbox_rename_file_->get_active());
 }
 
 }  // namespace Gui
