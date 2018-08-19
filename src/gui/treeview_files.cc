@@ -159,11 +159,21 @@ void TreeViewFiles::populateTreeView() {
 }
 
 void TreeViewFiles::saveSelectedFile(int pos) {
-  // TODO
+  if (pos == -1) {
+    if (current_row_) {
+      pos = (*current_row_)[columns_.pos()];
+      storeAndUpdateEntryData();
+    } else {
+      return;
+    }
+  }
+  files_[pos].saveFileChanges(true);
+  // TODO update filepath
 }
 
 void TreeViewFiles::saveAllFiles() {
-  // TODO
+  if (current_row_) storeAndUpdateEntryData();
+  // TODO loop
 }
 
 void TreeViewFiles::getRowData(const Gtk::TreeModel::Row& row,
