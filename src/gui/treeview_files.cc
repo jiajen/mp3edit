@@ -185,6 +185,7 @@ void TreeViewFiles::storeCurrentEditsInFileMem() {
     default:
       break;
   }
+  edit_type_ = EditType::kUnedited;
 }
 
 void TreeViewFiles::updateCurrentRowFromFileMem() {
@@ -223,7 +224,6 @@ void TreeViewFiles::onRowSelect() {
   storeCurrentEditsInFileMem();
   updateCurrentRowFromFileMem();
   current_row_ = treeselection_->get_selected();
-  edit_type_ = EditType::kUnedited;
   updateEntryFromFileMem();
 }
 
