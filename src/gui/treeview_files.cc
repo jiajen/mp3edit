@@ -123,6 +123,10 @@ void TreeViewFiles::onEditTypeEntry() {
 }
 
 void TreeViewFiles::onEntryEnterPress() {
+  storeAndUpdateEntryData();
+}
+
+void TreeViewFiles::storeAndUpdateEntryData() {
   storeCurrentEditsInFileMem();
   updateCurrentRowFromFileMem();
   updateEntryFromFileMem();
@@ -152,6 +156,29 @@ void TreeViewFiles::populateTreeView() {
   entry_song_track_num_->set_text(Glib::ustring());
   entry_song_track_denum_->set_text(Glib::ustring());
   disable_signals_ = false;
+}
+
+void TreeViewFiles::saveSelectedFile(bool rename_file) {
+  if (!current_row_) return;
+  storeAndUpdateEntryData();
+  Gtk::TreeModel::Row row = *current_row_;
+  saveSelectedFile(row, rename_file);
+}
+
+void TreeViewFiles::saveSelectedFile(Gtk::TreeModel::Row& row,
+                                     bool rename_file) {
+  int pos = row[columns_.pos()];
+  files_[pos].saveFileChanges(rename_file);
+  row[columns_.filepath()] = files_[pos].getFilepath();
+}
+
+void TreeViewFiles::saveAllFiles(bool rename_file) {
+  if (current_row_) storeAndUpdateEntryData();
+  Gtk::TreeModel::Children children = liststore_->children();
+  for (auto it = children.begin(); it != children.end(); it++) {
+    Gtk::TreeModel::Row row = *it;
+    saveSelectedFile(row, rename_file);
+  }
 }
 
 void TreeViewFiles::getRowData(const Gtk::TreeModel::Row& row,

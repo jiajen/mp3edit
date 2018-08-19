@@ -24,6 +24,8 @@ class TreeViewFiles: public Gtk::TreeView {
                 Gtk::Entry* entry_artist, Gtk::Entry* entry_album,
                 Gtk::Entry* entry_track_num, Gtk::Entry* entry_track_denum);
   void populateTreeView();
+  void saveSelectedFile(bool rename_file);
+  void saveAllFiles(bool rename_file);
  private:
   enum class EditType {
     kRow = 0,
@@ -55,10 +57,12 @@ class TreeViewFiles: public Gtk::TreeView {
     Column filepath_;
   };
 
+  void saveSelectedFile(Gtk::TreeModel::Row& row, bool rename_file);
   void onEditTypeRow(const Glib::ustring&,
                      const Glib::ustring&);
   void onEditTypeEntry();
   void onEntryEnterPress();
+  void storeAndUpdateEntryData();
 
   void getRowData(const Gtk::TreeModel::Row& row,
                   std::string& title, std::string& artist,

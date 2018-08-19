@@ -269,6 +269,9 @@ void File::saveFileChanges(bool rename_file) {
     if (!writeFile(audio_raw, metadata_front, metadata_back,
                    rename_file ?  title_ : ""))
       throw std::system_error(std::error_code(), "Unable to write.");
+    filesize_ = metadata_front.size() + audio_raw.size() + metadata_back.size();
+    audio_start_ = metadata_front.size();
+    audio_end_ = metadata_front.size() + audio_raw.size();
   } else if (rename_file) {
     filepath_ = renameFile(filepath_,
                            generateTargetPath(filepath_, title_, filetype_));

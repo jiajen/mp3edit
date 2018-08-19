@@ -22,6 +22,8 @@ class WindowMain: public Gtk::Window {
  private:
   void openDirDialog();
   void loadEntryDir();
+  void onSaveFileBtnPress();
+  void onSaveAllFilesBtnPress();
 
   std::vector<File::File> files_;
 
@@ -37,6 +39,9 @@ class WindowMain: public Gtk::Window {
   Gtk::Entry* entry_song_album_;
   Gtk::Entry* entry_song_track_num_;
   Gtk::Entry* entry_song_track_denum_;
+  Gtk::Button* btn_song_save_single_;
+  Gtk::Button* btn_song_save_all_;
+  Gtk::CheckButton* checkbox_rename_file_;
 };
 
 }  // namespace Gui
