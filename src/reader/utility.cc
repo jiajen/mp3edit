@@ -165,8 +165,8 @@ void bytesToString(Bytes::const_iterator it_begin, Bytes::const_iterator it_end,
   memcpy(output.data(), &(*it_begin), size);
 }
 
-void bytesToTrack(Bytes::const_iterator it_begin, Bytes::const_iterator it_end,
-                  int& track_num, int& track_denum) {
+template<class T>
+void bytesToTrack(T it_begin, T it_end, int& track_num, int& track_denum) {
   Bytes::const_iterator it;
   int separator_pos = -1;
   for (it = it_begin; it < it_end; it++) {
@@ -195,6 +195,10 @@ void bytesToTrack(Bytes::const_iterator it_begin, Bytes::const_iterator it_end,
     // Do nothing
   }
 }
+
+template void bytesToTrack<Bytes::const_iterator>(
+  Bytes::const_iterator it_begin, Bytes::const_iterator it_end,
+  int& track_num, int& track_denum);
 
 }  // namespace Utility
 }  // namespace Reader
