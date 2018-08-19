@@ -173,7 +173,11 @@ void TreeViewFiles::saveSelectedFile(int pos) {
 
 void TreeViewFiles::saveAllFiles() {
   if (current_row_) storeAndUpdateEntryData();
-  // TODO loop
+  Gtk::TreeModel::Children children = liststore_->children();
+  for (auto it = children.begin(); it != children.end(); it++) {
+    Gtk::TreeModel::Row row = *it;
+    saveSelectedFile(row[columns_.pos()]);
+  }
 }
 
 void TreeViewFiles::getRowData(const Gtk::TreeModel::Row& row,
