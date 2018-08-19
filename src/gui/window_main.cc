@@ -1,5 +1,7 @@
 #include "mp3edit/src/gui/window_main.h"
 
+#include <filesystem>
+
 #include <glib.h>
 #include <gtkmm/filechooserdialog.h>
 
@@ -25,6 +27,8 @@ WindowMain::WindowMain(BaseObjectType* cobject,
     sigc::mem_fun(*this, &WindowMain::loadEntryDir));
 
   builder_->get_widget("entry_dir", entry_dir_);
+  entry_dir_->signal_activate().connect(
+    sigc::mem_fun(*this, &WindowMain::loadEntryDir));
 
   builder_->get_widget("entry_song_title", entry_song_title_);
   builder_->get_widget("entry_song_artist", entry_song_artist_);
@@ -45,7 +49,12 @@ void WindowMain::openDirDialog() {
 
   dir_chooser.add_button("Open", Gtk::RESPONSE_OK);
   dir_chooser.add_button("Cancel", Gtk::RESPONSE_CANCEL);
-  dir_chooser.set_filename(g_get_home_dir());
+
+  if (std::filesystem::is_directory((std::string)entry_dir_->get_text())) {
+    dir_chooser.set_filename(entry_dir_->get_text());
+  } else {
+    dir_chooser.set_filename(g_get_home_dir());
+  }
 
   if (dir_chooser.run() == Gtk::RESPONSE_OK) {
     entry_dir_->set_text(dir_chooser.get_filename());
