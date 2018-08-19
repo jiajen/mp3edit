@@ -58,6 +58,7 @@ class TreeViewFiles: public Gtk::TreeView {
   void onEditTypeRow(const Glib::ustring&,
                      const Glib::ustring&);
   void onEditTypeEntry();
+  void onEntryEnterPress();
 
   void getRowData(const Gtk::TreeModel::Row& row,
                   std::string& title, std::string& artist,

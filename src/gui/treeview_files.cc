@@ -39,6 +39,14 @@ void appendColumnEditable(TreeViewFiles* tree_view,
     sigc::mem_fun(*tree_view, function_ptr));
 }
 
+void addSignalsToFieldEntry(TreeViewFiles* tree_view,
+                            void (TreeViewFiles::*fx_changed)(),
+                            void (TreeViewFiles::*fx_activated)(),
+                            Gtk::Entry* entry) {
+  entry->signal_changed().connect(sigc::mem_fun(*tree_view, fx_changed));
+  entry->signal_activate().connect(sigc::mem_fun(*tree_view, fx_activated));
+}
+
 }  // namespace
 
 TreeViewFiles::Columns::Columns() {
@@ -67,16 +75,16 @@ TreeViewFiles::TreeViewFiles(BaseObjectType* cobject,
       disable_signals_(true) {
   treeselection_ = this->get_selection();
 
-  entry_title->signal_changed().connect(
-    sigc::mem_fun(*this, &TreeViewFiles::onEditTypeEntry));
-  entry_artist->signal_changed().connect(
-    sigc::mem_fun(*this, &TreeViewFiles::onEditTypeEntry));
-  entry_album->signal_changed().connect(
-    sigc::mem_fun(*this, &TreeViewFiles::onEditTypeEntry));
-  entry_track_num->signal_changed().connect(
-    sigc::mem_fun(*this, &TreeViewFiles::onEditTypeEntry));
-  entry_track_denum->signal_changed().connect(
-    sigc::mem_fun(*this, &TreeViewFiles::onEditTypeEntry));
+  addSignalsToFieldEntry(this, &TreeViewFiles::onEditTypeEntry,
+                         &TreeViewFiles::onEntryEnterPress, entry_title);
+  addSignalsToFieldEntry(this, &TreeViewFiles::onEditTypeEntry,
+                         &TreeViewFiles::onEntryEnterPress, entry_artist);
+  addSignalsToFieldEntry(this, &TreeViewFiles::onEditTypeEntry,
+                         &TreeViewFiles::onEntryEnterPress, entry_album);
+  addSignalsToFieldEntry(this, &TreeViewFiles::onEditTypeEntry,
+                         &TreeViewFiles::onEntryEnterPress, entry_track_num);
+  addSignalsToFieldEntry(this, &TreeViewFiles::onEditTypeEntry,
+                         &TreeViewFiles::onEntryEnterPress, entry_track_denum);
 
   liststore_ = Gtk::ListStore::create(columns_);
   this->set_model(liststore_);
@@ -112,6 +120,12 @@ void TreeViewFiles::onEditTypeRow(const Glib::ustring&,
 void TreeViewFiles::onEditTypeEntry() {
   if (disable_signals_ || !current_row_) return;
   edit_type_ = EditType::kEntry;
+}
+
+void TreeViewFiles::onEntryEnterPress() {
+  storeCurrentEditsInFileMem();
+  updateCurrentRowFromFileMem();
+  updateEntryFromFileMem();
 }
 
 void TreeViewFiles::populateTreeView() {
