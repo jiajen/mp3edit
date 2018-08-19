@@ -186,6 +186,7 @@ void TreeViewFiles::storeCurrentEditsInFileMem() {
 }
 
 void TreeViewFiles::updateCurrentRowFromFileMem() {
+  if (!current_row_ || edit_type_ == EditType::kUnedited) return;
   Gtk::TreeModel::Row row = *current_row_;
   int idx = row[columns_.pos()];
   row[columns_.title()] = files_[idx].getTitle();
@@ -196,9 +197,7 @@ void TreeViewFiles::updateCurrentRowFromFileMem() {
 
 void TreeViewFiles::onRowSelect() {
   storeCurrentEditsInFileMem();
-  if (edit_type_ == EditType::kRow || edit_type_ == EditType::kEntry)
-    updateCurrentRowFromFileMem();
-
+  updateCurrentRowFromFileMem();
   current_row_ = treeselection_->get_selected();
   if (!current_row_) return;
   edit_type_ = EditType::kUnedited;
