@@ -218,6 +218,9 @@ void TreeViewFiles::updateCurrentRowFromFileMem() {
 void TreeViewFiles::updateEntryFromFileMem() {
   if (!current_row_) return;
   using std::to_string;
+  bool disable_signals_state_ = disable_signals_;
+  disable_signals_ = true;
+
   int idx = (*current_row_)[columns_.pos()];
   int track_num = files_[idx].getTrackNum();
   int track_denum = files_[idx].getTrackDenum();
@@ -234,6 +237,8 @@ void TreeViewFiles::updateEntryFromFileMem() {
   } else {
     entry_song_track_denum_->set_text(Glib::ustring());
   }
+
+  disable_signals_ = disable_signals_state_;
 }
 
 void TreeViewFiles::onRowSelect() {
