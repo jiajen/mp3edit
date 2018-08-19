@@ -9,6 +9,7 @@
 
 #include "mp3edit/src/filesystem.h"
 #include "mp3edit/src/sanitiser.h"
+#include "mp3edit/src/reader/utility.h"
 #include "mp3edit/src/reader/tag/ape.h"
 #include "mp3edit/src/reader/tag/id3v1.h"
 #include "mp3edit/src/reader/tag/id3v2.h"
@@ -79,7 +80,8 @@ std::string renameFile(const std::string& input_path,
 
 void parseTrackString(const std::string& track,
                       int& track_num, int& track_denum) {
-  // TODO
+  Reader::Utility::bytesToTrack(track.begin(), track.end(),
+                                track_num, track_denum);
 }
 
 }  // namespace
