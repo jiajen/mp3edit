@@ -47,6 +47,10 @@ class File {
   std::string getBitrate() const;
   std::string getSamplingRate() const;
   std::string getChannelMode() const;
+  void updateFields(const std::string& title, const std::string& artist,
+                    const std::string& album, const std::string& track);
+  void updateFields(const std::string& title, const std::string& artist,
+                    const std::string& album, int track_num, int track_denum);
   void saveFileChanges(bool rename_file);
  private:
   void readMetaData(Filesystem::FileStream& file_stream);

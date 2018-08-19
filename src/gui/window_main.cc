@@ -25,6 +25,17 @@ WindowMain::WindowMain(BaseObjectType* cobject,
     sigc::mem_fun(*this, &WindowMain::loadEntryDir));
 
   builder_->get_widget("entry_dir", entry_dir_);
+
+  builder_->get_widget("entry_song_title", entry_song_title_);
+  builder_->get_widget("entry_song_artist", entry_song_artist_);
+  builder_->get_widget("entry_song_album", entry_song_album_);
+  builder_->get_widget("entry_song_track_num", entry_song_track_num_);
+  builder_->get_widget("entry_song_track_denum", entry_song_track_denum_);
+
+  builder_->get_widget_derived("gtk_treeview_files", treeview_files_, files_,
+                               entry_song_title_, entry_song_artist_,
+                               entry_song_album_, entry_song_track_num_,
+                               entry_song_track_denum_);
 }
 
 void WindowMain::openDirDialog() {
@@ -46,7 +57,7 @@ void WindowMain::loadEntryDir() {
   files_ = Directory::getFiles(entry_dir_->get_text(),
                                checkbox_read_subdir_->get_active(),
                                checkbox_read_audio_->get_active());
-  // TODO update gui
+  treeview_files_->populateTreeView();
 }
 
 }  // namespace Gui

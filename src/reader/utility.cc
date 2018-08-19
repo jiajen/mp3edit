@@ -158,16 +158,24 @@ Bytes intToLEndian(unsigned int val, int length, bool is_sync_safe) {
   return size;
 }
 
-void bytesToString(Bytes::const_iterator it_begin, Bytes::const_iterator it_end,
-                   std::string& output) {
+template<class T>
+void bytesToString(T it_begin, T it_end, std::string& output) {
   int size = it_end - it_begin;
   output.resize(size);
   memcpy(output.data(), &(*it_begin), size);
 }
 
-void bytesToTrack(Bytes::const_iterator it_begin, Bytes::const_iterator it_end,
-                  int& track_num, int& track_denum) {
-  Bytes::const_iterator it;
+template void bytesToString<Bytes::const_iterator>(
+  Bytes::const_iterator it_begin, Bytes::const_iterator it_end,
+  std::string& output);
+
+template void bytesToString<std::string::const_iterator>(
+  std::string::const_iterator it_begin, std::string::const_iterator it_end,
+  std::string& output);
+
+template<class T>
+void bytesToTrack(T it_begin, T it_end, int& track_num, int& track_denum) {
+  T it;
   int separator_pos = -1;
   for (it = it_begin; it < it_end; it++) {
     if (*it == 0x2F) {
@@ -195,6 +203,14 @@ void bytesToTrack(Bytes::const_iterator it_begin, Bytes::const_iterator it_end,
     // Do nothing
   }
 }
+
+template void bytesToTrack<Bytes::const_iterator>(
+  Bytes::const_iterator it_begin, Bytes::const_iterator it_end,
+  int& track_num, int& track_denum);
+
+template void bytesToTrack<std::string::const_iterator>(
+  std::string::const_iterator it_begin, std::string::const_iterator it_end,
+  int& track_num, int& track_denum);
 
 }  // namespace Utility
 }  // namespace Reader
