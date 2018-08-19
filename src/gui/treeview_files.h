@@ -24,10 +24,7 @@ class TreeViewFiles: public Gtk::TreeView {
                 Gtk::Entry* entry_artist, Gtk::Entry* entry_album,
                 Gtk::Entry* entry_track_num, Gtk::Entry* entry_track_denum);
   void populateTreeView();
-  // Pos corresponds to the position of the file in files_
-  // If -1, this function will try to save the current selected file
-  // only if it exists or else this function does nothing.
-  void saveSelectedFile(int pos, bool rename_file);
+  void saveSelectedFile(bool rename_file);
   void saveAllFiles(bool rename_file);
  private:
   enum class EditType {
@@ -60,6 +57,7 @@ class TreeViewFiles: public Gtk::TreeView {
     Column filepath_;
   };
 
+  void saveSelectedFile(Gtk::TreeModel::Row& row, bool rename_file);
   void onEditTypeRow(const Glib::ustring&,
                      const Glib::ustring&);
   void onEditTypeEntry();

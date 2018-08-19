@@ -80,7 +80,7 @@ void WindowMain::loadEntryDir() {
 }
 
 void WindowMain::onSaveFileBtnPress() {
-  treeview_files_->saveSelectedFile(-1, checkbox_rename_file_->get_active());
+  treeview_files_->saveSelectedFile(checkbox_rename_file_->get_active());
 }
 
 void WindowMain::onSaveAllFilesBtnPress() {
