@@ -41,7 +41,7 @@ WindowMain::WindowMain(BaseObjectType* cobject,
                                entry_song_album_, entry_song_track_num_,
                                entry_song_track_denum_);
 
-  builder_->get_widget("btn_song_save_single_", btn_song_save_single_);
+  builder_->get_widget("btn_song_save_single", btn_song_save_single_);
   btn_song_save_single_->signal_clicked().connect(
     sigc::mem_fun(*this, &WindowMain::onSaveFileBtnPress));
 
