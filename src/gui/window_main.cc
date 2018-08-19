@@ -27,6 +27,8 @@ WindowMain::WindowMain(BaseObjectType* cobject,
     sigc::mem_fun(*this, &WindowMain::loadEntryDir));
 
   builder_->get_widget("entry_dir", entry_dir_);
+  entry_dir_->signal_activate().connect(
+    sigc::mem_fun(*this, &WindowMain::loadEntryDir));
 
   builder_->get_widget("entry_song_title", entry_song_title_);
   builder_->get_widget("entry_song_artist", entry_song_artist_);
