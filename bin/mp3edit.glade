@@ -105,7 +105,7 @@
               <object class="GtkTreeView" id="gtk_treeview_files">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="enable_search">False</property>
+                <property name="enable_search">True</property>
                 <property name="search_column">1</property>
                 <child internal-child="selection">
                   <object class="GtkTreeSelection"/>
