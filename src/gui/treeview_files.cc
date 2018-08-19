@@ -167,7 +167,7 @@ void TreeViewFiles::saveSelectedFile(bool rename_file) {
 
 void TreeViewFiles::saveSelectedFile(Gtk::TreeModel::Row& row,
                                      bool rename_file) {
-  int pos = (*current_row_)[columns_.pos()];
+  int pos = row[columns_.pos()];
   files_[pos].saveFileChanges(rename_file);
   row[columns_.filepath()] = files_[pos].getFilepath();
 }
