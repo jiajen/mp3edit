@@ -224,8 +224,9 @@ Bytes generateTag(const std::string& title, const std::string& artist,
   addVorbisField(album, kCommentAlbumHeader, kCommentAlbumHeaderSize, tag);
   addVorbisField(track_num,
                  kCommentTrackNumHeader, kCommentTrackNumHeaderSize, tag);
-  addVorbisField(track_denum,
-                 kCommentTrackTotalHeader, kCommentTrackTotalHeaderSize, tag);
+  if (track_num != -1)
+    addVorbisField(track_denum,
+                   kCommentTrackTotalHeader, kCommentTrackTotalHeaderSize, tag);
 
   if (has_framing_bit) tag.push_back(0x01);
 
