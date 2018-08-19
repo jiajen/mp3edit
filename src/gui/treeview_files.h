@@ -24,6 +24,11 @@ class TreeViewFiles: public Gtk::TreeView {
                 Gtk::Entry* entry_artist, Gtk::Entry* entry_album,
                 Gtk::Entry* entry_track_num, Gtk::Entry* entry_track_denum);
   void populateTreeView();
+  // Pos corresponds to the position of the file in files_
+  // If -1, this function will try to save the current selected file
+  // only if it exists or else this function does nothing.
+  void saveSelectedFile(int pos);
+  void saveAllFiles();
  private:
   enum class EditType {
     kRow = 0,

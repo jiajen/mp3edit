@@ -40,6 +40,14 @@ WindowMain::WindowMain(BaseObjectType* cobject,
                                entry_song_title_, entry_song_artist_,
                                entry_song_album_, entry_song_track_num_,
                                entry_song_track_denum_);
+
+  builder_->get_widget("btn_song_save_single_", btn_song_save_single_);
+  btn_song_save_single_->signal_clicked().connect(
+    sigc::mem_fun(*this, &WindowMain::onSaveFileBtnPress));
+
+  builder_->get_widget("btn_song_save_all", btn_song_save_all_);
+  btn_song_save_all_->signal_clicked().connect(
+    sigc::mem_fun(*this, &WindowMain::onSaveAllFilesBtnPress));
 }
 
 void WindowMain::openDirDialog() {
@@ -67,6 +75,14 @@ void WindowMain::loadEntryDir() {
                                checkbox_read_subdir_->get_active(),
                                checkbox_read_audio_->get_active());
   treeview_files_->populateTreeView();
+}
+
+void WindowMain::onSaveFileBtnPress() {
+  treeview_files_->saveSelectedFile(-1);
+}
+
+void WindowMain::onSaveAllFilesBtnPress() {
+  treeview_files_->saveAllFiles();
 }
 
 }  // namespace Gui

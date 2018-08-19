@@ -154,6 +154,14 @@ void TreeViewFiles::populateTreeView() {
   disable_signals_ = false;
 }
 
+void TreeViewFiles::saveSelectedFile(int pos) {
+  // TODO
+}
+
+void TreeViewFiles::saveAllFiles() {
+  // TODO
+}
+
 void TreeViewFiles::getRowData(const Gtk::TreeModel::Row& row,
                                std::string& title, std::string& artist,
                                std::string& album, std::string& track) {
