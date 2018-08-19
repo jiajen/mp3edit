@@ -123,6 +123,10 @@ void TreeViewFiles::onEditTypeEntry() {
 }
 
 void TreeViewFiles::onEntryEnterPress() {
+  storeAndUpdateEntryData();
+}
+
+void TreeViewFiles::storeAndUpdateEntryData() {
   storeCurrentEditsInFileMem();
   updateCurrentRowFromFileMem();
   updateEntryFromFileMem();
