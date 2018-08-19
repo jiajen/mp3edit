@@ -54,6 +54,10 @@ bool sanitiseTrack(int& track_num, int& track_denum) {
     track_denum = -1;
     changed = true;
   }
+  if (track_num == -1 && track_denum != -1) {
+    track_denum = -1;
+    changed = true;
+  }
   if (track_num != -1 && track_denum != -1 && track_num > track_denum) {
     track_denum = -1;
     changed = true;
