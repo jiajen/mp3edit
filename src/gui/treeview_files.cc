@@ -196,7 +196,8 @@ void TreeViewFiles::updateCurrentRowFromFileMem() {
 
 void TreeViewFiles::onRowSelect() {
   storeCurrentEditsInFileMem();
-  if (edit_type_ == EditType::kEntry) updateCurrentRowFromFileMem();
+  if (edit_type_ == EditType::kRow || edit_type_ == EditType::kEntry)
+    updateCurrentRowFromFileMem();
 
   current_row_ = treeselection_->get_selected();
   if (!current_row_) return;
