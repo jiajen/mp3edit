@@ -165,6 +165,16 @@ void TreeViewFiles::saveSelectedFile(bool rename_file) {
   saveSelectedFile(row, rename_file, true);
 }
 
+void TreeViewFiles::unSelectRow() {
+  if (current_row_) treeselection_->unselect(current_row_);
+  current_row_ = Gtk::TreeModel::iterator();
+  entry_song_title_->set_text(Glib::ustring());
+  entry_song_artist_->set_text(Glib::ustring());
+  entry_song_album_->set_text(Glib::ustring());
+  entry_song_track_num_->set_text(Glib::ustring());
+  entry_song_track_denum_->set_text(Glib::ustring());
+}
+
 void TreeViewFiles::saveSelectedFile(Gtk::TreeModel::Row& row,
                                      bool rename_file, bool is_single_file) {
   if (is_single_file) files_.clearErrorLog();
@@ -172,18 +182,12 @@ void TreeViewFiles::saveSelectedFile(Gtk::TreeModel::Row& row,
   if (!files_.saveFile(pos, rename_file)) {
     bool disable_signals_state = disable_signals_;
     disable_signals_ = true;
-    if (row == *current_row_) {
-      treeselection_->unselect(current_row_);
-      current_row_ = Gtk::TreeModel::iterator();
-      entry_song_title_->set_text(Glib::ustring());
-      entry_song_artist_->set_text(Glib::ustring());
-      entry_song_album_->set_text(Glib::ustring());
-      entry_song_track_num_->set_text(Glib::ustring());
-      entry_song_track_denum_->set_text(Glib::ustring());
-    }
+    if (is_single_file) unSelectRow();
     liststore_->erase(row);
-    // TODO show error if is_single_file.
     disable_signals_ = disable_signals_state;
+    if (is_single_file) {
+      // TODO show error.
+    }
     return;
   }
   row[columns_.filepath()] = files_[pos].getFilepath();
@@ -198,6 +202,7 @@ void TreeViewFiles::saveAllFiles(bool rename_file) {
     saveSelectedFile(row, rename_file, false);
   }
   if (!files_.getErrorList().empty()) {
+    unSelectRow();
     // TODO show error.
   }
 }
