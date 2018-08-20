@@ -30,6 +30,10 @@ inline std::vector<File::File> getFiles(const std::string& directory,
 
 }  // namespace
 
+Files::Error::Error(const std::string& filepath,
+                    const std::string& error_message) :
+    filepath_(filepath), error_message_(error_message) {}
+
 Files::Files() {
   // TODO
 }
