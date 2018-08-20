@@ -169,8 +169,9 @@ void TreeViewFiles::saveSelectedFile(Gtk::TreeModel::Row& row,
                                      bool rename_file, bool is_single_file) {
   if (is_single_file) files_.clearErrorLog();
   int pos = row[columns_.pos()];
-  if (!files_.saveFile(pos, rename_file) && is_single_file) {
-    // TODO remove single row.
+  if (!files_.saveFile(pos, rename_file)) {
+    // TODO remove invalid row. consider also if row is current row.
+    // TODO show error if is_single_file.
     return;
   }
   row[columns_.filepath()] = files_[pos].getFilepath();
@@ -185,7 +186,7 @@ void TreeViewFiles::saveAllFiles(bool rename_file) {
     saveSelectedFile(row, rename_file, false);
   }
   if (!files_.getErrorList().empty()) {
-    // TODO remove error rows.
+    // TODO show error.
   }
 }
 
