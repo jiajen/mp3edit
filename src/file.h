@@ -43,6 +43,7 @@ class File {
   inline std::string getAlbum() const { return album_; }
   inline int getTrackNum() const { return track_num_; }
   inline int getTrackDenum() const { return track_denum_; }
+  inline std::string getErrorMessage() const { return error_; }
   inline operator bool() const { return is_valid_; }
   std::string getTrack() const;
   std::string getBitrate() const;
@@ -88,6 +89,7 @@ class File {
 
   // True if valid audio (e.g. reading of properties appeared valid)
   bool is_valid_;
+  std::string error_;
 };
 
 }  // namespace File

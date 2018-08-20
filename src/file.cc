@@ -125,8 +125,9 @@ File::File(const std::string& filepath, FileType filetype,
       sampling_rate_ = -1;
       channel_mode_ = ChannelMode::kInvalid;
     }
-  } catch (const std::exception&) {
+  } catch (const std::exception& ex) {
     is_valid_ = false;
+    error_ = ex.what();
   }
   file_stream.close();
 }
