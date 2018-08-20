@@ -20,7 +20,10 @@ inline void Files::readFiles(const std::string& directory,
     File::FileType filetype = File::getAudioExtension(path);
     if (filetype == File::FileType::kInvalid) continue;
     files_.emplace_back(path, filetype, read_audio_data);
-    if (!files_.back()) files_.pop_back();
+    if (!files_.back()) {
+      errors_.emplace_back(path, files_.back().getErrorMessage());
+      files_.pop_back();
+    }
   }
 }
 
@@ -31,7 +34,6 @@ Files::Error::Error(const std::string& filepath,
 Files::Files() {}
 
 Files::Files(const std::string& directory, bool recurse, bool read_audio_data) {
-  // TODO
   if (recurse) {
     std::filesystem::recursive_directory_iterator it;
     readFiles(directory, read_audio_data, it);
