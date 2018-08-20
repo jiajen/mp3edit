@@ -63,7 +63,7 @@ TreeViewFiles::Columns::Columns() {
 
 TreeViewFiles::TreeViewFiles(BaseObjectType* cobject,
                              const Glib::RefPtr<Gtk::Builder>&,
-                             std::vector<File::File>& files,
+                             Files::Files& files,
                              Gtk::Entry* entry_title, Gtk::Entry* entry_artist,
                              Gtk::Entry* entry_album,
                              Gtk::Entry* entry_track_num,

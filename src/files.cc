@@ -30,15 +30,18 @@ inline std::vector<File::File> getFiles(const std::string& directory,
 
 }  // namespace
 
-std::vector<File::File> getFiles(const std::string& directory,
-                                 bool recurse,
-                                 bool read_audio_data) {
+Files::Files() {
+  // TODO
+}
+
+Files::Files(const std::string& directory, bool recurse, bool read_audio_data) {
+  // TODO
   if (recurse) {
     std::filesystem::recursive_directory_iterator it;
-    return getFiles(directory, read_audio_data, it);
+    files_ = getFiles(directory, read_audio_data, it);
   } else {
     std::filesystem::directory_iterator it;
-    return getFiles(directory, read_audio_data, it);
+    files_ = getFiles(directory, read_audio_data, it);
   }
 }
 

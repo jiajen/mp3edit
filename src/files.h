@@ -12,12 +12,11 @@ namespace Files {
 // TODO
 class Files {
  public:
+  Files();
+  Files(const std::string& directory, bool recurse, bool read_audio_data);
  private:
+  std::vector<File::File> files_;
 };
-
-std::vector<File::File> getFiles(const std::string& directory,
-                                 bool recurse,
-                                 bool read_audio_data);
 
 }  // namespace Files
 }  // namespace Mp3Edit

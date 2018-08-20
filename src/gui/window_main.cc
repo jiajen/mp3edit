@@ -5,8 +5,6 @@
 #include <glib.h>
 #include <gtkmm/filechooserdialog.h>
 
-#include "mp3edit/src/files.h"
-
 namespace Mp3Edit {
 namespace Gui {
 
@@ -73,9 +71,9 @@ void WindowMain::openDirDialog() {
 }
 
 void WindowMain::loadEntryDir() {
-  files_ = Files::getFiles(entry_dir_->get_text(),
-                           checkbox_read_subdir_->get_active(),
-                           checkbox_read_audio_->get_active());
+  files_ = Files::Files(entry_dir_->get_text(),
+                        checkbox_read_subdir_->get_active(),
+                        checkbox_read_audio_->get_active());
   treeview_files_->populateTreeView();
 }
 

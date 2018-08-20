@@ -1,7 +1,6 @@
 #ifndef MP3EDIT_SRC_GUI_TREEVIEW_FILES_H_
 #define MP3EDIT_SRC_GUI_TREEVIEW_FILES_H_
 
-#include <vector>
 #include <string>
 
 #include <gtkmm/builder.h>
@@ -13,6 +12,7 @@
 #include <gtkmm/treemodel.h>
 
 #include "mp3edit/src/file.h"
+#include "mp3edit/src/files.h"
 
 namespace Mp3Edit {
 namespace Gui {
@@ -20,7 +20,7 @@ namespace Gui {
 class TreeViewFiles: public Gtk::TreeView {
  public:
   TreeViewFiles(BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>&,
-                std::vector<File::File>& files, Gtk::Entry* entry_title,
+                Files::Files& files, Gtk::Entry* entry_title,
                 Gtk::Entry* entry_artist, Gtk::Entry* entry_album,
                 Gtk::Entry* entry_track_num, Gtk::Entry* entry_track_denum);
   void populateTreeView();
@@ -77,7 +77,7 @@ class TreeViewFiles: public Gtk::TreeView {
   void updateEntryFromFileMem();
   void onRowSelect();
 
-  std::vector<File::File>& files_;
+  Files::Files& files_;
 
   Glib::RefPtr<Gtk::ListStore> liststore_;
   Glib::RefPtr<Gtk::TreeSelection> treeselection_;
