@@ -409,6 +409,7 @@ void File::readAudioData(Filesystem::FileStream& file_stream) {
                                                 bitrate_, sampling_rate_,
                                                 channel_mode_)) {
         is_valid_ = false;
+        error_ = "Invalid MP3 Audio Data.";
       }
       break;
     case FileType::kFlac:
@@ -424,6 +425,7 @@ void File::readAudioData(Filesystem::FileStream& file_stream) {
                                                 bitrate_, sampling_rate_,
                                                 channel_mode_)) {
         is_valid_ = false;
+        error_ = "Invalid Ogg Audio Data.";
       }
       break;
     default:
