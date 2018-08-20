@@ -13,7 +13,8 @@ int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek);
 Bytes extractTag(Filesystem::FileStream& file_stream,
                  int seek_tag_start, int);
 
-void parseTag(const Bytes& tag, std::string& title, std::string& artist,
+// Returns false on failure.
+bool parseTag(const Bytes& tag, std::string& title, std::string& artist,
               std::string& album, int& track_num, int& track_denum);
 
 Bytes generateTag(Filesystem::FileStream& file_stream, int seek_flac_start,

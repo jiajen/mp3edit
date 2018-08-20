@@ -348,8 +348,9 @@ void File::readMetaData(Filesystem::FileStream& file_stream) {
         using VorbisFlac::parseTag;
         using VorbisFlac::extractTag;
         file_container_start_seek_ = audio_start_;
-        parseTag(extractTag(file_stream, audio_start_, seek),
-                 title_, artist_, album_, track_num_, track_denum_);
+        if (!parseTag(extractTag(file_stream, audio_start_, seek),
+                      title_, artist_, album_, track_num_, track_denum_))
+          throw std::system_error(std::error_code(), "Invalid FLAC Tag.");
         audio_start_ = seek;
       } else {
         throw std::system_error(std::error_code(), "Invalid FLAC.");
@@ -361,8 +362,9 @@ void File::readMetaData(Filesystem::FileStream& file_stream) {
         using VorbisOgg::parseTag;
         using VorbisOgg::extractTag;
         file_container_start_seek_ = audio_start_;
-        parseTag(extractTag(file_stream, audio_start_, seek),
-                 title_, artist_, album_, track_num_, track_denum_);
+        if (!parseTag(extractTag(file_stream, audio_start_, seek),
+                      title_, artist_, album_, track_num_, track_denum_))
+          throw std::system_error(std::error_code(), "Invalid OGG Tag.");
         audio_start_ = seek;
       } else {
         throw std::system_error(std::error_code(), "Invalid OGG.");
