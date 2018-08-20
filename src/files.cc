@@ -1,12 +1,10 @@
-#include "mp3edit/src/directory.h"
-
-#include "mp3edit/src/file.h"
+#include "mp3edit/src/files.h"
 
 #include <algorithm>
 #include <filesystem>
 
 namespace Mp3Edit {
-namespace Directory {
+namespace Files {
 
 namespace {
 
@@ -44,5 +42,5 @@ std::vector<File::File> getFiles(const std::string& directory,
   }
 }
 
-}  // namespace Directory
+}  // namespace Files
 }  // namespace Mp3Edit
