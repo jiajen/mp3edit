@@ -49,13 +49,11 @@ bool Files::saveFile(int idx, bool rename_file) {
                          "Invalid file index to save.");
     return false;
   }
-  try {
-    files_[idx].saveFileChanges(rename_file);
-  } catch (const std::exception& ex) {
-    errors_.emplace_back(files_[idx].getFilepath(), ex.what());
-    return false;
-  }
-  return true;
+  files_[idx].saveFileChanges(rename_file);
+  if (files_[idx]) return true;
+  errors_.emplace_back(files_[idx].getFilepath(),
+                       files_[idx].getErrorMessage());
+  return false;
 }
 
 }  // namespace Files
