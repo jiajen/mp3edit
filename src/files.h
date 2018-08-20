@@ -19,6 +19,8 @@ class Files {
   inline std::vector<File::File>::iterator end() { return files_.end(); }
   inline File::File& operator[](int idx) { return files_[idx]; }
   inline std::vector<Error> getErrorList() { return errors_; }
+  inline void clearErrorLog() { errors_.clear(); }
+  bool saveFile(int idx, bool rename_file);
  private:
   class Error {
    public:

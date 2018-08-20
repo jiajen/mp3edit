@@ -57,7 +57,8 @@ class TreeViewFiles: public Gtk::TreeView {
     Column filepath_;
   };
 
-  void saveSelectedFile(Gtk::TreeModel::Row& row, bool rename_file);
+  void saveSelectedFile(Gtk::TreeModel::Row& row, bool rename_file,
+                        bool is_single_file);
   void onEditTypeRow(const Glib::ustring&,
                      const Glib::ustring&);
   void onEditTypeEntry();

@@ -162,22 +162,30 @@ void TreeViewFiles::saveSelectedFile(bool rename_file) {
   if (!current_row_) return;
   storeAndUpdateEntryData();
   Gtk::TreeModel::Row row = *current_row_;
-  saveSelectedFile(row, rename_file);
+  saveSelectedFile(row, rename_file, true);
 }
 
 void TreeViewFiles::saveSelectedFile(Gtk::TreeModel::Row& row,
-                                     bool rename_file) {
+                                     bool rename_file, bool is_single_file) {
+  if (is_single_file) files_.clearErrorLog();
   int pos = row[columns_.pos()];
-  files_[pos].saveFileChanges(rename_file);
+  if (!files_.saveFile(pos, rename_file) && is_single_file) {
+    // TODO remove single row.
+    return;
+  }
   row[columns_.filepath()] = files_[pos].getFilepath();
 }
 
 void TreeViewFiles::saveAllFiles(bool rename_file) {
+  files_.clearErrorLog();
   if (current_row_) storeAndUpdateEntryData();
   Gtk::TreeModel::Children children = liststore_->children();
   for (auto it = children.begin(); it != children.end(); it++) {
     Gtk::TreeModel::Row row = *it;
-    saveSelectedFile(row, rename_file);
+    saveSelectedFile(row, rename_file, false);
+  }
+  if (!files_.getErrorList().empty()) {
+    // TODO remove error rows.
   }
 }
 
