@@ -25,6 +25,7 @@ inline std::vector<File::File> getFiles(const std::string& directory,
     File::FileType filetype = File::getAudioExtension(path);
     if (filetype == File::FileType::kInvalid) continue;
     files.emplace_back(path, filetype, read_audio_data);
+    if (!files.back()) files.pop_back();
   }
   return files;
 }
