@@ -29,6 +29,9 @@ class Files {
     std::string filepath_;
     std::string error_message_;
   };
+  template <class T>
+  inline std::vector<File::File> getFiles(const std::string& directory,
+                                          bool read_audio_data, T& it);
   std::vector<Error> errors_;
   std::vector<File::File> files_;
 };
