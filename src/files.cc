@@ -7,23 +7,21 @@ namespace Mp3Edit {
 namespace Files {
 
 template <class T>
-inline std::vector<File::File> Files::getFiles(const std::string& directory,
-                                               bool read_audio_data, T& it) {
-  std::vector<File::File> files;
+inline void Files::readFiles(const std::string& directory,
+                             bool read_audio_data, T& it) {
   try {
     it = T(directory);
   } catch (const std::filesystem::filesystem_error&) {
-    return files;
+    return;
   }
   for (const auto& entry: it) {
     if (!entry.is_regular_file()) continue;
     std::string path = entry.path();
     File::FileType filetype = File::getAudioExtension(path);
     if (filetype == File::FileType::kInvalid) continue;
-    files.emplace_back(path, filetype, read_audio_data);
-    if (!files.back()) files.pop_back();
+    files_.emplace_back(path, filetype, read_audio_data);
+    if (!files_.back()) files_.pop_back();
   }
-  return files;
 }
 
 Files::Error::Error(const std::string& filepath,
@@ -36,10 +34,10 @@ Files::Files(const std::string& directory, bool recurse, bool read_audio_data) {
   // TODO
   if (recurse) {
     std::filesystem::recursive_directory_iterator it;
-    files_ = getFiles(directory, read_audio_data, it);
+    readFiles(directory, read_audio_data, it);
   } else {
     std::filesystem::directory_iterator it;
-    files_ = getFiles(directory, read_audio_data, it);
+    readFiles(directory, read_audio_data, it);
   }
 }
 
