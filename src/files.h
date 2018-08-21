@@ -51,6 +51,7 @@ class Files {
   Gui::WindowMain* parent_window_;
   std::string current_filepath_;
   int processed_files_;
+  int total_files_;
   bool stop_processing_;
 };
 
