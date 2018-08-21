@@ -35,10 +35,10 @@ inline void Files::readFiles(const std::string& directory,
   std::vector<DirectoryEntry> dir_entries;
   for (const auto& entry: it) {
     if (!entry.is_regular_file()) continue;
-    current_filepath_ = entry.path();
-    File::FileType filetype = File::getAudioExtension(current_filepath_);
+    std::string filepath = entry.path();
+    File::FileType filetype = File::getAudioExtension(filepath);
     if (filetype == File::FileType::kInvalid) continue;
-    dir_entries.emplace_back(current_filepath_, filetype);
+    dir_entries.emplace_back(filepath, filetype);
   }
 
   for (const auto& entry: dir_entries) {
