@@ -44,11 +44,6 @@ Files::Files(const std::string& directory, bool recurse, bool read_audio_data) {
 }
 
 bool Files::saveFile(int idx, bool rename_file) {
-  if (idx >= (int)files_.size()) {
-    errors_.emplace_back(std::string("Index: ") + std::to_string(idx),
-                         "Invalid file index to save.");
-    return false;
-  }
   files_[idx].saveFileChanges(rename_file);
   if (files_[idx]) return true;
   errors_.emplace_back(files_[idx].getFilepath(),
