@@ -31,9 +31,10 @@ Files::Error::Error(const std::string& filepath,
                     const std::string& error_message) :
     filepath_(filepath), error_message_(error_message) {}
 
-Files::Files() {}
-
-Files::Files(const std::string& directory, bool recurse, bool read_audio_data) {
+void Files::readDirectory(const std::string& directory, bool recurse,
+                          bool read_audio_data) {
+  errors_.clear();
+  files_.clear();
   if (recurse) {
     std::filesystem::recursive_directory_iterator it;
     readFiles(directory, read_audio_data, it);

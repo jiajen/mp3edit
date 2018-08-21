@@ -101,9 +101,9 @@ void WindowMain::openDirDialog() {
 }
 
 void WindowMain::loadEntryDir() {
-  files_ = Files::Files(entry_dir_->get_text(),
-                        checkbox_read_subdir_->get_active(),
-                        checkbox_read_audio_->get_active());
+  files_.readDirectory(entry_dir_->get_text(),
+                       checkbox_read_subdir_->get_active(),
+                       checkbox_read_audio_->get_active());
   treeview_files_->populateTreeView();
 }
 

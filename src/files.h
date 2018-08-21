@@ -13,12 +13,12 @@ class Files {
  private:
   class Error;
  public:
-  Files();
-  Files(const std::string& directory, bool recurse, bool read_audio_data);
   inline std::vector<File::File>::iterator begin() { return files_.begin(); }
   inline std::vector<File::File>::iterator end() { return files_.end(); }
   inline File::File& operator[](int idx) { return files_[idx]; }
   inline const std::vector<Error>& getErrorList() const { return errors_; }
+  void readDirectory(const std::string& directory, bool recurse,
+                     bool read_audio_data);
   bool saveFile(int idx, bool rename_file, bool clear_error_message = true);
   // Only save files that are valid as invalidated files (due to save errors)
   // will still exist in the vector and in order.
