@@ -72,5 +72,10 @@ bool Files::saveAllFiles(bool rename_file) {
   return errors_.empty();
 }
 
+void Files::stopOperation() {
+  std::lock_guard<std::mutex> lock(mutex_);
+  stop_processing_ = true;
+}
+
 }  // namespace Files
 }  // namespace Mp3Edit
