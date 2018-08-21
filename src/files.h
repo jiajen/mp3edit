@@ -21,9 +21,8 @@ class Files {
  private:
   class Error;
  public:
-  inline std::vector<File::File>::iterator begin() { return files_.begin(); }
-  inline std::vector<File::File>::iterator end() { return files_.end(); }
   inline File::File& operator[](int idx) { return files_[idx]; }
+  inline int size() const { return files_.size(); }
   inline const std::vector<Error>& getErrorList() const { return errors_; }
   void readDirectory(const std::string& directory, bool recurse,
                      bool read_audio_data);

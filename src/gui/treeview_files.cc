@@ -139,7 +139,7 @@ void TreeViewFiles::populateTreeView() {
   unSelectRow();
   liststore_->clear();
   edit_type_ = EditType::kUnedited;
-  appendValidRows();
+  appendValidRows(-1);
   disable_signals_ = false;
 }
 
@@ -177,9 +177,10 @@ void TreeViewFiles::saveAllFiles(bool rename_file) {
   if (!files_.saveAllFiles(rename_file)) {
     bool disable_signals_state = disable_signals_;
     disable_signals_ = true;
+    int pos = (current_row_) ? (*current_row_)[columns_.pos()] : -1;
     unSelectRow();
     liststore_->clear();
-    appendValidRows();
+    appendValidRows(pos);
     disable_signals_ = disable_signals_state;
     // TODO show error.
   }
@@ -190,20 +191,20 @@ void TreeViewFiles::saveAllFiles(bool rename_file) {
   }
 }
 
-void TreeViewFiles::appendValidRows() {
-  int n = 0;
-  for (const File::File& file: files_) {
-    if (!file) continue;
+void TreeViewFiles::appendValidRows(int selected_pos) {
+  for (int i = 0, n = files_.size(); i < n; i++) {
+    if (!files_[i]) continue;
     Gtk::TreeModel::Row row = *(liststore_->append());
-    row[columns_.pos()] = n++;
-    row[columns_.title()] = file.getTitle();
-    row[columns_.artist()] = file.getArtist();
-    row[columns_.album()] = file.getAlbum();
-    row[columns_.track()] = file.getTrack();
-    row[columns_.bitrate()] = file.getBitrate();
-    row[columns_.samplingRate()] = file.getSamplingRate();
-    row[columns_.channelMode()] = file.getChannelMode();
-    row[columns_.filepath()] = file.getFilepath();
+    if (i == selected_pos) treeselection_->select(row);
+    row[columns_.pos()] = i;
+    row[columns_.title()] = files_[i].getTitle();
+    row[columns_.artist()] = files_[i].getArtist();
+    row[columns_.album()] = files_[i].getAlbum();
+    row[columns_.track()] = files_[i].getTrack();
+    row[columns_.bitrate()] = files_[i].getBitrate();
+    row[columns_.samplingRate()] = files_[i].getSamplingRate();
+    row[columns_.channelMode()] = files_[i].getChannelMode();
+    row[columns_.filepath()] = files_[i].getFilepath();
   }
 }
 
