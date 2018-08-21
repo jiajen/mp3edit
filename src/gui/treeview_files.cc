@@ -136,6 +136,7 @@ void TreeViewFiles::storeAndUpdateEntryData() {
 
 void TreeViewFiles::populateTreeView() {
   disable_signals_ = true;
+  progressbar_main_->set_fraction(0);
   current_row_ = Gtk::TreeModel::iterator();
   edit_type_ = EditType::kUnedited;
   liststore_->clear();
