@@ -8,6 +8,21 @@
 namespace Mp3Edit {
 namespace Files {
 
+namespace {
+
+class DirectoryEntry {
+ public:
+  DirectoryEntry(const std::string& path, File::FileType& filetype)
+      : filetype_(filetype), path_(path) {}
+  inline File::FileType getFiletype() const { return filetype_; }
+  inline const std::string& getPath() const { return path_; }
+ private:
+  File::FileType filetype_;
+  std::string path_;
+};
+
+}  // namespace
+
 template <class T>
 inline void Files::readFiles(const std::string& directory,
                              bool read_audio_data, T& it) {
@@ -16,14 +31,20 @@ inline void Files::readFiles(const std::string& directory,
   } catch (const std::filesystem::filesystem_error&) {
     return;
   }
+
+  std::vector<DirectoryEntry> dir_entries;
   for (const auto& entry: it) {
     if (!entry.is_regular_file()) continue;
     current_filepath_ = entry.path();
     File::FileType filetype = File::getAudioExtension(current_filepath_);
     if (filetype == File::FileType::kInvalid) continue;
-    files_.emplace_back(current_filepath_, filetype, read_audio_data);
+    dir_entries.emplace_back(current_filepath_, filetype);
+  }
+
+  for (const auto& entry: dir_entries) {
+    files_.emplace_back(entry.getPath(), entry.getFiletype(), read_audio_data);
     if (!files_.back()) {
-      errors_.emplace_back(current_filepath_, files_.back().getErrorMessage());
+      errors_.emplace_back(entry.getPath(), files_.back().getErrorMessage());
       files_.pop_back();
     }
   }
