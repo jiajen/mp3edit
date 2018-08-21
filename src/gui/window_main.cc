@@ -63,9 +63,11 @@ WindowMain::WindowMain(BaseObjectType* cobject,
 }
 
 void WindowMain::toggleLoadingMode(bool enter_loading_mode) {
-  entry_dir_->set_sensitive(!enter_loading_mode);
+  checkbox_read_subdir_->set_sensitive(!enter_loading_mode);
+  checkbox_read_audio_->set_sensitive(!enter_loading_mode);
   btn_dir_open_->set_sensitive(!enter_loading_mode);
   btn_dir_refresh_->set_sensitive(!enter_loading_mode);
+  entry_dir_->set_sensitive(!enter_loading_mode);
   treeview_files_->set_sensitive(!enter_loading_mode);
   entry_song_title_->set_sensitive(!enter_loading_mode);
   entry_song_artist_->set_sensitive(!enter_loading_mode);
@@ -74,6 +76,8 @@ void WindowMain::toggleLoadingMode(bool enter_loading_mode) {
   entry_song_track_denum_->set_sensitive(!enter_loading_mode);
   btn_song_save_single_->set_sensitive(!enter_loading_mode);
   btn_song_save_all_->set_sensitive(!enter_loading_mode);
+  btn_song_search_web_->set_sensitive(!enter_loading_mode);
+  checkbox_rename_file_->set_sensitive(!enter_loading_mode);
 }
 
 void WindowMain::openDirDialog() {
