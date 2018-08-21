@@ -43,7 +43,7 @@ inline void Files::readFiles(const std::string& directory,
 
   beginProgress(dir_entries.size());
   for (int i = 0, n = dir_entries.size(); i < n; i++) {
-    updateProgress(dir_entries[i].getPath(), i+1);
+    if (!updateProgress(dir_entries[i].getPath(), i+1)) return;
     files_.emplace_back(dir_entries[i].getPath(), dir_entries[i].getFiletype(),
                         read_audio_data);
     if (!files_.back()) {
@@ -103,7 +103,8 @@ bool Files::saveAllFiles(bool rename_file) {
   int processing_file_idx = 0;
   for (int i = 0, n = files_.size(); i < n; i++) {
     if (files_[i]) {
-      updateProgress(files_[i].getFilepath(), ++processing_file_idx);
+      if (!updateProgress(files_[i].getFilepath(), ++processing_file_idx))
+        return errors_.empty();
       saveFile(i, rename_file, false);
     }
   }
