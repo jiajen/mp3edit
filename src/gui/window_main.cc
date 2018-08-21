@@ -12,7 +12,8 @@ using File::File;
 
 WindowMain::WindowMain(BaseObjectType* cobject,
                        const Glib::RefPtr<Gtk::Builder>& builder)
-    : Gtk::Window(cobject), files_(this), builder_(builder) {
+    : Gtk::Window(cobject), files_(this),
+      processing_mode_(ProcessingMode::kReady), builder_(builder) {
   builder_->get_widget("checkbox_read_subdir", checkbox_read_subdir_);
   builder_->get_widget("checkbox_read_audio", checkbox_read_audio_);
 
@@ -60,6 +61,10 @@ WindowMain::WindowMain(BaseObjectType* cobject,
 
   builder_->get_widget("checkbox_rename_file", checkbox_rename_file_);
 
+}
+
+void WindowMain::changeProcessingMode(ProcessingMode processing_mode) {
+  processing_mode_ = processing_mode;
 }
 
 void WindowMain::toggleLoadingMode(bool enter_loading_mode) {
