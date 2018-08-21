@@ -19,12 +19,17 @@ class WindowMain: public Gtk::Window {
  public:
   WindowMain(BaseObjectType* cobject,
              const Glib::RefPtr<Gtk::Builder>& builder);
+  // Loading mode is for disabling user actions (except cancel).
+  // This is used when a long running action is initiated.
+  inline void enterLoadingMode() { toggleLoadingMode(true); }
+  inline void exitLoadingMode() { toggleLoadingMode(false); }
  private:
   void openDirDialog();
   void loadEntryDir();
   void onSaveFileBtnPress();
   void onSaveAllFilesBtnPress();
   void onCancelBtnPress();
+  void toggleLoadingMode(bool enter_loading_mode);
 
   Files::Files files_;
 

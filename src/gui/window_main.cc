@@ -58,6 +58,20 @@ WindowMain::WindowMain(BaseObjectType* cobject,
 
 }
 
+void WindowMain::toggleLoadingMode(bool enter_loading_mode) {
+  entry_dir_->set_sensitive(!enter_loading_mode);
+  btn_dir_open_->set_sensitive(!enter_loading_mode);
+  btn_dir_refresh_->set_sensitive(!enter_loading_mode);
+  treeview_files_->set_sensitive(!enter_loading_mode);
+  entry_song_title_->set_sensitive(!enter_loading_mode);
+  entry_song_artist_->set_sensitive(!enter_loading_mode);
+  entry_song_album_->set_sensitive(!enter_loading_mode);
+  entry_song_track_num_->set_sensitive(!enter_loading_mode);
+  entry_song_track_denum_->set_sensitive(!enter_loading_mode);
+  btn_song_save_single_->set_sensitive(!enter_loading_mode);
+  btn_song_save_all_->set_sensitive(!enter_loading_mode);
+}
+
 void WindowMain::openDirDialog() {
   Gtk::FileChooserDialog dir_chooser("Select a directory",
                                      Gtk::FILE_CHOOSER_ACTION_SELECT_FOLDER);
