@@ -64,6 +64,13 @@ WindowMain::WindowMain(BaseObjectType* cobject,
 }
 
 void WindowMain::changeProcessingMode(ProcessingMode processing_mode) {
+  if (processing_mode_ == ProcessingMode::kReady &&
+      processing_mode != ProcessingMode::kReady) {
+    toggleLoadingMode(true);
+  } else if (processing_mode_ != ProcessingMode::kReady &&
+             processing_mode == ProcessingMode::kReady) {
+    toggleLoadingMode(false);
+  }
   processing_mode_ = processing_mode;
 }
 
