@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <filesystem>
 
+#include "mp3edit/src/gui/window_main.h"
+
 namespace Mp3Edit {
 namespace Files {
 

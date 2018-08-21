@@ -3,10 +3,18 @@
 
 #include <string>
 #include <vector>
+#include <mutex>
 
 #include "mp3edit/src/file.h"
 
 namespace Mp3Edit {
+
+// WindowMain is used to callback its member function when a threaded operation
+// is running.
+namespace Gui {
+  class WindowMain;
+}  // namespace Gui
+
 namespace Files {
 
 class Files {
@@ -37,6 +45,13 @@ class Files {
   void readFiles(const std::string& directory, bool read_audio_data, T& it);
   std::vector<Error> errors_;
   std::vector<File::File> files_;
+
+  // Multi-threading
+  std::mutex mutex_;
+  Gui::WindowMain* parent_window_;
+  std::string current_filepath_;
+  int processed_files_;
+  bool stop_processing_;
 };
 
 }  // namespace Files
