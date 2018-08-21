@@ -36,6 +36,7 @@ WindowMain::WindowMain(BaseObjectType* cobject,
 
   builder_->get_widget("progressbar_main", progressbar_main_);
   progressbar_main_->set_show_text(true);
+  progressbar_main_->set_text("");
   builder_->get_widget("btn_cancel_action", btn_cancel_action_);
   btn_cancel_action_->signal_clicked().connect(
     sigc::mem_fun(*this, &WindowMain::onCancelBtnPress));
