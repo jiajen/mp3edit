@@ -41,10 +41,14 @@ inline void Files::readFiles(const std::string& directory,
     dir_entries.emplace_back(filepath, filetype);
   }
 
-  for (const auto& entry: dir_entries) {
-    files_.emplace_back(entry.getPath(), entry.getFiletype(), read_audio_data);
+  beginProgress(dir_entries.size());
+  for (int i = 0, n = dir_entries.size(); i < n; i++) {
+    updateProgress(dir_entries[i].getPath(), i+1);
+    files_.emplace_back(dir_entries[i].getPath(), dir_entries[i].getFiletype(),
+                        read_audio_data);
     if (!files_.back()) {
-      errors_.emplace_back(entry.getPath(), files_.back().getErrorMessage());
+      errors_.emplace_back(dir_entries[i].getPath(),
+                           files_.back().getErrorMessage());
       files_.pop_back();
     }
   }
