@@ -19,8 +19,10 @@ class Files {
   inline std::vector<File::File>::iterator end() { return files_.end(); }
   inline File::File& operator[](int idx) { return files_[idx]; }
   inline std::vector<Error> getErrorList() { return errors_; }
-  inline void clearErrorLog() { errors_.clear(); }
-  bool saveFile(int idx, bool rename_file);
+  bool saveFile(int idx, bool rename_file, bool clear_error_message = true);
+  // Only save files that are valid as invalidated files (due to save errors)
+  // will still exist in the vector and in order.
+  bool saveAllFiles(bool rename_file);
  private:
   class Error {
    public:

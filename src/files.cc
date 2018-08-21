@@ -43,12 +43,21 @@ Files::Files(const std::string& directory, bool recurse, bool read_audio_data) {
   }
 }
 
-bool Files::saveFile(int idx, bool rename_file) {
+bool Files::saveFile(int idx, bool rename_file, bool clear_error_message) {
+  if (clear_error_message) errors_.clear();
   files_[idx].saveFileChanges(rename_file);
   if (files_[idx]) return true;
   errors_.emplace_back(files_[idx].getFilepath(),
                        files_[idx].getErrorMessage());
   return false;
+}
+
+bool Files::saveAllFiles(bool rename_file) {
+  errors_.clear();
+  for (int i = 0, n = files_.size(); i < n; i++) {
+    if (files_[i]) saveFile(i, rename_file, false);
+  }
+  return errors_.empty();
 }
 
 }  // namespace Files
