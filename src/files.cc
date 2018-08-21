@@ -40,6 +40,8 @@ std::string Files::fileOperationStatus(int& processed_files, int& total_files) {
   return std::filesystem::path(current_filepath_).filename();
 }
 
+Files::Files(Gui::WindowMain* parent_window): parent_window_(parent_window) {}
+
 void Files::readDirectory(const std::string& directory, bool recurse,
                           bool read_audio_data) {
   errors_.clear();

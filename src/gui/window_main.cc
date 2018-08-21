@@ -12,7 +12,7 @@ using File::File;
 
 WindowMain::WindowMain(BaseObjectType* cobject,
                        const Glib::RefPtr<Gtk::Builder>& builder)
-    : Gtk::Window(cobject), builder_(builder) {
+    : Gtk::Window(cobject), files_(this), builder_(builder) {
   builder_->get_widget("checkbox_read_subdir", checkbox_read_subdir_);
   builder_->get_widget("checkbox_read_audio", checkbox_read_audio_);
 

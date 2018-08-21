@@ -21,6 +21,7 @@ class Files {
  private:
   class Error;
  public:
+  Files(Gui::WindowMain* parent_window);
   inline File::File& operator[](int idx) { return files_[idx]; }
   inline int size() const { return files_.size(); }
   inline const std::vector<Error>& getErrorList() const { return errors_; }
