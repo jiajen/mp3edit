@@ -98,5 +98,19 @@ void Files::stopOperation() {
   stop_processing_ = true;
 }
 
+void Files::beginProgress(int total_files) {
+  std::lock_guard<std::mutex> lock(mutex_);
+  stop_processing_ = false;
+  total_files_ = total_files;
+}
+
+bool Files::updateProgress(const std::string& filepath, int processing_file) {
+  std::lock_guard<std::mutex> lock(mutex_);
+  if (stop_processing_) return false;
+  current_filepath_ = filepath;
+  processed_files_ = processing_file;
+  return true;
+}
+
 }  // namespace Files
 }  // namespace Mp3Edit

@@ -45,8 +45,15 @@ class Files {
     std::string filepath_;
     std::string error_message_;
   };
+
   template <class T>
   void readFiles(const std::string& directory, bool read_audio_data, T& it);
+
+  // Mutexed functions
+  void beginProgress(int total_files);
+  // Check if operation has been stopped.
+  bool updateProgress(const std::string& filepath, int processing_file);
+
   std::vector<Error> errors_;
   std::vector<File::File> files_;
 
