@@ -34,6 +34,11 @@ WindowMain::WindowMain(BaseObjectType* cobject,
   builder_->get_widget("entry_song_track_num", entry_song_track_num_);
   builder_->get_widget("entry_song_track_denum", entry_song_track_denum_);
 
+  builder_->get_widget("progressbar_main", progressbar_main_);
+  builder_->get_widget("btn_cancel_action", btn_cancel_action_);
+  btn_cancel_action_->signal_clicked().connect(
+    sigc::mem_fun(*this, &WindowMain::onCancelBtnPress));
+
   builder_->get_widget_derived("gtk_treeview_files", treeview_files_, files_,
                                entry_song_title_, entry_song_artist_,
                                entry_song_album_, entry_song_track_num_,
@@ -49,10 +54,6 @@ WindowMain::WindowMain(BaseObjectType* cobject,
 
   builder_->get_widget("checkbox_rename_file", checkbox_rename_file_);
 
-  builder_->get_widget("progressbar_main", progressbar_main_);
-  builder_->get_widget("btn_cancel_action", btn_cancel_action_);
-  btn_cancel_action_->signal_clicked().connect(
-    sigc::mem_fun(*this, &WindowMain::onCancelBtnPress));
 }
 
 void WindowMain::openDirDialog() {
