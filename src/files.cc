@@ -91,8 +91,19 @@ bool Files::saveFile(int idx, bool rename_file, bool clear_error_message) {
 
 bool Files::saveAllFiles(bool rename_file) {
   errors_.clear();
+
+  int total_files = 0;
+  for (const auto& file: files_) {
+    if (file) total_files++;
+  }
+  beginProgress(total_files);
+
+  int processing_file_idx = 0;
   for (int i = 0, n = files_.size(); i < n; i++) {
-    if (files_[i]) saveFile(i, rename_file, false);
+    if (files_[i]) {
+      updateProgress(files_[i].getFilepath(), ++processing_file_idx);
+      saveFile(i, rename_file, false);
+    }
   }
   return errors_.empty();
 }
