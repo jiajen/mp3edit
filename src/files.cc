@@ -129,6 +129,7 @@ bool Files::updateProgress(const std::string& filepath, int processing_file) {
   }
   current_filepath_ = filepath;
   processed_files_ = processing_file;
+  parent_window_->notifyProgressChange();
   return true;
 }
 
