@@ -136,10 +136,10 @@ void TreeViewFiles::storeAndUpdateEntryData() {
 
 void TreeViewFiles::populateTreeView() {
   disable_signals_ = true;
+  unSelectRow();
   liststore_->clear();
   edit_type_ = EditType::kUnedited;
   appendValidRows();
-  unSelectRow();
   disable_signals_ = false;
 }
 
@@ -161,8 +161,8 @@ void TreeViewFiles::saveSelectedFile(bool rename_file) {
   if (!files_.saveFile(pos, rename_file)) {
     bool disable_signals_state = disable_signals_;
     disable_signals_ = true;
-    unSelectRow();
     liststore_->erase(current_row_);
+    unSelectRow();
     disable_signals_ = disable_signals_state;
     // TODO show error.
   }
