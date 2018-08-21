@@ -139,19 +139,7 @@ void TreeViewFiles::populateTreeView() {
   current_row_ = Gtk::TreeModel::iterator();
   edit_type_ = EditType::kUnedited;
   liststore_->clear();
-  int n = 0;
-  for (const File::File& file: files_) {
-    Gtk::TreeModel::Row row = *(liststore_->append());
-    row[columns_.pos()] = n++;
-    row[columns_.title()] = file.getTitle();
-    row[columns_.artist()] = file.getArtist();
-    row[columns_.album()] = file.getAlbum();
-    row[columns_.track()] = file.getTrack();
-    row[columns_.bitrate()] = file.getBitrate();
-    row[columns_.samplingRate()] = file.getSamplingRate();
-    row[columns_.channelMode()] = file.getChannelMode();
-    row[columns_.filepath()] = file.getFilepath();
-  }
+  appendValidRows();
   entry_song_title_->set_text(Glib::ustring());
   entry_song_artist_->set_text(Glib::ustring());
   entry_song_album_->set_text(Glib::ustring());
@@ -207,6 +195,22 @@ void TreeViewFiles::saveAllFiles(bool rename_file) {
     for (auto it = children.begin(); it != children.end(); it++) {
       (*it)[columns_.filepath()] = files_[(*it)[columns_.pos()]].getFilepath();
     }
+  }
+}
+
+void TreeViewFiles::appendValidRows() {
+  int n = 0;
+  for (const File::File& file: files_) {
+    Gtk::TreeModel::Row row = *(liststore_->append());
+    row[columns_.pos()] = n++;
+    row[columns_.title()] = file.getTitle();
+    row[columns_.artist()] = file.getArtist();
+    row[columns_.album()] = file.getAlbum();
+    row[columns_.track()] = file.getTrack();
+    row[columns_.bitrate()] = file.getBitrate();
+    row[columns_.samplingRate()] = file.getSamplingRate();
+    row[columns_.channelMode()] = file.getChannelMode();
+    row[columns_.filepath()] = file.getFilepath();
   }
 }
 

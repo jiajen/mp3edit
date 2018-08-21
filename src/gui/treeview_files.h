@@ -78,6 +78,7 @@ class TreeViewFiles: public Gtk::TreeView {
   void updateEntryFromFileMem();
   void onRowSelect();
   void unSelectRow();
+  void appendValidRows();
 
   Files::Files& files_;
 
