@@ -82,6 +82,8 @@ void Files::readDirectory(const std::string& directory, bool recurse,
 
 bool Files::saveFile(int idx, bool rename_file, bool clear_error_message) {
   if (clear_error_message) errors_.clear();
+  beginProgress(1);
+  updateProgress(files_[idx].getFilepath(), 1);
   files_[idx].saveFileChanges(rename_file);
   if (files_[idx]) return true;
   errors_.emplace_back(files_[idx].getFilepath(),
