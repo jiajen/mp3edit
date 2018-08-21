@@ -29,6 +29,7 @@ class WindowMain: public Gtk::Window {
   void onSaveFileBtnPress();
   void onSaveAllFilesBtnPress();
   void onCancelBtnPress();
+  void onSearchWebBtnPress();
   void toggleLoadingMode(bool enter_loading_mode);
 
   Files::Files files_;
@@ -45,6 +46,7 @@ class WindowMain: public Gtk::Window {
   Gtk::Entry* entry_song_album_;
   Gtk::Entry* entry_song_track_num_;
   Gtk::Entry* entry_song_track_denum_;
+  Gtk::Button* btn_song_search_web_;
   Gtk::Button* btn_song_save_single_;
   Gtk::Button* btn_song_save_all_;
   Gtk::CheckButton* checkbox_rename_file_;

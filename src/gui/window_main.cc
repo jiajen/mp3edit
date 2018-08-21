@@ -46,6 +46,10 @@ WindowMain::WindowMain(BaseObjectType* cobject,
                                entry_song_album_, entry_song_track_num_,
                                entry_song_track_denum_, progressbar_main_);
 
+  builder_->get_widget("btn_song_search_web", btn_song_search_web_);
+  btn_song_search_web_->signal_clicked().connect(
+    sigc::mem_fun(*this, &WindowMain::onSearchWebBtnPress));
+
   builder_->get_widget("btn_song_save_single", btn_song_save_single_);
   btn_song_save_single_->signal_clicked().connect(
     sigc::mem_fun(*this, &WindowMain::onSaveFileBtnPress));
@@ -105,6 +109,10 @@ void WindowMain::onSaveFileBtnPress() {
 
 void WindowMain::onSaveAllFilesBtnPress() {
   treeview_files_->saveAllFiles(checkbox_rename_file_->get_active());
+}
+
+void WindowMain::onSearchWebBtnPress() {
+  // TODO
 }
 
 void WindowMain::onCancelBtnPress() {
