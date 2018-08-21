@@ -132,7 +132,7 @@ void WindowMain::onSearchWebBtnPress() {
 }
 
 void WindowMain::onCancelBtnPress() {
-  // TODO
+  files_.stopOperation();
 }
 
 }  // namespace Gui
