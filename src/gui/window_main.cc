@@ -37,7 +37,7 @@ WindowMain::WindowMain(BaseObjectType* cobject,
   builder_->get_widget_derived("gtk_treeview_files", treeview_files_, files_,
                                entry_song_title_, entry_song_artist_,
                                entry_song_album_, entry_song_track_num_,
-                               entry_song_track_denum_);
+                               entry_song_track_denum_, progressbar_main_);
 
   builder_->get_widget("btn_song_save_single", btn_song_save_single_);
   btn_song_save_single_->signal_clicked().connect(
@@ -48,6 +48,11 @@ WindowMain::WindowMain(BaseObjectType* cobject,
     sigc::mem_fun(*this, &WindowMain::onSaveAllFilesBtnPress));
 
   builder_->get_widget("checkbox_rename_file", checkbox_rename_file_);
+
+  builder_->get_widget("progressbar_main", progressbar_main_);
+  builder_->get_widget("btn_cancel_action", btn_cancel_action_);
+  btn_cancel_action_->signal_clicked().connect(
+    sigc::mem_fun(*this, &WindowMain::onCancelBtnPress));
 }
 
 void WindowMain::openDirDialog() {
@@ -83,6 +88,10 @@ void WindowMain::onSaveFileBtnPress() {
 
 void WindowMain::onSaveAllFilesBtnPress() {
   treeview_files_->saveAllFiles(checkbox_rename_file_->get_active());
+}
+
+void WindowMain::onCancelBtnPress() {
+  // TODO
 }
 
 }  // namespace Gui

@@ -6,6 +6,7 @@
 #include <gtkmm/checkbutton.h>
 #include <gtkmm/button.h>
 #include <gtkmm/entry.h>
+#include <gtkmm/progressbar.h>
 
 #include "mp3edit/src/file.h"
 #include "mp3edit/src/files.h"
@@ -23,6 +24,7 @@ class WindowMain: public Gtk::Window {
   void loadEntryDir();
   void onSaveFileBtnPress();
   void onSaveAllFilesBtnPress();
+  void onCancelBtnPress();
 
   Files::Files files_;
 
@@ -41,6 +43,8 @@ class WindowMain: public Gtk::Window {
   Gtk::Button* btn_song_save_single_;
   Gtk::Button* btn_song_save_all_;
   Gtk::CheckButton* checkbox_rename_file_;
+  Gtk::ProgressBar* progressbar_main_;
+  Gtk::Button* btn_cancel_action_;
 };
 
 }  // namespace Gui

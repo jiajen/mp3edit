@@ -67,11 +67,13 @@ TreeViewFiles::TreeViewFiles(BaseObjectType* cobject,
                              Gtk::Entry* entry_title, Gtk::Entry* entry_artist,
                              Gtk::Entry* entry_album,
                              Gtk::Entry* entry_track_num,
-                             Gtk::Entry* entry_track_denum)
+                             Gtk::Entry* entry_track_denum,
+                             Gtk::ProgressBar* progressbar_main)
     : Gtk::TreeView(cobject), files_(files), entry_song_title_(entry_title),
       entry_song_artist_(entry_artist), entry_song_album_(entry_album),
       entry_song_track_num_(entry_track_num),
       entry_song_track_denum_(entry_track_denum),
+      progressbar_main_(progressbar_main),
       disable_signals_(true) {
   treeselection_ = this->get_selection();
 
