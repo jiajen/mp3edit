@@ -158,13 +158,6 @@ void TreeViewFiles::populateTreeView() {
   disable_signals_ = false;
 }
 
-void TreeViewFiles::saveSelectedFile(bool rename_file) {
-  if (!current_row_) return;
-  storeAndUpdateEntryData();
-  Gtk::TreeModel::Row row = *current_row_;
-  saveSelectedFile(row, rename_file, true);
-}
-
 void TreeViewFiles::unSelectRow() {
   if (current_row_) treeselection_->unselect(current_row_);
   current_row_ = Gtk::TreeModel::iterator();
@@ -175,35 +168,43 @@ void TreeViewFiles::unSelectRow() {
   entry_song_track_denum_->set_text(Glib::ustring());
 }
 
-void TreeViewFiles::saveSelectedFile(Gtk::TreeModel::Row& row,
-                                     bool rename_file, bool is_single_file) {
-  if (is_single_file) files_.clearErrorLog();
-  int pos = row[columns_.pos()];
+void TreeViewFiles::saveSelectedFile(bool rename_file) {
+  if (!current_row_) return;
+  storeAndUpdateEntryData();
+  int pos = (*current_row_)[columns_.pos()];
+
   if (!files_.saveFile(pos, rename_file)) {
     bool disable_signals_state = disable_signals_;
     disable_signals_ = true;
-    if (is_single_file) unSelectRow();
-    liststore_->erase(row);
+    unSelectRow();
+    liststore_->erase(current_row_);
     disable_signals_ = disable_signals_state;
-    if (is_single_file) {
-      // TODO show error.
-    }
-    return;
+    // TODO show error.
   }
-  row[columns_.filepath()] = files_[pos].getFilepath();
+  if (rename_file && files_[pos]) {
+    (*current_row_)[columns_.filepath()] = files_[pos].getFilepath();
+  }
 }
 
 void TreeViewFiles::saveAllFiles(bool rename_file) {
-  files_.clearErrorLog();
   if (current_row_) storeAndUpdateEntryData();
   Gtk::TreeModel::Children children = liststore_->children();
-  for (auto it = children.begin(); it != children.end(); it++) {
-    Gtk::TreeModel::Row row = *it;
-    saveSelectedFile(row, rename_file, false);
-  }
-  if (!files_.getErrorList().empty()) {
+  if (!files_.saveAllFiles(rename_file)) {
+    bool disable_signals_state = disable_signals_;
+    disable_signals_ = true;
     unSelectRow();
+    for (int i = children.size()-1; i >= 0; i--) {
+      if (!files_[children[i][columns_.pos()]]) {
+        liststore_->erase(children[i]);
+      }
+    }
+    disable_signals_ = disable_signals_state;
     // TODO show error.
+  }
+  if (rename_file) {
+    for (auto it = children.begin(); it != children.end(); it++) {
+      (*it)[columns_.filepath()] = files_[(*it)[columns_.pos()]].getFilepath();
+    }
   }
 }
 
