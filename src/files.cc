@@ -18,12 +18,12 @@ inline void Files::readFiles(const std::string& directory,
   }
   for (const auto& entry: it) {
     if (!entry.is_regular_file()) continue;
-    std::string path = entry.path();
-    File::FileType filetype = File::getAudioExtension(path);
+    current_filepath_ = entry.path();
+    File::FileType filetype = File::getAudioExtension(current_filepath_);
     if (filetype == File::FileType::kInvalid) continue;
-    files_.emplace_back(path, filetype, read_audio_data);
+    files_.emplace_back(current_filepath_, filetype, read_audio_data);
     if (!files_.back()) {
-      errors_.emplace_back(path, files_.back().getErrorMessage());
+      errors_.emplace_back(current_filepath_, files_.back().getErrorMessage());
       files_.pop_back();
     }
   }
