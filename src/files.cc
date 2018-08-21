@@ -33,6 +33,13 @@ Files::Error::Error(const std::string& filepath,
                     const std::string& error_message) :
     filepath_(filepath), error_message_(error_message) {}
 
+std::string Files::fileOperationStatus(int& processed_files, int& total_files) {
+  std::lock_guard<std::mutex> lock(mutex_);
+  processed_files = processed_files_;
+  total_files = total_files_;
+  return std::filesystem::path(current_filepath_).filename();
+}
+
 void Files::readDirectory(const std::string& directory, bool recurse,
                           bool read_audio_data) {
   errors_.clear();
