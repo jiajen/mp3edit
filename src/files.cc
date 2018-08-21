@@ -110,7 +110,10 @@ void Files::beginProgress(int total_files) {
 
 bool Files::updateProgress(const std::string& filepath, int processing_file) {
   std::lock_guard<std::mutex> lock(mutex_);
-  if (stop_processing_) return false;
+  if (stop_processing_) {
+    processed_files_ = processing_file-1;
+    return false;
+  }
   current_filepath_ = filepath;
   processed_files_ = processing_file;
   return true;
