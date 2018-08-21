@@ -61,6 +61,12 @@ WindowMain::WindowMain(BaseObjectType* cobject,
 
   builder_->get_widget("checkbox_rename_file", checkbox_rename_file_);
 
+  dispatcher_.connect(
+    sigc::mem_fun(*this, &WindowMain::updateProgressBarNotification));
+}
+
+void WindowMain::notifyProgressChange() {
+  dispatcher_.emit();
 }
 
 void WindowMain::changeProcessingMode(ProcessingMode processing_mode) {
@@ -133,6 +139,10 @@ void WindowMain::onSearchWebBtnPress() {
 
 void WindowMain::onCancelBtnPress() {
   files_.stopOperation();
+}
+
+void WindowMain::updateProgressBarNotification() {
+  // TODO
 }
 
 }  // namespace Gui
