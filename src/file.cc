@@ -53,15 +53,16 @@ std::filesystem::path generateTargetPath(const std::string& filepath,
   std::filesystem::path current_path = filepath;
   std::filesystem::path target_path = current_path;
   if (!new_filename.empty()) {
-    target_path.replace_filename(new_filename);
-    target_path.replace_extension(kFileSupportedFileTypes[(int)filetype]);
+    target_path.replace_filename(new_filename +
+                                 kFileSupportedFileTypes[(int)filetype]);
   }
 
   if (target_path != current_path) {
     for (int i = 2; std::filesystem::exists(target_path); i++) {
       if (target_path == current_path) break;
-      target_path.replace_filename(new_filename + std::to_string(i));
-      target_path.replace_extension(kFileSupportedFileTypes[(int)filetype]);
+      target_path.replace_filename(new_filename +
+                                   "(" + std::to_string(i) + ")" +
+                                   kFileSupportedFileTypes[(int)filetype]);
     }
   }
   return target_path;
@@ -125,8 +126,9 @@ File::File(const std::string& filepath, FileType filetype,
       sampling_rate_ = -1;
       channel_mode_ = ChannelMode::kInvalid;
     }
-  } catch (const std::exception&) {
+  } catch (const std::exception& ex) {
     is_valid_ = false;
+    error_ = ex.what();
   }
   file_stream.close();
 }
@@ -217,71 +219,81 @@ void File::updateFields(const std::string& title, const std::string& artist,
 }
 
 void File::saveFileChanges(bool rename_file) {
-  using Filesystem::readBytes;
-  Filesystem::FileStream file_stream(filepath_, std::ios::in |
-                                                std::ifstream::binary);
-  if (!file_stream) {
-    throw std::system_error(std::error_code(), "Error accessing file.");
-  }
-
-  Bytes metadata_front, metadata_back, audio_raw;
-  bool skip_writing = false;
   try {
-    switch (filetype_) {
-      using namespace ReaderTag;
-      case FileType::kMp3:
-        metadata_front = Id3v2_3::generateTag(title_, artist_, album_,
-                                              track_num_, track_denum_);
-        metadata_back = Id3v1::generateTag(title_, artist_, album_,
-                                           track_num_, track_denum_);
-        break;
-      case FileType::kFlac:
-        metadata_front = VorbisFlac::generateTag(file_stream,
-                                                 file_container_start_seek_,
-                                                 title_, artist_, album_,
-                                                 track_num_, track_denum_);
-        break;
-      case FileType::kOgg:
-        metadata_front = VorbisOgg::generateTag(file_stream,
-                                                file_container_start_seek_,
-                                                audio_start_,
-                                                title_, artist_, album_,
+    if (!is_valid_) {
+      throw std::system_error(std::error_code(),
+                              "Attempted to save an invalid file.");
+    }
+    using Filesystem::readBytes;
+    Filesystem::FileStream file_stream(filepath_, std::ios::in |
+                                                  std::ifstream::binary);
+    if (!file_stream) {
+      throw std::system_error(std::error_code(), "Error accessing file.");
+    }
+
+    Bytes metadata_front, metadata_back, audio_raw;
+    bool skip_writing = false;
+    try {
+      switch (filetype_) {
+        using namespace ReaderTag;
+        case FileType::kMp3:
+          metadata_front = Id3v2_3::generateTag(title_, artist_, album_,
                                                 track_num_, track_denum_);
-        break;
-      default:
-        break;
-    }
-
-    if ((int)metadata_front.size() == audio_start_ &&
-        filesize_ - (int)metadata_back.size() == audio_end_) {
-      Bytes front_block, back_block;
-      readBytes(file_stream, 0, metadata_front.size(), front_block);
-      readBytes(file_stream, filesize_ - metadata_back.size(),
-                metadata_back.size(), back_block);
-      if (front_block == metadata_front && back_block == metadata_back) {
-        skip_writing = true;
+          metadata_back = Id3v1::generateTag(title_, artist_, album_,
+                                             track_num_, track_denum_);
+          break;
+        case FileType::kFlac:
+          metadata_front = VorbisFlac::generateTag(file_stream,
+                                                   file_container_start_seek_,
+                                                   title_, artist_, album_,
+                                                   track_num_, track_denum_);
+          break;
+        case FileType::kOgg:
+          metadata_front = VorbisOgg::generateTag(file_stream,
+                                                  file_container_start_seek_,
+                                                  audio_start_,
+                                                  title_, artist_, album_,
+                                                  track_num_, track_denum_);
+          break;
+        default:
+          break;
       }
-    }
 
-    if (!skip_writing) {
-      readBytes(file_stream, audio_start_,
-                audio_end_ - audio_start_, audio_raw);
+      if ((int)metadata_front.size() == audio_start_ &&
+          filesize_ - (int)metadata_back.size() == audio_end_) {
+        Bytes front_block, back_block;
+        readBytes(file_stream, 0, metadata_front.size(), front_block);
+        readBytes(file_stream, filesize_ - metadata_back.size(),
+                  metadata_back.size(), back_block);
+        if (front_block == metadata_front && back_block == metadata_back) {
+          skip_writing = true;
+        }
+      }
+
+      if (!skip_writing) {
+        readBytes(file_stream, audio_start_,
+                  audio_end_ - audio_start_, audio_raw);
+      }
+      file_stream.close();
+    } catch (const std::exception& ex) {
+      file_stream.close();
+      throw ex;
     }
-    file_stream.close();
+    if (!skip_writing) {
+      if (!writeFile(audio_raw, metadata_front, metadata_back,
+                     rename_file ?  title_ : ""))
+        throw std::system_error(std::error_code(), "Unable to write.");
+      filesize_ = metadata_front.size() + audio_raw.size() +
+                  metadata_back.size();
+      audio_start_ = metadata_front.size();
+      audio_end_ = metadata_front.size() + audio_raw.size();
+    } else if (rename_file) {
+      filepath_ = renameFile(filepath_,
+                             generateTargetPath(filepath_, title_, filetype_));
+    }
   } catch (const std::exception& ex) {
-    file_stream.close();
-    throw ex;
-  }
-  if (!skip_writing) {
-    if (!writeFile(audio_raw, metadata_front, metadata_back,
-                   rename_file ?  title_ : ""))
-      throw std::system_error(std::error_code(), "Unable to write.");
-    filesize_ = metadata_front.size() + audio_raw.size() + metadata_back.size();
-    audio_start_ = metadata_front.size();
-    audio_end_ = metadata_front.size() + audio_raw.size();
-  } else if (rename_file) {
-    filepath_ = renameFile(filepath_,
-                           generateTargetPath(filepath_, title_, filetype_));
+    error_ = ex.what();
+    is_valid_ = false;
   }
 }
 
@@ -348,8 +360,9 @@ void File::readMetaData(Filesystem::FileStream& file_stream) {
         using VorbisFlac::parseTag;
         using VorbisFlac::extractTag;
         file_container_start_seek_ = audio_start_;
-        parseTag(extractTag(file_stream, audio_start_, seek),
-                 title_, artist_, album_, track_num_, track_denum_);
+        if (!parseTag(extractTag(file_stream, audio_start_, seek),
+                      title_, artist_, album_, track_num_, track_denum_))
+          throw std::system_error(std::error_code(), "Invalid FLAC Tag.");
         audio_start_ = seek;
       } else {
         throw std::system_error(std::error_code(), "Invalid FLAC.");
@@ -361,8 +374,9 @@ void File::readMetaData(Filesystem::FileStream& file_stream) {
         using VorbisOgg::parseTag;
         using VorbisOgg::extractTag;
         file_container_start_seek_ = audio_start_;
-        parseTag(extractTag(file_stream, audio_start_, seek),
-                 title_, artist_, album_, track_num_, track_denum_);
+        if (!parseTag(extractTag(file_stream, audio_start_, seek),
+                      title_, artist_, album_, track_num_, track_denum_))
+          throw std::system_error(std::error_code(), "Invalid OGG Tag.");
         audio_start_ = seek;
       } else {
         throw std::system_error(std::error_code(), "Invalid OGG.");
@@ -396,6 +410,7 @@ void File::readAudioData(Filesystem::FileStream& file_stream) {
                                                 bitrate_, sampling_rate_,
                                                 channel_mode_)) {
         is_valid_ = false;
+        error_ = "Invalid MP3 Audio Data.";
       }
       break;
     case FileType::kFlac:
@@ -411,6 +426,7 @@ void File::readAudioData(Filesystem::FileStream& file_stream) {
                                                 bitrate_, sampling_rate_,
                                                 channel_mode_)) {
         is_valid_ = false;
+        error_ = "Invalid Ogg Audio Data.";
       }
       break;
     default:

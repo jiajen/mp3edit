@@ -59,11 +59,13 @@ int skipMetadataBlock(Filesystem::FileStream& file_stream, int seek,
 
 }  // namespace
 
-void parseTag(const Bytes& tag, std::string& title, std::string& artist,
+bool parseTag(const Bytes& tag, std::string& title, std::string& artist,
               std::string& album, int& track_num, int& track_denum) {
-  if (tag.empty()) return;
-  VorbisShared::parseTag(tag, kBlockHeaderLength, false, false,
-                         title, artist, album, track_num, track_denum);
+  if (tag.empty()) return true;
+  using VorbisShared::parseTag;
+  int res = parseTag(tag, kBlockHeaderLength, false, false,
+                     title, artist, album, track_num, track_denum);
+  return (res != -1);
 }
 
 Bytes extractTag(Filesystem::FileStream& file_stream,

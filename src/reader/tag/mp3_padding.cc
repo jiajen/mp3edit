@@ -25,9 +25,14 @@ int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek) {
   Bytes buffer;
   Filesystem::readBytes(file_stream, seek, 1, buffer);
   old_byte = buffer[0];
-  do {
-    Filesystem::readBytes(file_stream, seek+1, 1, buffer);
-  } while (!checkIsValidSync(old_byte, buffer, seek));
+  try {
+    do {
+      Filesystem::readBytes(file_stream, seek+1, 1, buffer);
+    } while (!checkIsValidSync(old_byte, buffer, seek));
+  } catch (const std::exception& ex) {
+    throw std::system_error(std::error_code(),
+                            "Unable to locate a valid MP3 Frame.");
+  }
   return seek;
 }
 

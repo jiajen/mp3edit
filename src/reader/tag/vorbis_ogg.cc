@@ -113,10 +113,12 @@ Bytes calculateCrc(const Bytes& page_header, const Bytes& segment_table,
 
 }  // namespace
 
-void parseTag(const Bytes& tag, std::string& title, std::string& artist,
+bool parseTag(const Bytes& tag, std::string& title, std::string& artist,
               std::string& album, int& track_num, int& track_denum) {
-  VorbisShared::parseTag(tag, kCommonVorbisHeaderSize, true, false,
-                         title, artist, album, track_num, track_denum);
+  using VorbisShared::parseTag;
+  int res = parseTag(tag, kCommonVorbisHeaderSize, true, false,
+                     title, artist, album, track_num, track_denum);
+  return (res != -1);
 }
 
 Bytes extractTag(Filesystem::FileStream& file_stream,
