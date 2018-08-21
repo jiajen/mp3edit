@@ -136,15 +136,10 @@ void TreeViewFiles::storeAndUpdateEntryData() {
 
 void TreeViewFiles::populateTreeView() {
   disable_signals_ = true;
-  current_row_ = Gtk::TreeModel::iterator();
-  edit_type_ = EditType::kUnedited;
   liststore_->clear();
+  edit_type_ = EditType::kUnedited;
   appendValidRows();
-  entry_song_title_->set_text(Glib::ustring());
-  entry_song_artist_->set_text(Glib::ustring());
-  entry_song_album_->set_text(Glib::ustring());
-  entry_song_track_num_->set_text(Glib::ustring());
-  entry_song_track_denum_->set_text(Glib::ustring());
+  unSelectRow();
   disable_signals_ = false;
 }
 
