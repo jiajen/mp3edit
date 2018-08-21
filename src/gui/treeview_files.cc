@@ -195,7 +195,6 @@ void TreeViewFiles::appendValidRows(int selected_pos) {
   for (int i = 0, n = files_.size(); i < n; i++) {
     if (!files_[i]) continue;
     Gtk::TreeModel::Row row = *(liststore_->append());
-    if (i == selected_pos) treeselection_->select(row);
     row[columns_.pos()] = i;
     row[columns_.title()] = files_[i].getTitle();
     row[columns_.artist()] = files_[i].getArtist();
@@ -205,6 +204,11 @@ void TreeViewFiles::appendValidRows(int selected_pos) {
     row[columns_.samplingRate()] = files_[i].getSamplingRate();
     row[columns_.channelMode()] = files_[i].getChannelMode();
     row[columns_.filepath()] = files_[i].getFilepath();
+    if (i == selected_pos) {
+      treeselection_->select(row);
+      current_row_ = treeselection_->get_selected();
+      updateEntryFromFileMem();
+    }
   }
 }
 
