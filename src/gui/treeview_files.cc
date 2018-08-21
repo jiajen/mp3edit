@@ -178,11 +178,8 @@ void TreeViewFiles::saveAllFiles(bool rename_file) {
     bool disable_signals_state = disable_signals_;
     disable_signals_ = true;
     unSelectRow();
-    for (int i = children.size()-1; i >= 0; i--) {
-      if (!files_[children[i][columns_.pos()]]) {
-        liststore_->erase(children[i]);
-      }
-    }
+    liststore_->clear();
+    appendValidRows();
     disable_signals_ = disable_signals_state;
     // TODO show error.
   }
@@ -196,6 +193,7 @@ void TreeViewFiles::saveAllFiles(bool rename_file) {
 void TreeViewFiles::appendValidRows() {
   int n = 0;
   for (const File::File& file: files_) {
+    if (!file) continue;
     Gtk::TreeModel::Row row = *(liststore_->append());
     row[columns_.pos()] = n++;
     row[columns_.title()] = file.getTitle();
