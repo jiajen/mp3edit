@@ -10,6 +10,7 @@
 #include <gtkmm/entry.h>
 #include <gtkmm/treeselection.h>
 #include <gtkmm/treemodel.h>
+#include <gtkmm/progressbar.h>
 
 #include "mp3edit/src/file.h"
 #include "mp3edit/src/files.h"
@@ -22,7 +23,8 @@ class TreeViewFiles: public Gtk::TreeView {
   TreeViewFiles(BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>&,
                 Files::Files& files, Gtk::Entry* entry_title,
                 Gtk::Entry* entry_artist, Gtk::Entry* entry_album,
-                Gtk::Entry* entry_track_num, Gtk::Entry* entry_track_denum);
+                Gtk::Entry* entry_track_num, Gtk::Entry* entry_track_denum,
+                Gtk::ProgressBar* progressbar_main);
   void populateTreeView();
   void saveSelectedFile(bool rename_file);
   void saveAllFiles(bool rename_file);
@@ -76,6 +78,7 @@ class TreeViewFiles: public Gtk::TreeView {
   void updateEntryFromFileMem();
   void onRowSelect();
   void unSelectRow();
+  void appendValidRows(int selected_pos);
 
   Files::Files& files_;
 
@@ -88,6 +91,8 @@ class TreeViewFiles: public Gtk::TreeView {
   Gtk::Entry* entry_song_album_;
   Gtk::Entry* entry_song_track_num_;
   Gtk::Entry* entry_song_track_denum_;
+
+  Gtk::ProgressBar* progressbar_main_;
 
   // To remember what was edited
   EditType edit_type_;

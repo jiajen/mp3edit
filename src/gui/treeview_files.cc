@@ -67,11 +67,13 @@ TreeViewFiles::TreeViewFiles(BaseObjectType* cobject,
                              Gtk::Entry* entry_title, Gtk::Entry* entry_artist,
                              Gtk::Entry* entry_album,
                              Gtk::Entry* entry_track_num,
-                             Gtk::Entry* entry_track_denum)
+                             Gtk::Entry* entry_track_denum,
+                             Gtk::ProgressBar* progressbar_main)
     : Gtk::TreeView(cobject), files_(files), entry_song_title_(entry_title),
       entry_song_artist_(entry_artist), entry_song_album_(entry_album),
       entry_song_track_num_(entry_track_num),
       entry_song_track_denum_(entry_track_denum),
+      progressbar_main_(progressbar_main),
       disable_signals_(true) {
   treeselection_ = this->get_selection();
 
@@ -134,27 +136,10 @@ void TreeViewFiles::storeAndUpdateEntryData() {
 
 void TreeViewFiles::populateTreeView() {
   disable_signals_ = true;
-  current_row_ = Gtk::TreeModel::iterator();
-  edit_type_ = EditType::kUnedited;
+  unSelectRow();
   liststore_->clear();
-  int n = 0;
-  for (const File::File& file: files_) {
-    Gtk::TreeModel::Row row = *(liststore_->append());
-    row[columns_.pos()] = n++;
-    row[columns_.title()] = file.getTitle();
-    row[columns_.artist()] = file.getArtist();
-    row[columns_.album()] = file.getAlbum();
-    row[columns_.track()] = file.getTrack();
-    row[columns_.bitrate()] = file.getBitrate();
-    row[columns_.samplingRate()] = file.getSamplingRate();
-    row[columns_.channelMode()] = file.getChannelMode();
-    row[columns_.filepath()] = file.getFilepath();
-  }
-  entry_song_title_->set_text(Glib::ustring());
-  entry_song_artist_->set_text(Glib::ustring());
-  entry_song_album_->set_text(Glib::ustring());
-  entry_song_track_num_->set_text(Glib::ustring());
-  entry_song_track_denum_->set_text(Glib::ustring());
+  edit_type_ = EditType::kUnedited;
+  appendValidRows(-1);
   disable_signals_ = false;
 }
 
@@ -173,11 +158,12 @@ void TreeViewFiles::saveSelectedFile(bool rename_file) {
   storeAndUpdateEntryData();
   int pos = (*current_row_)[columns_.pos()];
 
-  if (!files_.saveFile(pos, rename_file)) {
+  files_.saveFile(pos, rename_file);
+  if (!files_.getErrorList().empty()) {
     bool disable_signals_state = disable_signals_;
     disable_signals_ = true;
-    unSelectRow();
     liststore_->erase(current_row_);
+    unSelectRow();
     disable_signals_ = disable_signals_state;
     // TODO show error.
   }
@@ -189,21 +175,41 @@ void TreeViewFiles::saveSelectedFile(bool rename_file) {
 void TreeViewFiles::saveAllFiles(bool rename_file) {
   if (current_row_) storeAndUpdateEntryData();
   Gtk::TreeModel::Children children = liststore_->children();
-  if (!files_.saveAllFiles(rename_file)) {
+  files_.saveAllFiles(rename_file);
+  if (!files_.getErrorList().empty()) {
     bool disable_signals_state = disable_signals_;
     disable_signals_ = true;
+    int pos = (current_row_) ? (*current_row_)[columns_.pos()] : -1;
     unSelectRow();
-    for (int i = children.size()-1; i >= 0; i--) {
-      if (!files_[children[i][columns_.pos()]]) {
-        liststore_->erase(children[i]);
-      }
-    }
+    liststore_->clear();
+    appendValidRows(pos);
     disable_signals_ = disable_signals_state;
     // TODO show error.
   }
   if (rename_file) {
     for (auto it = children.begin(); it != children.end(); it++) {
       (*it)[columns_.filepath()] = files_[(*it)[columns_.pos()]].getFilepath();
+    }
+  }
+}
+
+void TreeViewFiles::appendValidRows(int selected_pos) {
+  for (int i = 0, n = files_.size(); i < n; i++) {
+    if (!files_[i]) continue;
+    Gtk::TreeModel::Row row = *(liststore_->append());
+    row[columns_.pos()] = i;
+    row[columns_.title()] = files_[i].getTitle();
+    row[columns_.artist()] = files_[i].getArtist();
+    row[columns_.album()] = files_[i].getAlbum();
+    row[columns_.track()] = files_[i].getTrack();
+    row[columns_.bitrate()] = files_[i].getBitrate();
+    row[columns_.samplingRate()] = files_[i].getSamplingRate();
+    row[columns_.channelMode()] = files_[i].getChannelMode();
+    row[columns_.filepath()] = files_[i].getFilepath();
+    if (i == selected_pos) {
+      treeselection_->select(row);
+      current_row_ = treeselection_->get_selected();
+      updateEntryFromFileMem();
     }
   }
 }
@@ -297,6 +303,8 @@ void TreeViewFiles::updateEntryFromFileMem() {
 
 void TreeViewFiles::onRowSelect() {
   if (disable_signals_) return;
+  progressbar_main_->set_fraction(0);
+  progressbar_main_->set_text("");
   storeCurrentEditsInFileMem();
   updateCurrentRowFromFileMem();
   current_row_ = treeselection_->get_selected();
