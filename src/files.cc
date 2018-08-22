@@ -33,19 +33,23 @@ inline void Files::readFiles(const std::string& directory,
   }
 
   std::vector<DirectoryEntry> dir_entries;
-  beginProgress(0);
+  int file_num = 0;
+  beginProgress(-1);
   for (const auto& entry: it) {
     if (!entry.is_regular_file()) continue;
     std::string filepath = entry.path();
     File::FileType filetype = File::getAudioExtension(filepath);
     if (filetype == File::FileType::kInvalid) continue;
-    if (!updateProgress(filepath, 0)) return;
+    if (!updateProgress(filepath, file_num++)) return;
     dir_entries.emplace_back(filepath, filetype);
   }
 
+   // To avoid being the same as dir_entries.size().
+  if (!updateProgress("", 0)) return;
+
   beginProgress(dir_entries.size());
   for (int i = 0, n = dir_entries.size(); i < n; i++) {
-    if (!updateProgress(dir_entries[i].getPath(), i+1)) return;
+    if (!updateProgress(dir_entries[i].getPath(), i)) return;
     files_.emplace_back(dir_entries[i].getPath(), dir_entries[i].getFiletype(),
                         read_audio_data);
     if (!files_.back()) {
@@ -54,6 +58,7 @@ inline void Files::readFiles(const std::string& directory,
       files_.pop_back();
     }
   }
+  updateProgress("", dir_entries.size());
 }
 
 Files::Error::Error(const std::string& filepath,
