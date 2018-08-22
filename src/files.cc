@@ -64,7 +64,8 @@ std::string Files::fileOperationStatus(int& processed_files, int& total_files) {
   std::lock_guard<std::mutex> lock(mutex_);
   processed_files = processed_files_;
   total_files = total_files_;
-  return std::filesystem::path(current_filepath_).filename();
+  using std::filesystem::path;
+  return current_filepath_.empty() ? "" : path(current_filepath_).filename();
 }
 
 Files::Files(Gui::WindowMain* parent_window): parent_window_(parent_window) {}
