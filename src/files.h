@@ -28,8 +28,16 @@ class Files {
   // will still exist in the vector and in order.
   void saveAllFiles(bool rename_file);
 
-  // Returns the filename that is being loaded.
-  std::string fileOperationStatus(int& processed_files, int& total_files);
+  enum class ProcessingMode {
+    kReady = 0,
+    kReadMulti = 1,
+    kSaveSingle = 2,
+    kSaveMulti = 3,
+  };
+  ProcessingMode fileOperationStatus(int& processed_files, int& total_files,
+                                     std::string& processing_file);
+  // This must be called by the GUI thread before the start of an operation.
+  void setOperation(ProcessingMode processing_mode);
   void stopOperation();
  private:
   class Error {
@@ -60,6 +68,7 @@ class Files {
   int processed_files_;
   int total_files_;
   bool stop_processing_;
+  ProcessingMode processing_mode_;
 };
 
 }  // namespace Files

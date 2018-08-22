@@ -42,9 +42,6 @@ inline void Files::readFiles(const std::string& directory,
     dir_entries.emplace_back(filepath, filetype);
   }
 
-   // To avoid being the same as dir_entries.size().
-  if (!updateProgress("", 0)) return;
-
   beginProgress(dir_entries.size());
   for (int i = 0, n = dir_entries.size(); i < n; i++) {
     if (!updateProgress(dir_entries[i].getPath(), i)) return;
@@ -56,6 +53,7 @@ inline void Files::readFiles(const std::string& directory,
       files_.pop_back();
     }
   }
+  setOperation(ProcessingMode::kReady);
   updateProgress("", dir_entries.size());
 }
 
@@ -63,15 +61,22 @@ Files::Error::Error(const std::string& filepath,
                     const std::string& error_message) :
     filepath_(filepath), error_message_(error_message) {}
 
-std::string Files::fileOperationStatus(int& processed_files, int& total_files) {
+Files::ProcessingMode Files::fileOperationStatus(int& processed_files,
+                                                 int& total_files,
+                                                 std::string& processing_file) {
   std::lock_guard<std::mutex> lock(mutex_);
   processed_files = processed_files_;
   total_files = total_files_;
-  using std::filesystem::path;
-  return current_filepath_.empty() ? "" : path(current_filepath_).filename();
+  if (current_filepath_.empty()) {
+    processing_file.clear();
+  } else {
+    processing_file = std::filesystem::path(current_filepath_).filename();
+  }
+  return processing_mode_;
 }
 
-Files::Files(Glib::Dispatcher* dispatcher): dispatcher_(dispatcher) {}
+Files::Files(Glib::Dispatcher* dispatcher)
+    : dispatcher_(dispatcher), processing_mode_(ProcessingMode::kReady) {}
 
 void Files::readDirectory(const std::string& directory, bool recurse,
                           bool read_audio_data) {
@@ -97,6 +102,7 @@ void Files::saveFile(int idx, bool rename_file, bool is_single_file) {
     errors_.emplace_back(files_[idx].getFilepath(),
                          files_[idx].getErrorMessage());
   }
+  setOperation(ProcessingMode::kReady);
   if (is_single_file) updateProgress(files_[idx].getFilepath(), 1);
 }
 
@@ -117,7 +123,18 @@ void Files::saveAllFiles(bool rename_file) {
       processed_files_n++;
     }
   }
+  setOperation(ProcessingMode::kReady);
   updateProgress("", processed_files_n);
+}
+
+void Files::setOperation(ProcessingMode processing_mode) {
+  std::lock_guard<std::mutex> lock(mutex_);
+  if (processing_mode != ProcessingMode::kReady) {
+    current_filepath_ = "";
+    processed_files_ = -1;
+    total_files_ = -1;
+  }
+  processing_mode_ = processing_mode;
 }
 
 void Files::stopOperation() {
@@ -129,13 +146,14 @@ void Files::beginProgress(int total_files) {
   std::lock_guard<std::mutex> lock(mutex_);
   stop_processing_ = false;
   total_files_ = total_files;
+  processed_files_ = (total_files == -1) ? -1 : 0;
 }
 
 bool Files::updateProgress(const std::string& filepath, int processed_files_n) {
   std::lock_guard<std::mutex> lock(mutex_);
   current_filepath_ = filepath;
   processed_files_ = processed_files_n;
-  if (stop_processing_) total_files_ = processed_files_;
+  if (stop_processing_) processing_mode_ = ProcessingMode::kReady;
   dispatcher_->emit();
   return !stop_processing_;
 }
