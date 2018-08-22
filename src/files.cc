@@ -78,7 +78,6 @@ void Files::readDirectory(const std::string& directory, bool recurse,
     std::filesystem::directory_iterator it;
     readFiles(directory, read_audio_data, it);
   }
-  stopOperation();
 }
 
 bool Files::saveFile(int idx, bool rename_file, bool clear_error_message) {
@@ -89,7 +88,6 @@ bool Files::saveFile(int idx, bool rename_file, bool clear_error_message) {
   if (files_[idx]) return true;
   errors_.emplace_back(files_[idx].getFilepath(),
                        files_[idx].getErrorMessage());
-  stopOperation();
   return false;
 }
 
@@ -110,7 +108,6 @@ bool Files::saveAllFiles(bool rename_file) {
       saveFile(i, rename_file, false);
     }
   }
-  stopOperation();
   return errors_.empty();
 }
 
