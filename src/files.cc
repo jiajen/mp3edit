@@ -86,16 +86,14 @@ void Files::saveFile(int idx, bool rename_file, bool is_single_file) {
   if (is_single_file) {
     errors_.clear();
     beginProgress(1);
-    updateProgress(files_[idx].getFilepath(), 1);
+    updateProgress(files_[idx].getFilepath(), 0);
   }
   files_[idx].saveFileChanges(rename_file);
   if (!files_[idx]) {
     errors_.emplace_back(files_[idx].getFilepath(),
                          files_[idx].getErrorMessage());
   }
-  if (is_single_file) {
-    // TODO
-  }
+  if (is_single_file) updateProgress(files_[idx].getFilepath(), 1);
 }
 
 void Files::saveAllFiles(bool rename_file) {
