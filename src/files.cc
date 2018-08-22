@@ -86,7 +86,7 @@ void Files::saveFile(int idx, bool rename_file, bool is_single_file) {
   if (is_single_file) {
     errors_.clear();
     beginProgress(1);
-    updateProgress(files_[idx].getFilepath(), 0);
+    if (!updateProgress(files_[idx].getFilepath(), 0)) return;
   }
   files_[idx].saveFileChanges(rename_file);
   if (!files_[idx]) {
@@ -129,14 +129,11 @@ void Files::beginProgress(int total_files) {
 
 bool Files::updateProgress(const std::string& filepath, int processed_files_n) {
   std::lock_guard<std::mutex> lock(mutex_);
-  if (stop_processing_) {
-    processed_files_ = processed_files_n-1;
-    return false;
-  }
   current_filepath_ = filepath;
   processed_files_ = processed_files_n;
+  if (stop_processing_) total_files_ = processed_files_;
   parent_window_->notifyProgressChange();
-  return true;
+  return !stop_processing_;
 }
 
 }  // namespace Files
