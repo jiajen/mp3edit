@@ -12,7 +12,7 @@ using File::File;
 
 WindowMain::WindowMain(BaseObjectType* cobject,
                        const Glib::RefPtr<Gtk::Builder>& builder)
-    : Gtk::Window(cobject), files_(this),
+    : Gtk::Window(cobject), files_(&dispatcher_),
       processing_mode_(ProcessingMode::kReady), builder_(builder) {
   builder_->get_widget("checkbox_read_subdir", checkbox_read_subdir_);
   builder_->get_widget("checkbox_read_audio", checkbox_read_audio_);
@@ -63,10 +63,6 @@ WindowMain::WindowMain(BaseObjectType* cobject,
 
   dispatcher_.connect(
     sigc::mem_fun(*this, &WindowMain::onOperationUpdate));
-}
-
-void WindowMain::notifyProgressChange() {
-  dispatcher_.emit();
 }
 
 void WindowMain::changeProcessingMode(ProcessingMode processing_mode) {

@@ -3,8 +3,6 @@
 #include <algorithm>
 #include <filesystem>
 
-#include "mp3edit/src/gui/window_main.h"
-
 namespace Mp3Edit {
 namespace Files {
 
@@ -33,19 +31,20 @@ inline void Files::readFiles(const std::string& directory,
   }
 
   std::vector<DirectoryEntry> dir_entries;
-  beginProgress(0);
+  int file_num = 0;
+  beginProgress(-1);
   for (const auto& entry: it) {
     if (!entry.is_regular_file()) continue;
     std::string filepath = entry.path();
     File::FileType filetype = File::getAudioExtension(filepath);
     if (filetype == File::FileType::kInvalid) continue;
-    if (!updateProgress(filepath, 0)) return;
+    if (!updateProgress(filepath, file_num++)) return;
     dir_entries.emplace_back(filepath, filetype);
   }
 
   beginProgress(dir_entries.size());
   for (int i = 0, n = dir_entries.size(); i < n; i++) {
-    if (!updateProgress(dir_entries[i].getPath(), i+1)) return;
+    if (!updateProgress(dir_entries[i].getPath(), i)) return;
     files_.emplace_back(dir_entries[i].getPath(), dir_entries[i].getFiletype(),
                         read_audio_data);
     if (!files_.back()) {
@@ -54,20 +53,30 @@ inline void Files::readFiles(const std::string& directory,
       files_.pop_back();
     }
   }
+  setOperation(ProcessingMode::kReady);
+  updateProgress("", dir_entries.size());
 }
 
 Files::Error::Error(const std::string& filepath,
                     const std::string& error_message) :
     filepath_(filepath), error_message_(error_message) {}
 
-std::string Files::fileOperationStatus(int& processed_files, int& total_files) {
+Files::ProcessingMode Files::fileOperationStatus(int& processed_files,
+                                                 int& total_files,
+                                                 std::string& processing_file) {
   std::lock_guard<std::mutex> lock(mutex_);
   processed_files = processed_files_;
   total_files = total_files_;
-  return std::filesystem::path(current_filepath_).filename();
+  if (current_filepath_.empty()) {
+    processing_file.clear();
+  } else {
+    processing_file = std::filesystem::path(current_filepath_).filename();
+  }
+  return processing_mode_;
 }
 
-Files::Files(Gui::WindowMain* parent_window): parent_window_(parent_window) {}
+Files::Files(Glib::Dispatcher* dispatcher)
+    : dispatcher_(dispatcher), processing_mode_(ProcessingMode::kReady) {}
 
 void Files::readDirectory(const std::string& directory, bool recurse,
                           bool read_audio_data) {
@@ -82,14 +91,19 @@ void Files::readDirectory(const std::string& directory, bool recurse,
   }
 }
 
-void Files::saveFile(int idx, bool rename_file, bool clear_error_message) {
-  if (clear_error_message) errors_.clear();
-  beginProgress(1);
-  updateProgress(files_[idx].getFilepath(), 1);
+void Files::saveFile(int idx, bool rename_file, bool is_single_file) {
+  if (is_single_file) {
+    errors_.clear();
+    beginProgress(1);
+    if (!updateProgress(files_[idx].getFilepath(), 0)) return;
+  }
   files_[idx].saveFileChanges(rename_file);
-  if (files_[idx]) return;
-  errors_.emplace_back(files_[idx].getFilepath(),
-                       files_[idx].getErrorMessage());
+  if (!files_[idx]) {
+    errors_.emplace_back(files_[idx].getFilepath(),
+                         files_[idx].getErrorMessage());
+  }
+  setOperation(ProcessingMode::kReady);
+  if (is_single_file) updateProgress(files_[idx].getFilepath(), 1);
 }
 
 void Files::saveAllFiles(bool rename_file) {
@@ -101,14 +115,26 @@ void Files::saveAllFiles(bool rename_file) {
   }
   beginProgress(total_files);
 
-  int processing_file_idx = 0;
+  int processed_files_n = 0;
   for (int i = 0, n = files_.size(); i < n; i++) {
     if (files_[i]) {
-      if (!updateProgress(files_[i].getFilepath(), ++processing_file_idx))
-        return;
+      if (!updateProgress(files_[i].getFilepath(), processed_files_n)) return;
       saveFile(i, rename_file, false);
+      processed_files_n++;
     }
   }
+  setOperation(ProcessingMode::kReady);
+  updateProgress("", processed_files_n);
+}
+
+void Files::setOperation(ProcessingMode processing_mode) {
+  std::lock_guard<std::mutex> lock(mutex_);
+  if (processing_mode != ProcessingMode::kReady) {
+    current_filepath_ = "";
+    processed_files_ = -1;
+    total_files_ = -1;
+  }
+  processing_mode_ = processing_mode;
 }
 
 void Files::stopOperation() {
@@ -120,18 +146,16 @@ void Files::beginProgress(int total_files) {
   std::lock_guard<std::mutex> lock(mutex_);
   stop_processing_ = false;
   total_files_ = total_files;
+  processed_files_ = (total_files == -1) ? -1 : 0;
 }
 
-bool Files::updateProgress(const std::string& filepath, int processing_file) {
+bool Files::updateProgress(const std::string& filepath, int processed_files_n) {
   std::lock_guard<std::mutex> lock(mutex_);
-  if (stop_processing_) {
-    processed_files_ = processing_file-1;
-    return false;
-  }
   current_filepath_ = filepath;
-  processed_files_ = processing_file;
-  parent_window_->notifyProgressChange();
-  return true;
+  processed_files_ = processed_files_n;
+  if (stop_processing_) processing_mode_ = ProcessingMode::kReady;
+  dispatcher_->emit();
+  return !stop_processing_;
 }
 
 }  // namespace Files
