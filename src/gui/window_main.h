@@ -40,7 +40,7 @@ class WindowMain: public Gtk::Window {
   void onCancelBtnPress();
   void onSearchWebBtnPress();
   void toggleLoadingMode(bool enter_loading_mode);
-  void updateProgressBarNotification();
+  void onOperationUpdate();
 
   Files::Files files_;
   ProcessingMode processing_mode_;

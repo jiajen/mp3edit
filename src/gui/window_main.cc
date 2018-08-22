@@ -62,7 +62,7 @@ WindowMain::WindowMain(BaseObjectType* cobject,
   builder_->get_widget("checkbox_rename_file", checkbox_rename_file_);
 
   dispatcher_.connect(
-    sigc::mem_fun(*this, &WindowMain::updateProgressBarNotification));
+    sigc::mem_fun(*this, &WindowMain::onOperationUpdate));
 }
 
 void WindowMain::notifyProgressChange() {
@@ -141,7 +141,7 @@ void WindowMain::onCancelBtnPress() {
   files_.stopOperation();
 }
 
-void WindowMain::updateProgressBarNotification() {
+void WindowMain::onOperationUpdate() {
   // TODO
 }
 
