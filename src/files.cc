@@ -82,14 +82,20 @@ void Files::readDirectory(const std::string& directory, bool recurse,
   }
 }
 
-void Files::saveFile(int idx, bool rename_file, bool clear_error_message) {
-  if (clear_error_message) errors_.clear();
-  beginProgress(1);
-  updateProgress(files_[idx].getFilepath(), 1);
+void Files::saveFile(int idx, bool rename_file, bool is_single_file) {
+  if (is_single_file) {
+    errors_.clear();
+    beginProgress(1);
+    updateProgress(files_[idx].getFilepath(), 1);
+  }
   files_[idx].saveFileChanges(rename_file);
-  if (files_[idx]) return;
-  errors_.emplace_back(files_[idx].getFilepath(),
-                       files_[idx].getErrorMessage());
+  if (!files_[idx]) {
+    errors_.emplace_back(files_[idx].getFilepath(),
+                         files_[idx].getErrorMessage());
+  }
+  if (is_single_file) {
+    // TODO
+  }
 }
 
 void Files::saveAllFiles(bool rename_file) {
