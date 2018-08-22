@@ -27,10 +27,10 @@ class Files {
   inline const std::vector<Error>& getErrorList() const { return errors_; }
   void readDirectory(const std::string& directory, bool recurse,
                      bool read_audio_data);
-  bool saveFile(int idx, bool rename_file, bool clear_error_message = true);
+  void saveFile(int idx, bool rename_file, bool clear_error_message = true);
   // Only save files that are valid as invalidated files (due to save errors)
   // will still exist in the vector and in order.
-  bool saveAllFiles(bool rename_file);
+  void saveAllFiles(bool rename_file);
 
   // Returns the filename that is being loaded.
   std::string fileOperationStatus(int& processed_files, int& total_files);

@@ -80,18 +80,17 @@ void Files::readDirectory(const std::string& directory, bool recurse,
   }
 }
 
-bool Files::saveFile(int idx, bool rename_file, bool clear_error_message) {
+void Files::saveFile(int idx, bool rename_file, bool clear_error_message) {
   if (clear_error_message) errors_.clear();
   beginProgress(1);
   updateProgress(files_[idx].getFilepath(), 1);
   files_[idx].saveFileChanges(rename_file);
-  if (files_[idx]) return true;
+  if (files_[idx]) return;
   errors_.emplace_back(files_[idx].getFilepath(),
                        files_[idx].getErrorMessage());
-  return false;
 }
 
-bool Files::saveAllFiles(bool rename_file) {
+void Files::saveAllFiles(bool rename_file) {
   errors_.clear();
 
   int total_files = 0;
@@ -104,11 +103,10 @@ bool Files::saveAllFiles(bool rename_file) {
   for (int i = 0, n = files_.size(); i < n; i++) {
     if (files_[i]) {
       if (!updateProgress(files_[i].getFilepath(), ++processing_file_idx))
-        return errors_.empty();
+        return;
       saveFile(i, rename_file, false);
     }
   }
-  return errors_.empty();
 }
 
 void Files::stopOperation() {

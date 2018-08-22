@@ -158,7 +158,8 @@ void TreeViewFiles::saveSelectedFile(bool rename_file) {
   storeAndUpdateEntryData();
   int pos = (*current_row_)[columns_.pos()];
 
-  if (!files_.saveFile(pos, rename_file)) {
+  files_.saveFile(pos, rename_file);
+  if (!files_.getErrorList().empty()) {
     bool disable_signals_state = disable_signals_;
     disable_signals_ = true;
     liststore_->erase(current_row_);
@@ -174,7 +175,8 @@ void TreeViewFiles::saveSelectedFile(bool rename_file) {
 void TreeViewFiles::saveAllFiles(bool rename_file) {
   if (current_row_) storeAndUpdateEntryData();
   Gtk::TreeModel::Children children = liststore_->children();
-  if (!files_.saveAllFiles(rename_file)) {
+  files_.saveAllFiles(rename_file);
+  if (!files_.getErrorList().empty()) {
     bool disable_signals_state = disable_signals_;
     disable_signals_ = true;
     int pos = (current_row_) ? (*current_row_)[columns_.pos()] : -1;
