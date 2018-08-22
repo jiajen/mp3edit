@@ -52,7 +52,7 @@ class Files {
   // Mutexed functions
   void beginProgress(int total_files);
   // Check if operation has been stopped.
-  bool updateProgress(const std::string& filepath, int processing_file);
+  bool updateProgress(const std::string& filepath, int processed_files_n);
 
   std::vector<Error> errors_;
   std::vector<File::File> files_;

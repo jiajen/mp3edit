@@ -105,14 +105,15 @@ void Files::saveAllFiles(bool rename_file) {
   }
   beginProgress(total_files);
 
-  int processing_file_idx = 0;
+  int processed_files_n = 0;
   for (int i = 0, n = files_.size(); i < n; i++) {
     if (files_[i]) {
-      if (!updateProgress(files_[i].getFilepath(), ++processing_file_idx))
-        return;
+      if (!updateProgress(files_[i].getFilepath(), processed_files_n)) return;
       saveFile(i, rename_file, false);
+      processed_files_n++;
     }
   }
+  updateProgress("", processed_files_n);
 }
 
 void Files::stopOperation() {
@@ -126,14 +127,14 @@ void Files::beginProgress(int total_files) {
   total_files_ = total_files;
 }
 
-bool Files::updateProgress(const std::string& filepath, int processing_file) {
+bool Files::updateProgress(const std::string& filepath, int processed_files_n) {
   std::lock_guard<std::mutex> lock(mutex_);
   if (stop_processing_) {
-    processed_files_ = processing_file-1;
+    processed_files_ = processed_files_n-1;
     return false;
   }
   current_filepath_ = filepath;
-  processed_files_ = processing_file;
+  processed_files_ = processed_files_n;
   parent_window_->notifyProgressChange();
   return true;
 }
