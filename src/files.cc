@@ -33,11 +33,13 @@ inline void Files::readFiles(const std::string& directory,
   }
 
   std::vector<DirectoryEntry> dir_entries;
+  beginProgress(0);
   for (const auto& entry: it) {
     if (!entry.is_regular_file()) continue;
     std::string filepath = entry.path();
     File::FileType filetype = File::getAudioExtension(filepath);
     if (filetype == File::FileType::kInvalid) continue;
+    if (!updateProgress(filepath, 0)) return;
     dir_entries.emplace_back(filepath, filetype);
   }
 
