@@ -31,7 +31,6 @@ class WindowMain: public Gtk::Window {
   // Loading mode is for disabling user actions (except cancel).
   // This is used when a long running action is initiated.
   void changeProcessingMode(ProcessingMode processing_mode);
-  void notifyProgressChange();
  private:
   void openDirDialog();
   void loadEntryDir();
@@ -42,9 +41,9 @@ class WindowMain: public Gtk::Window {
   void toggleLoadingMode(bool enter_loading_mode);
   void onOperationUpdate();
 
+  Glib::Dispatcher dispatcher_;
   Files::Files files_;
   ProcessingMode processing_mode_;
-  Glib::Dispatcher dispatcher_;
 
   Glib::RefPtr<Gtk::Builder> builder_;
   Gtk::CheckButton* checkbox_read_subdir_;

@@ -5,15 +5,11 @@
 #include <vector>
 #include <mutex>
 
+#include <glibmm/dispatcher.h>
+
 #include "mp3edit/src/file.h"
 
 namespace Mp3Edit {
-
-// WindowMain is used to callback its member function when a threaded operation
-// is running.
-namespace Gui {
-  class WindowMain;
-}  // namespace Gui
 
 namespace Files {
 
@@ -21,7 +17,7 @@ class Files {
  private:
   class Error;
  public:
-  Files(Gui::WindowMain* parent_window);
+  Files(Glib::Dispatcher* dispatcher);
   inline File::File& operator[](int idx) { return files_[idx]; }
   inline int size() const { return files_.size(); }
   inline const std::vector<Error>& getErrorList() const { return errors_; }
@@ -59,7 +55,7 @@ class Files {
 
   // Multi-threading
   std::mutex mutex_;
-  Gui::WindowMain* parent_window_;
+  Glib::Dispatcher* dispatcher_;
   std::string current_filepath_;
   int processed_files_;
   int total_files_;

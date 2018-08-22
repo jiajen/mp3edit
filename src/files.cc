@@ -3,8 +3,6 @@
 #include <algorithm>
 #include <filesystem>
 
-#include "mp3edit/src/gui/window_main.h"
-
 namespace Mp3Edit {
 namespace Files {
 
@@ -73,7 +71,7 @@ std::string Files::fileOperationStatus(int& processed_files, int& total_files) {
   return current_filepath_.empty() ? "" : path(current_filepath_).filename();
 }
 
-Files::Files(Gui::WindowMain* parent_window): parent_window_(parent_window) {}
+Files::Files(Glib::Dispatcher* dispatcher): dispatcher_(dispatcher) {}
 
 void Files::readDirectory(const std::string& directory, bool recurse,
                           bool read_audio_data) {
@@ -138,7 +136,7 @@ bool Files::updateProgress(const std::string& filepath, int processed_files_n) {
   current_filepath_ = filepath;
   processed_files_ = processed_files_n;
   if (stop_processing_) total_files_ = processed_files_;
-  parent_window_->notifyProgressChange();
+  dispatcher_->emit();
   return !stop_processing_;
 }
 
