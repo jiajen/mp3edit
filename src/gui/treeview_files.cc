@@ -5,6 +5,8 @@
 #include <gtkmm/cellrenderer.h>
 #include <gtkmm/cellrenderertext.h>
 
+#include "mp3edit/src/gui/window_main.h"
+
 namespace Mp3Edit {
 namespace Gui {
 
@@ -19,14 +21,13 @@ const char* kSamplingRate = "Sampling Rate";
 const char* kChannelMode = "Channel Mode";
 const char* kFilepath = "Path";
 
-inline void appendColumn(TreeViewFiles* tree_view, const char* column_title,
-                         Gtk::TreeModelColumn<std::string>& column) {
+void appendColumn(TreeViewFiles* tree_view, const char* column_title,
+                  Gtk::TreeModelColumn<std::string>& column) {
   tree_view->get_column(tree_view->append_column(
     column_title, column)-1)->set_sort_column(column);
 }
 
-void appendColumnEditable(TreeViewFiles* tree_view,
-                          const char* column_title,
+void appendColumnEditable(TreeViewFiles* tree_view, const char* column_title,
                           Gtk::TreeModelColumn<std::string>& column,
                           void (TreeViewFiles::*function_ptr)(
                             const Glib::ustring&, const Glib::ustring&)) {
@@ -38,7 +39,7 @@ void appendColumnEditable(TreeViewFiles* tree_view,
   renderer_text->signal_edited().connect(
     sigc::mem_fun(*tree_view, function_ptr));
 }
-
+/*
 void addSignalsToFieldEntry(TreeViewFiles* tree_view,
                             void (TreeViewFiles::*fx_changed)(),
                             void (TreeViewFiles::*fx_activated)(),
@@ -46,7 +47,7 @@ void addSignalsToFieldEntry(TreeViewFiles* tree_view,
   entry->signal_changed().connect(sigc::mem_fun(*tree_view, fx_changed));
   entry->signal_activate().connect(sigc::mem_fun(*tree_view, fx_activated));
 }
-
+*/
 }  // namespace
 
 TreeViewFiles::Columns::Columns() {
@@ -63,42 +64,21 @@ TreeViewFiles::Columns::Columns() {
 
 TreeViewFiles::TreeViewFiles(BaseObjectType* cobject,
                              const Glib::RefPtr<Gtk::Builder>&,
-                             Files::Files& files,
-                             Gtk::Entry* entry_title, Gtk::Entry* entry_artist,
-                             Gtk::Entry* entry_album,
-                             Gtk::Entry* entry_track_num,
-                             Gtk::Entry* entry_track_denum,
-                             Gtk::ProgressBar* progressbar_main)
-    : Gtk::TreeView(cobject), files_(files), entry_song_title_(entry_title),
-      entry_song_artist_(entry_artist), entry_song_album_(entry_album),
-      entry_song_track_num_(entry_track_num),
-      entry_song_track_denum_(entry_track_denum),
-      progressbar_main_(progressbar_main),
-      disable_signals_(true) {
-  treeselection_ = this->get_selection();
-
-  addSignalsToFieldEntry(this, &TreeViewFiles::onEditTypeEntry,
-                         &TreeViewFiles::onEntryEnterPress, entry_title);
-  addSignalsToFieldEntry(this, &TreeViewFiles::onEditTypeEntry,
-                         &TreeViewFiles::onEntryEnterPress, entry_artist);
-  addSignalsToFieldEntry(this, &TreeViewFiles::onEditTypeEntry,
-                         &TreeViewFiles::onEntryEnterPress, entry_album);
-  addSignalsToFieldEntry(this, &TreeViewFiles::onEditTypeEntry,
-                         &TreeViewFiles::onEntryEnterPress, entry_track_num);
-  addSignalsToFieldEntry(this, &TreeViewFiles::onEditTypeEntry,
-                         &TreeViewFiles::onEntryEnterPress, entry_track_denum);
-
-  liststore_ = Gtk::ListStore::create(columns_);
+                             WindowMain* parent_window, Files::Files& files)
+    : Gtk::TreeView(cobject), files_(files), parent_window_(parent_window) {
   this->set_model(liststore_);
 
+  liststore_ = Gtk::ListStore::create(columns_);
+  treeselection_ = this->get_selection();
+
   appendColumnEditable(this, kTrack, columns_.track(),
-                       &TreeViewFiles::onEditTypeRow);
+    &TreeViewFiles::onRowDataEdit);
   appendColumnEditable(this, kTitle, columns_.title(),
-                       &TreeViewFiles::onEditTypeRow);
+    &TreeViewFiles::onRowDataEdit);
   appendColumnEditable(this, kArtist, columns_.artist(),
-                       &TreeViewFiles::onEditTypeRow);
+    &TreeViewFiles::onRowDataEdit);
   appendColumnEditable(this, kAlbum, columns_.album(),
-                       &TreeViewFiles::onEditTypeRow);
+    &TreeViewFiles::onRowDataEdit);
   appendColumn(this, kBitrate, columns_.bitrate());
   appendColumn(this, kSamplingRate, columns_.samplingRate());
   appendColumn(this, kChannelMode, columns_.channelMode());
@@ -106,19 +86,19 @@ TreeViewFiles::TreeViewFiles(BaseObjectType* cobject,
 
   treeselection_->signal_changed().connect(
     sigc::mem_fun(*this, &TreeViewFiles::onRowSelect));
-
-  edit_type_ = EditType::kUnedited;
 }
 
-void TreeViewFiles::onEditTypeRow(const Glib::ustring&,
+void TreeViewFiles::onRowDataEdit(const Glib::ustring&,
                                   const Glib::ustring&) {
+  /*
   if (disable_signals_ || !current_row_) return;
   edit_type_ = EditType::kRow;
   storeCurrentEditsInFileMem();
   updateCurrentRowFromFileMem();
   updateEntryFromFileMem();
+  */
 }
-
+/*
 void TreeViewFiles::onEditTypeEntry() {
   if (disable_signals_ || !current_row_) return;
   edit_type_ = EditType::kEntry;
@@ -133,16 +113,16 @@ void TreeViewFiles::storeAndUpdateEntryData() {
   updateCurrentRowFromFileMem();
   updateEntryFromFileMem();
 }
-
+*/
 void TreeViewFiles::populateTreeView() {
-  disable_signals_ = true;
-  unSelectRow();
+  //disable_signals_ = true;
+  //unSelectRow();
   liststore_->clear();
-  edit_type_ = EditType::kUnedited;
-  appendValidRows(-1);
-  disable_signals_ = false;
+  //edit_type_ = EditType::kUnedited;
+  //appendValidRows(-1);
+  //disable_signals_ = false;
 }
-
+/*
 void TreeViewFiles::unSelectRow() {
   if (current_row_) treeselection_->unselect(current_row_);
   current_row_ = Gtk::TreeModel::iterator();
@@ -300,15 +280,15 @@ void TreeViewFiles::updateEntryFromFileMem() {
 
   disable_signals_ = disable_signals_state;
 }
-
+*/
 void TreeViewFiles::onRowSelect() {
-  if (disable_signals_) return;
-  progressbar_main_->set_fraction(0);
-  progressbar_main_->set_text("");
-  storeCurrentEditsInFileMem();
-  updateCurrentRowFromFileMem();
-  current_row_ = treeselection_->get_selected();
-  updateEntryFromFileMem();
+  //if (disable_signals_) return;
+  //progressbar_main_->set_fraction(0);
+  //progressbar_main_->set_text("");
+  //storeCurrentEditsInFileMem();
+  //updateCurrentRowFromFileMem();
+  //current_row_ = treeselection_->get_selected();
+  //updateEntryFromFileMem();
 }
 
 }  // namespace Gui

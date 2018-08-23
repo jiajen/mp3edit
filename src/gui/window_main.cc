@@ -40,10 +40,8 @@ WindowMain::WindowMain(BaseObjectType* cobject,
   builder_->get_widget("progressbar_main", progressbar_main_);
   progressbar_main_->set_show_text(true);
   progressbar_main_->set_text("");
-  builder_->get_widget_derived("gtk_treeview_files", treeview_files_, files_,
-                               entry_song_title_, entry_song_artist_,
-                               entry_song_album_, entry_song_track_num_,
-                               entry_song_track_denum_, progressbar_main_);
+  builder_->get_widget_derived("gtk_treeview_files", treeview_files_,
+                               this, files_);
 
   builder_->get_widget("checkbox_read_audio", checkbox_read_audio_);
   builder_->get_widget("checkbox_rename_file", checkbox_rename_file_);
@@ -78,7 +76,8 @@ void WindowMain::onRefreshDirBtnPress() {
 }
 
 void WindowMain::onSaveFileBtnPress() {
-  treeview_files_->saveSelectedFile(checkbox_rename_file_->get_active());
+  // TODO
+  //treeview_files_->saveSelectedFile(checkbox_rename_file_->get_active());
 }
 
 void WindowMain::onSearchWebBtnPress() {
@@ -86,7 +85,8 @@ void WindowMain::onSearchWebBtnPress() {
 }
 
 void WindowMain::onSaveAllFilesBtnPress() {
-  treeview_files_->saveAllFiles(checkbox_rename_file_->get_active());
+  // TODO
+  // treeview_files_->saveAllFiles(checkbox_rename_file_->get_active());
 }
 
 void WindowMain::onCancelBtnPress() {

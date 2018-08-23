@@ -18,22 +18,14 @@
 namespace Mp3Edit {
 namespace Gui {
 
+class WindowMain;
+
 class TreeViewFiles: public Gtk::TreeView {
  public:
   TreeViewFiles(BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>&,
-                Files::Files& files, Gtk::Entry* entry_title,
-                Gtk::Entry* entry_artist, Gtk::Entry* entry_album,
-                Gtk::Entry* entry_track_num, Gtk::Entry* entry_track_denum,
-                Gtk::ProgressBar* progressbar_main);
+                WindowMain* parent_window, Files::Files& files);
   void populateTreeView();
-  void saveSelectedFile(bool rename_file);
-  void saveAllFiles(bool rename_file);
  private:
-  enum class EditType {
-    kRow = 0,
-    kEntry = 1,
-    kUnedited = 2,
-  };
   class Columns : public Gtk::TreeModel::ColumnRecord {
     typedef Gtk::TreeModelColumn<std::string> Column;
    public:
@@ -59,26 +51,12 @@ class TreeViewFiles: public Gtk::TreeView {
     Column filepath_;
   };
 
-  void onEditTypeRow(const Glib::ustring&,
-                     const Glib::ustring&);
-  void onEditTypeEntry();
-  void onEntryEnterPress();
-  void storeAndUpdateEntryData();
-
-  void getRowData(const Gtk::TreeModel::Row& row,
-                  std::string& title, std::string& artist,
-                  std::string& album, std::string& track);
+  void onRowDataEdit(const Glib::ustring&, const Glib::ustring&);
 
   void getEntryData(std::string& title, std::string& artist, std::string& album,
                     int& track_num, int& track_denum);
 
-  void storeCurrentEditsInFileMem();
-
-  void updateCurrentRowFromFileMem();
-  void updateEntryFromFileMem();
   void onRowSelect();
-  void unSelectRow();
-  void appendValidRows(int selected_pos);
 
   Files::Files& files_;
 
@@ -86,20 +64,7 @@ class TreeViewFiles: public Gtk::TreeView {
   Glib::RefPtr<Gtk::TreeSelection> treeselection_;
   Columns columns_;
 
-  Gtk::Entry* entry_song_title_;
-  Gtk::Entry* entry_song_artist_;
-  Gtk::Entry* entry_song_album_;
-  Gtk::Entry* entry_song_track_num_;
-  Gtk::Entry* entry_song_track_denum_;
-
-  Gtk::ProgressBar* progressbar_main_;
-
-  // To remember what was edited
-  EditType edit_type_;
-  Gtk::TreeModel::iterator current_row_;
-
-  // UI
-  bool disable_signals_;
+  WindowMain* parent_window_;
 };
 
 }  // namespace Gui
