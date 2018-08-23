@@ -9,7 +9,6 @@
 #include <gtkmm/entry.h>
 #include <gtkmm/progressbar.h>
 
-#include "mp3edit/src/file.h"
 #include "mp3edit/src/files.h"
 #include "mp3edit/src/gui/treeview_files.h"
 

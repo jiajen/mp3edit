@@ -8,8 +8,6 @@
 namespace Mp3Edit {
 namespace Gui {
 
-using File::File;
-
 WindowMain::WindowMain(BaseObjectType* cobject,
                        const Glib::RefPtr<Gtk::Builder>& builder)
     : Gtk::Window(cobject), files_(&dispatcher_),
