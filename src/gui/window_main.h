@@ -17,20 +17,9 @@ namespace Mp3Edit {
 namespace Gui {
 
 class WindowMain: public Gtk::Window {
- private:
-  enum class ProcessingMode {
-    kReady = -1,
-    kReadSingle = 0,
-    kReadMulti = 1,
-    kSaveSingle = 2,
-    kSaveMulti = 3,
-  };
  public:
   WindowMain(BaseObjectType* cobject,
              const Glib::RefPtr<Gtk::Builder>& builder);
-  // Loading mode is for disabling user actions (except cancel).
-  // This is used when a long running action is initiated.
-  void changeProcessingMode(ProcessingMode processing_mode);
  private:
   void openDirDialog();
   void loadEntryDir();
@@ -43,7 +32,7 @@ class WindowMain: public Gtk::Window {
 
   Glib::Dispatcher dispatcher_;
   Files::Files files_;
-  ProcessingMode processing_mode_;
+  Files::Files::ProcessingMode processing_mode_;
 
   Glib::RefPtr<Gtk::Builder> builder_;
   Gtk::CheckButton* checkbox_read_subdir_;
