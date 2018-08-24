@@ -1,5 +1,6 @@
 #include "main.h"
 
+#include <glibmm/refptr.h>
 #include <gtkmm/application.h>
 #include <gtkmm/builder.h>
 
