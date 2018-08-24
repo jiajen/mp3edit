@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <exception>
 
+#include "mp3edit/src/sanitiser.h"
 #include "mp3edit/src/reader/utility.h"
 
 namespace Mp3Edit {
@@ -93,6 +94,7 @@ bool matchTrackComment(const std::string& comment, const char* header,
                        int header_size, int& value) {
   std::string str;
   if (!matchComment(comment, header, header_size, str)) return false;
+  Sanitiser::sanitiseIntegerString(str);
   try {
     value = std::atoi(str.c_str());
   } catch (const std::exception&) {
@@ -191,6 +193,10 @@ int parseTag(const Bytes& tag, int seek,
           checkCommentIsTrackNum(comment, track_num) ||
           checkCommentIsTrackTotal(comment, track_denum)) continue;
     }
+    Sanitiser::sanitiseString(title);
+    Sanitiser::sanitiseString(artist);
+    Sanitiser::sanitiseString(album);
+    Sanitiser::sanitiseTrack(track_num, track_denum);
     if (has_framing_bit && reader.readInt(1) != 0x01) return -1;
     if (remove_padding) reader.skipPadding();
   } catch (const SafeReaderException&) {
