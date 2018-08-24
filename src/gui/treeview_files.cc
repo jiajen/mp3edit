@@ -1,10 +1,9 @@
 #include "mp3edit/src/gui/treeview_files.h"
 
-#include <algorithm>
-
 #include <gtkmm/cellrenderer.h>
 #include <gtkmm/cellrenderertext.h>
 
+#include "mp3edit/src/file.h"
 #include "mp3edit/src/gui/window_main.h"
 
 namespace Mp3Edit {
@@ -29,7 +28,7 @@ void appendColumn(TreeViewFiles* tree_view, const char* column_title,
 
 void appendColumnEditable(TreeViewFiles* tree_view, const char* column_title,
                           Gtk::TreeModelColumn<std::string>& column,
-                          void (TreeViewFiles::*function_ptr)(
+                          void (TreeViewFiles::* function_ptr)(
                             const Glib::ustring&, const Glib::ustring&)) {
   int idx = tree_view->append_column_editable(column_title, column)-1;
   tree_view->get_column(idx)->set_sort_column(column);
@@ -39,15 +38,7 @@ void appendColumnEditable(TreeViewFiles* tree_view, const char* column_title,
   renderer_text->signal_edited().connect(
     sigc::mem_fun(*tree_view, function_ptr));
 }
-/*
-void addSignalsToFieldEntry(TreeViewFiles* tree_view,
-                            void (TreeViewFiles::*fx_changed)(),
-                            void (TreeViewFiles::*fx_activated)(),
-                            Gtk::Entry* entry) {
-  entry->signal_changed().connect(sigc::mem_fun(*tree_view, fx_changed));
-  entry->signal_activate().connect(sigc::mem_fun(*tree_view, fx_activated));
-}
-*/
+
 }  // namespace
 
 TreeViewFiles::Columns::Columns() {
@@ -66,10 +57,11 @@ TreeViewFiles::TreeViewFiles(BaseObjectType* cobject,
                              const Glib::RefPtr<Gtk::Builder>&,
                              WindowMain* parent_window, Files::Files& files)
     : Gtk::TreeView(cobject), files_(files), parent_window_(parent_window) {
+  liststore_ = Gtk::ListStore::create(columns_);
   this->set_model(liststore_);
 
-  liststore_ = Gtk::ListStore::create(columns_);
   treeselection_ = this->get_selection();
+  enableRowSignal();
 
   appendColumnEditable(this, kTrack, columns_.track(),
     &TreeViewFiles::onRowDataEdit);
@@ -84,96 +76,17 @@ TreeViewFiles::TreeViewFiles(BaseObjectType* cobject,
   appendColumn(this, kChannelMode, columns_.channelMode());
   appendColumn(this, kFilepath, columns_.filepath());
 
-  treeselection_->signal_changed().connect(
-    sigc::mem_fun(*this, &TreeViewFiles::onRowSelect));
+  populateTreeView(-1);
 }
 
-void TreeViewFiles::onRowDataEdit(const Glib::ustring&,
-                                  const Glib::ustring&) {
-  /*
-  if (disable_signals_ || !current_row_) return;
-  edit_type_ = EditType::kRow;
-  storeCurrentEditsInFileMem();
-  updateCurrentRowFromFileMem();
-  updateEntryFromFileMem();
-  */
-}
-/*
-void TreeViewFiles::onEditTypeEntry() {
-  if (disable_signals_ || !current_row_) return;
-  edit_type_ = EditType::kEntry;
-}
+void TreeViewFiles::populateTreeView(int selected_file_idx) {
+  if (signal_row_change_.connected()) {
+    runWithoutSignal(&TreeViewFiles::populateTreeView, selected_file_idx);
+    return;
+  }
 
-void TreeViewFiles::onEntryEnterPress() {
-  storeAndUpdateEntryData();
-}
-
-void TreeViewFiles::storeAndUpdateEntryData() {
-  storeCurrentEditsInFileMem();
-  updateCurrentRowFromFileMem();
-  updateEntryFromFileMem();
-}
-*/
-void TreeViewFiles::populateTreeView() {
-  //disable_signals_ = true;
-  //unSelectRow();
+  unSelectRowIfSelected();
   liststore_->clear();
-  //edit_type_ = EditType::kUnedited;
-  //appendValidRows(-1);
-  //disable_signals_ = false;
-}
-/*
-void TreeViewFiles::unSelectRow() {
-  if (current_row_) treeselection_->unselect(current_row_);
-  current_row_ = Gtk::TreeModel::iterator();
-  entry_song_title_->set_text(Glib::ustring());
-  entry_song_artist_->set_text(Glib::ustring());
-  entry_song_album_->set_text(Glib::ustring());
-  entry_song_track_num_->set_text(Glib::ustring());
-  entry_song_track_denum_->set_text(Glib::ustring());
-}
-
-void TreeViewFiles::saveSelectedFile(bool rename_file) {
-  if (!current_row_) return;
-  storeAndUpdateEntryData();
-  int pos = (*current_row_)[columns_.pos()];
-
-  files_.saveFile(pos, rename_file);
-  if (!files_.getErrorList().empty()) {
-    bool disable_signals_state = disable_signals_;
-    disable_signals_ = true;
-    liststore_->erase(current_row_);
-    unSelectRow();
-    disable_signals_ = disable_signals_state;
-    // TODO show error.
-  }
-  if (rename_file && files_[pos]) {
-    (*current_row_)[columns_.filepath()] = files_[pos].getFilepath();
-  }
-}
-
-void TreeViewFiles::saveAllFiles(bool rename_file) {
-  if (current_row_) storeAndUpdateEntryData();
-  Gtk::TreeModel::Children children = liststore_->children();
-  files_.saveAllFiles(rename_file);
-  if (!files_.getErrorList().empty()) {
-    bool disable_signals_state = disable_signals_;
-    disable_signals_ = true;
-    int pos = (current_row_) ? (*current_row_)[columns_.pos()] : -1;
-    unSelectRow();
-    liststore_->clear();
-    appendValidRows(pos);
-    disable_signals_ = disable_signals_state;
-    // TODO show error.
-  }
-  if (rename_file) {
-    for (auto it = children.begin(); it != children.end(); it++) {
-      (*it)[columns_.filepath()] = files_[(*it)[columns_.pos()]].getFilepath();
-    }
-  }
-}
-
-void TreeViewFiles::appendValidRows(int selected_pos) {
   for (int i = 0, n = files_.size(); i < n; i++) {
     if (!files_[i]) continue;
     Gtk::TreeModel::Row row = *(liststore_->append());
@@ -186,68 +99,70 @@ void TreeViewFiles::appendValidRows(int selected_pos) {
     row[columns_.samplingRate()] = files_[i].getSamplingRate();
     row[columns_.channelMode()] = files_[i].getChannelMode();
     row[columns_.filepath()] = files_[i].getFilepath();
-    if (i == selected_pos) {
-      treeselection_->select(row);
-      current_row_ = treeselection_->get_selected();
-      updateEntryFromFileMem();
-    }
+    if (i == selected_file_idx) treeselection_->select(row);
   }
 }
 
-void TreeViewFiles::getRowData(const Gtk::TreeModel::Row& row,
-                               std::string& title, std::string& artist,
-                               std::string& album, std::string& track) {
-  title = row[columns_.title()];
-  artist = row[columns_.artist()];
-  album = row[columns_.album()];
-  track = row[columns_.track()];
+void TreeViewFiles::restoreSelectedRowData() {
+  restoreRowData(*treeselection_->get_selected());
 }
 
-void TreeViewFiles::getEntryData(std::string& title, std::string& artist,
-                                 std::string& album, int& track_num,
-                                 int& track_denum) {
-  title = entry_song_title_->get_text();
-  artist = entry_song_artist_->get_text();
-  album = entry_song_album_->get_text();
-  try {
-    track_num = std::stoi(entry_song_track_num_->get_text());
-  } catch (const std::exception&) {
-    track_num = -1;
-  }
-  try {
-    track_denum = std::stoi(entry_song_track_denum_->get_text());
-  } catch (const std::exception&) {
-    track_denum = -1;
-  }
+int TreeViewFiles::getSelectedFileIdx() {
+  Gtk::TreeModel::iterator row_ptr = treeselection_->get_selected();
+  return (row_ptr) ? (*row_ptr)[columns_.pos()] : -1;
 }
 
-void TreeViewFiles::storeCurrentEditsInFileMem() {
-  if (!current_row_ || edit_type_ == EditType::kUnedited) return;
-  int idx = (*current_row_)[columns_.pos()];
-  std::string title;
-  std::string artist;
-  std::string album;
-  std::string track;
-  int track_num;
-  int track_denum;
-  switch (edit_type_) {
-    case EditType::kRow:
-      getRowData(*current_row_, title, artist, album, track);
-      files_[idx].updateFields(title, artist, album, track);
-      break;
-    case EditType::kEntry:
-      getEntryData(title, artist, album, track_num, track_denum);
-      files_[idx].updateFields(title, artist, album, track_num, track_denum);
-      break;
-    default:
-      break;
-  }
-  edit_type_ = EditType::kUnedited;
+void TreeViewFiles::updateSelectedRowFilepath() {
+  Gtk::TreeModel::Row row = *treeselection_->get_selected();
+  row[columns_.filepath()] = files_[row[columns_.pos()]].getFilepath();
 }
 
-void TreeViewFiles::updateCurrentRowFromFileMem() {
-  if (!current_row_) return;
-  Gtk::TreeModel::Row row = *current_row_;
+void TreeViewFiles::updateAllRowsFilepath() {
+  for (Gtk::TreeModel::Row row: liststore_->children())
+    row[columns_.filepath()] = files_[row[columns_.pos()]].getFilepath();
+}
+
+void TreeViewFiles::removeSelectedRow() {
+  Gtk::TreeModel::iterator row_ptr = treeselection_->get_selected();
+  unSelectRowIfSelected();
+  liststore_->erase(row_ptr);
+}
+
+void TreeViewFiles::onRowSelect() {
+  if (last_selected_row_ptr_) {
+    parent_window_->storeEntryData((*last_selected_row_ptr_)[columns_.pos()]);
+    restoreRowData(*last_selected_row_ptr_);
+  }
+  Gtk::TreeModel::iterator row_ptr = treeselection_->get_selected();
+  parent_window_->restoreEntryData((row_ptr) ? (*row_ptr)[columns_.pos()] : -1);
+  last_selected_row_ptr_ = row_ptr;
+}
+
+void TreeViewFiles::onRowDataEdit(const Glib::ustring&, const Glib::ustring&) {
+  Gtk::TreeModel::Row row = *treeselection_->get_selected();
+  storeRowData(row);
+  restoreRowData(row);
+  parent_window_->restoreEntryData(row[columns_.pos()]);
+}
+
+void TreeViewFiles::unSelectRowIfSelected() {
+  if (signal_row_change_.connected()) {
+    runWithoutSignal(&TreeViewFiles::unSelectRowIfSelected);
+    return;
+  }
+
+  Gtk::TreeModel::iterator row_ptr = treeselection_->get_selected();
+  if (row_ptr) treeselection_->unselect(row_ptr);
+  last_selected_row_ptr_ = Gtk::TreeModel::iterator();
+}
+
+void TreeViewFiles::storeRowData(const Gtk::TreeModel::Row& row) {
+  int idx = row[columns_.pos()];
+  files_[idx].updateFields(row[columns_.title()], row[columns_.artist()],
+                           row[columns_.album()], row[columns_.track()]);
+}
+
+void TreeViewFiles::restoreRowData(const Gtk::TreeModel::Row& row) {
   int idx = row[columns_.pos()];
   row[columns_.title()] = files_[idx].getTitle();
   row[columns_.artist()] = files_[idx].getArtist();
@@ -255,40 +170,22 @@ void TreeViewFiles::updateCurrentRowFromFileMem() {
   row[columns_.track()] = files_[idx].getTrack();
 }
 
-void TreeViewFiles::updateEntryFromFileMem() {
-  if (!current_row_) return;
-  using std::to_string;
-  bool disable_signals_state = disable_signals_;
-  disable_signals_ = true;
-
-  int idx = (*current_row_)[columns_.pos()];
-  int track_num = files_[idx].getTrackNum();
-  int track_denum = files_[idx].getTrackDenum();
-  entry_song_title_->set_text((Glib::ustring)files_[idx].getTitle());
-  entry_song_artist_->set_text((Glib::ustring)files_[idx].getArtist());
-  entry_song_album_->set_text((Glib::ustring)files_[idx].getAlbum());
-  if (track_num != -1) {
-    entry_song_track_num_->set_text((Glib::ustring)to_string(track_num));
-  } else {
-    entry_song_track_num_->set_text(Glib::ustring());
-  }
-  if (track_denum != -1) {
-    entry_song_track_denum_->set_text((Glib::ustring)to_string(track_denum));
-  } else {
-    entry_song_track_denum_->set_text(Glib::ustring());
-  }
-
-  disable_signals_ = disable_signals_state;
+void TreeViewFiles::enableRowSignal() {
+  signal_row_change_ = treeselection_->signal_changed().connect(
+                         sigc::mem_fun(*this, &TreeViewFiles::onRowSelect));
 }
-*/
-void TreeViewFiles::onRowSelect() {
-  //if (disable_signals_) return;
-  //progressbar_main_->set_fraction(0);
-  //progressbar_main_->set_text("");
-  //storeCurrentEditsInFileMem();
-  //updateCurrentRowFromFileMem();
-  //current_row_ = treeselection_->get_selected();
-  //updateEntryFromFileMem();
+
+void TreeViewFiles::runWithoutSignal(void (TreeViewFiles::* function_ptr)()) {
+  signal_row_change_.disconnect();
+  ((*this).*function_ptr)();
+  enableRowSignal();
+}
+
+void TreeViewFiles::runWithoutSignal(void (TreeViewFiles::* function_ptr)(int),
+                                     int val) {
+  signal_row_change_.disconnect();
+  ((*this).*function_ptr)(val);
+  enableRowSignal();
 }
 
 }  // namespace Gui

@@ -2,11 +2,12 @@
 #define MP3EDIT_SRC_GUI_WINDOW_MAIN_H_
 
 #include <glibmm/dispatcher.h>
+#include <glibmm/refptr.h>
 #include <gtkmm/builder.h>
 #include <gtkmm/window.h>
+#include <gtkmm/entry.h>
 #include <gtkmm/checkbutton.h>
 #include <gtkmm/button.h>
-#include <gtkmm/entry.h>
 #include <gtkmm/progressbar.h>
 
 #include "mp3edit/src/files.h"
@@ -19,10 +20,16 @@ class WindowMain: public Gtk::Window {
  public:
   WindowMain(BaseObjectType* cobject,
              const Glib::RefPtr<Gtk::Builder>& builder);
+  // Called by treeview when row is changed.
+  void storeEntryData(int pos);
+  // Called by self to update entry with file data and also
+  // by treeview when row data is edited.
+  void restoreEntryData(int pos);
  private:
   void onDirEntryEnterPress();
   void onOpenDirBtnPress();
   void onRefreshDirBtnPress();
+  void onMetadataEntryEnterPress();
   void onSaveFileBtnPress();
   void onSearchWebBtnPress();
   void onSaveAllFilesBtnPress();
@@ -31,8 +38,16 @@ class WindowMain: public Gtk::Window {
   void onOperationUpdate();
 
   void openDirDialog();
-  void loadEntryDir();
+  bool storeEntryDataAndUpdateSelectedRowAndEntry();
   void toggleLoadingMode(bool enter_loading_mode);
+  void enterProcessingMode(Files::Files::ProcessingMode processing_mode);
+
+  void preOpLoadEntryDir();
+  void postOpLoadEntryDir();
+  void preOpSaveFile();
+  void postOpSaveFile();
+  void preOpSaveAllFiles();
+  void postOpSaveAllFiles();
 
   Glib::Dispatcher dispatcher_;
   Files::Files files_;
