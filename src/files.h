@@ -13,32 +13,9 @@ namespace Mp3Edit {
 
 namespace Files {
 
+// This class is not fully multi-threaded beyond the bare minimal for use
+// with the GUI. Caution is advised if this is used with multi-threading.
 class Files {
- private:
-  class Error;
- public:
-  Files(Glib::Dispatcher* dispatcher);
-  inline File::File& operator[](int idx) { return files_[idx]; }
-  inline int size() const { return files_.size(); }
-  inline const std::vector<Error>& getErrorList() const { return errors_; }
-  void readDirectory(const std::string& directory, bool recurse,
-                     bool read_audio_data);
-  void saveFile(int idx, bool rename_file, bool is_single_file = true);
-  // Only save files that are valid as invalidated files (due to save errors)
-  // will still exist in the vector and in order.
-  void saveAllFiles(bool rename_file);
-
-  enum class ProcessingMode {
-    kReady = 0,
-    kReadMulti = 1,
-    kSaveSingle = 2,
-    kSaveMulti = 3,
-  };
-  ProcessingMode fileOperationStatus(int& processed_files, int& total_files,
-                                     std::string& processing_file);
-  // This must be called by the GUI thread before the start of an operation.
-  void setOperation(ProcessingMode processing_mode);
-  void stopOperation();
  private:
   class Error {
    public:
@@ -49,7 +26,32 @@ class Files {
     std::string filepath_;
     std::string error_message_;
   };
+ public:
+  enum class ProcessingMode {
+    kReady = 0,
+    kReadMulti = 1,
+    kSaveSingle = 2,
+    kSaveMulti = 3,
+  };
+  Files(Glib::Dispatcher* dispatcher);
 
+  inline File::File& operator[](int idx) { return files_[idx]; }
+  inline int size() const { return files_.size(); }
+  inline const std::vector<Error>& getErrorList() const { return errors_; }
+
+  void readDirectory(const std::string& directory, bool recurse,
+                     bool read_audio_data);
+  void saveFile(int idx, bool rename_file, bool is_single_file = true);
+  // Only save files that are valid as invalidated files (due to save errors)
+  // will still exist in the vector and in order.
+  void saveAllFiles(bool rename_file);
+
+  ProcessingMode fileOperationStatus(int& processed_files, int& total_files,
+                                     std::string& processing_file);
+  // This must be called by the GUI thread before the start of an operation.
+  void setOperation(ProcessingMode processing_mode);
+  void stopOperation();
+ private:
   template <class T>
   void readFiles(const std::string& directory, bool read_audio_data, T& it);
 
