@@ -10,7 +10,6 @@
 #include "mp3edit/src/file.h"
 
 namespace Mp3Edit {
-
 namespace Files {
 
 // This class is not fully multi-threaded beyond the bare minimal for use
