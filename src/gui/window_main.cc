@@ -6,6 +6,8 @@
 
 #include <gtkmm/filechooserdialog.h>
 
+#include "mp3edit/src/gui/error_dialog.h"
+
 namespace Mp3Edit {
 namespace Gui {
 
@@ -301,7 +303,9 @@ void WindowMain::updateProgressBar(const std::string& filename,
 }
 
 void WindowMain::showErrorDialog() {
-  // TODO
+  ErrorDialog error_dialog(files_.getErrorList());
+  error_dialog.set_transient_for(*this);
+  error_dialog.run();
 }
 
 void WindowMain::toggleLoadingMode(bool enter_loading_mode) {
