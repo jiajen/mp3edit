@@ -129,6 +129,7 @@ void TreeViewFiles::removeSelectedRow() {
 }
 
 void TreeViewFiles::onRowSelect() {
+  parent_window_->clearProgressBar();
   if (last_selected_row_ptr_) {
     parent_window_->storeEntryData((*last_selected_row_ptr_)[columns_.pos()]);
     restoreRowData(*last_selected_row_ptr_);
