@@ -80,6 +80,10 @@ WindowMain::WindowMain(BaseObjectType* cobject,
   btn_song_save_all_->signal_clicked().connect(
     sigc::mem_fun(*this, &WindowMain::onSaveAllFilesBtnPress));
 
+  builder_->get_widget("eventbox_progressbar_main", eventbox_progressbar_main_);
+  eventbox_progressbar_main_->signal_button_press_event().connect(
+    sigc::mem_fun(*this, &WindowMain::onClickProgressBar));
+
   builder_->get_widget("progressbar_main", progressbar_main_);
   progressbar_main_->set_show_text(true);
   progressbar_main_->set_text("");
@@ -142,6 +146,14 @@ void WindowMain::onSearchWebBtnPress() {
 void WindowMain::onSaveAllFilesBtnPress() {
   storeEntryDataAndUpdateSelectedRowAndEntry();
   preOpSaveAllFiles();
+}
+
+bool WindowMain::onClickProgressBar(GdkEventButton* button_event) {
+  if (button_event->type == GDK_BUTTON_PRESS && button_event->button == 1 &&
+      !files_.getErrorList().empty()) {
+    // TODO show error
+  }
+  return true;
 }
 
 void WindowMain::onCancelBtnPress() {
@@ -307,6 +319,7 @@ void WindowMain::toggleLoadingMode(bool enter_loading_mode) {
   btn_song_save_all_->set_sensitive(!enter_loading_mode);
   btn_song_search_web_->set_sensitive(!enter_loading_mode);
   checkbox_rename_file_->set_sensitive(!enter_loading_mode);
+  eventbox_progressbar_main_->set_sensitive(!enter_loading_mode);
 }
 
 void WindowMain::enterProcessingMode(Files::Files::ProcessingMode mode) {

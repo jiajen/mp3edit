@@ -10,6 +10,7 @@
 #include <gtkmm/entry.h>
 #include <gtkmm/checkbutton.h>
 #include <gtkmm/button.h>
+#include <gtkmm/eventbox.h>
 #include <gtkmm/progressbar.h>
 
 #include "mp3edit/src/files.h"
@@ -36,6 +37,7 @@ class WindowMain: public Gtk::Window {
   void onSaveFileBtnPress();
   void onSearchWebBtnPress();
   void onSaveAllFilesBtnPress();
+  bool onClickProgressBar(GdkEventButton* button_event);
   void onCancelBtnPress();
   bool onCloseWindow(bool);
 
@@ -76,6 +78,7 @@ class WindowMain: public Gtk::Window {
   Gtk::Button* btn_song_save_single_;
   Gtk::Button* btn_song_search_web_;
   Gtk::Button* btn_song_save_all_;
+  Gtk::EventBox* eventbox_progressbar_main_;
   Gtk::ProgressBar* progressbar_main_;
   Gtk::Button* btn_cancel_action_;
 };
