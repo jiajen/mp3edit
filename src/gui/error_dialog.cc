@@ -34,7 +34,12 @@ ErrorDialog::ErrorDialog(BaseObjectType* cobject,
 }
 
 void ErrorDialog::run() {
-  // TODO fill treeview
+  liststore_->clear();
+  for (int i = 0, n = errors_.size(); i < n; i++) {
+    Gtk::TreeModel::Row row = *(liststore_->append());
+    row[columns_.filepath()] = (std::string)errors_[i].path();
+    row[columns_.error()] = errors_[i].what();
+  }
   Gtk::MessageDialog::run();
 }
 

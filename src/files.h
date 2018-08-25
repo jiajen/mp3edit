@@ -15,8 +15,8 @@ namespace Files {
 class FilesError {
  public:
   FilesError(const std::string& filepath, const std::string& error_message);
-  inline std::string path() { return filepath_; }
-  inline std::string what() { return error_message_; }
+  inline const std::string path() const { return filepath_; }
+  inline const std::string what() const { return error_message_; }
  private:
   std::string filepath_;
   std::string error_message_;
