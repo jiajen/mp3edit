@@ -350,6 +350,7 @@ void WindowMain::preOpLoadEntryDir() {
 void WindowMain::postOpLoadEntryDir() {
   treeview_files_->populateTreeView(-1);
   restoreEntryData(-1);
+  if (!files_.getErrorList().empty()) showErrorDialog();
   enterProcessingMode(Files::Files::ProcessingMode::kReady);
 }
 
