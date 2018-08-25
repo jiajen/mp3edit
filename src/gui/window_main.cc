@@ -204,8 +204,13 @@ void WindowMain::onSearchWebBtnPress() {
   appendField(kWsTitleField, getSongTitleOrFilename(), query);
   appendField(kWsArtistField, entry_song_artist_->get_text(), query);
   appendField(kWsAlbumField, entry_song_album_->get_text(), query);
-  appendField(kWsTrackNumField, entry_song_track_num_->get_text(), query);
-  appendField(kWsTrackDenumField, entry_song_track_denum_->get_text(), query);
+  std::string track_num_str = entry_song_track_num_->get_text();
+  std::string track_denum_str = entry_song_track_denum_->get_text();
+  if (track_num_str == "1" && (track_denum_str.empty() ||
+                               track_denum_str == "1")) track_num_str.clear();
+  if (track_denum_str == "1") track_denum_str.clear();
+  appendField(kWsTrackNumField, track_num_str, query);
+  appendField(kWsTrackDenumField, track_denum_str, query);
   if (query.empty()) return;
   query = std::string(kWsHeader) + std::string(kWsParams) + query;
   gtk_show_uri_on_window(nullptr, query.c_str(), GDK_CURRENT_TIME, nullptr);
