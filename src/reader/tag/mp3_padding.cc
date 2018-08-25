@@ -1,5 +1,6 @@
 #include "mp3edit/src/reader/tag/mp3_padding.h"
 
+#include <exception>
 #include <stdexcept>
 
 namespace Mp3Edit {

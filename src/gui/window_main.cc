@@ -3,6 +3,7 @@
 #include <string>
 #include <algorithm>
 #include <filesystem>
+#include <exception>
 
 #include <gtkmm/widget.h>
 #include <gtkmm/box.h>
