@@ -11,12 +11,28 @@ namespace Gui {
 
 namespace {
 
+const char* kWsHeader = "https://musicbrainz.org/search?";
+const char* kWsParams = "type=recording&limit=10&method=advanced&query=";
+const char* kWsFieldSeparator = " AND ";
+const char* kWsTitleField = "recording:";
+const char* kWsArtistField = "artist:";
+const char* kWsAlbumField = "release:";
+const char* kWsTrackNumField = "tnum:";
+const char* kWsTrackDenumField = "tracks:";
+
 int stringToTrack(const std::string& track) {
   try {
     return std::stoi(track);
   } catch (const std::exception&) {
     return -1;
   }
+}
+
+void appendField(const char* field_name, const std::string& field_data,
+                 std::string& query) {
+  if (field_data.empty()) return;
+  if (!query.empty()) query += kWsFieldSeparator;
+  query += field_name + field_data;
 }
 
 }  // namespace
@@ -145,7 +161,15 @@ void WindowMain::onSaveFileBtnPress() {
 }
 
 void WindowMain::onSearchWebBtnPress() {
-  // TODO
+  std::string query;
+  appendField(kWsTitleField, entry_song_title_->get_text(), query);
+  appendField(kWsArtistField, entry_song_artist_->get_text(), query);
+  appendField(kWsAlbumField, entry_song_album_->get_text(), query);
+  appendField(kWsTrackNumField, entry_song_track_num_->get_text(), query);
+  appendField(kWsTrackDenumField, entry_song_track_denum_->get_text(), query);
+  if (query.empty()) return;
+  query = std::string(kWsHeader) + std::string(kWsParams) + query;
+  gtk_show_uri_on_window(nullptr, query.c_str(), GDK_CURRENT_TIME, nullptr);
 }
 
 void WindowMain::onSaveAllFilesBtnPress() {
