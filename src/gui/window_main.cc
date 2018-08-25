@@ -245,7 +245,22 @@ void WindowMain::updateProgressBar(const std::string& filename,
       }
       break;
     case Files::Files::ProcessingMode::kSaveSingle:
-
+      if (done_processing) {
+        progressbar_main_->set_fraction(1);
+        if (processed_files == 0) {
+          progressbar_main_->set_text("Cancelled saving " + filename + ".");
+          return;
+        }
+        if (files_.getErrorList().empty()) {
+          progressbar_main_->set_text("Saved " + filename + ".");
+        } else {
+          progressbar_main_->set_text("Error saving " + filename +
+                                      ". Click here for details.");
+        }
+      } else {
+        progressbar_main_->set_fraction(0);
+        progressbar_main_->set_text("Saving " + filename + ".");
+      }
       break;
     case Files::Files::ProcessingMode::kSaveMulti:
 
