@@ -171,6 +171,16 @@ bool WindowMain::onCloseWindow(bool) {
   return true;
 }
 
+bool WindowMain::on_key_press_event(GdkEventKey* event) {
+  if (processing_mode_ == Files::Files::ProcessingMode::kReady &&
+      event->state == GDK_CONTROL_MASK &&
+      (event->keyval == GDK_KEY_o || event->keyval == GDK_KEY_O)) {
+    openDirDialog();
+    return true;
+  }
+  return Gtk::Window::on_key_press_event(event);
+}
+
 void WindowMain::onOperationUpdate() {
   if (processing_mode_ == Files::Files::ProcessingMode::kReady) return;
 
