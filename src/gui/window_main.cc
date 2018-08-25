@@ -263,7 +263,23 @@ void WindowMain::updateProgressBar(const std::string& filename,
       }
       break;
     case Files::Files::ProcessingMode::kSaveMulti:
-
+      if (done_processing) {
+        progressbar_main_->set_fraction(1);
+        if (files_.getErrorList().empty()) {
+          progressbar_main_->set_text("Saved " + to_string(processed_files) +
+                                      " files.");
+        } else {
+          int ok_files = processed_files - files_.getErrorList().size();
+          progressbar_main_->set_text("Saved " + to_string(ok_files) +
+                                      " out of " + to_string(processed_files) +
+                                      " files. Click here for details.");
+        }
+      } else {
+        progressbar_main_->set_fraction((double)processed_files/total_files);
+        progressbar_main_->set_text("Saving " + filename +
+                                    " [" + to_string(processed_files+1) +
+                                    "/" + to_string(total_files) + "]");
+      }
       break;
     default:
       break;
