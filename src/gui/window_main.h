@@ -36,6 +36,7 @@ class WindowMain: public Gtk::Window {
   void onSearchWebBtnPress();
   void onSaveAllFilesBtnPress();
   void onCancelBtnPress();
+  bool onCloseWindow(bool);
 
   void onOperationUpdate();
 

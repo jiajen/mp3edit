@@ -87,6 +87,9 @@ WindowMain::WindowMain(BaseObjectType* cobject,
   builder_->get_widget("btn_cancel_action", btn_cancel_action_);
   btn_cancel_action_->signal_clicked().connect(
     sigc::mem_fun(*this, &WindowMain::onCancelBtnPress));
+
+  signal_delete_event().connect(
+    sigc::mem_fun(*this, &WindowMain::onCloseWindow));
 }
 
 void WindowMain::storeEntryData(int pos) {
@@ -141,6 +144,12 @@ void WindowMain::onSaveAllFilesBtnPress() {
 
 void WindowMain::onCancelBtnPress() {
   files_.stopOperation();
+}
+
+bool WindowMain::onCloseWindow(bool) {
+  if (processing_mode_ == Files::Files::ProcessingMode::kReady) return false;
+  files_.stopOperation();
+  return true;
 }
 
 void WindowMain::onOperationUpdate() {
