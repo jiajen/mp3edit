@@ -1,6 +1,8 @@
 #ifndef MP3EDIT_SRC_GUI_WINDOW_MAIN_H_
 #define MP3EDIT_SRC_GUI_WINDOW_MAIN_H_
 
+#include <thread>
+
 #include <glibmm/dispatcher.h>
 #include <glibmm/refptr.h>
 #include <gtkmm/builder.h>
@@ -34,6 +36,7 @@ class WindowMain: public Gtk::Window {
   void onSearchWebBtnPress();
   void onSaveAllFilesBtnPress();
   void onCancelBtnPress();
+  bool onCloseWindow(bool);
 
   void onOperationUpdate();
 
@@ -52,6 +55,7 @@ class WindowMain: public Gtk::Window {
   Glib::Dispatcher dispatcher_;
   Files::Files files_;
   Files::Files::ProcessingMode processing_mode_;
+  std::thread* thread_;
 
   Glib::RefPtr<Gtk::Builder> builder_;
   Gtk::Entry* entry_dir_;

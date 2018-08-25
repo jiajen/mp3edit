@@ -45,7 +45,7 @@ configure_file(
 )
 
 ## Custom Compiler Flags
-set(COMPILER_FLAGS_CUSTOM)
+set(COMPILER_FLAGS_CUSTOM -pthread)
 
 ## Compiler Optimisations
 set(COMPILER_FLAGS_OPTIMISATIONS -O2 -flto)
