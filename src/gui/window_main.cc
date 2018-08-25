@@ -80,15 +80,19 @@ WindowMain::WindowMain(BaseObjectType* cobject,
   btn_song_save_all_->signal_clicked().connect(
     sigc::mem_fun(*this, &WindowMain::onSaveAllFilesBtnPress));
 
+  builder_->get_widget("eventbox_progressbar_main", eventbox_progressbar_main_);
+  eventbox_progressbar_main_->signal_button_press_event().connect(
+    sigc::mem_fun(*this, &WindowMain::onClickProgressBar));
+
   builder_->get_widget("progressbar_main", progressbar_main_);
-  progressbar_main_->set_show_text(true);
-  progressbar_main_->set_text("");
-  progressbar_main_->set_ellipsize(Pango::EllipsizeMode::ELLIPSIZE_END);
-  progressbar_main_->set_pulse_step(0.1);
+  clearProgressBar();
 
   builder_->get_widget("btn_cancel_action", btn_cancel_action_);
   btn_cancel_action_->signal_clicked().connect(
     sigc::mem_fun(*this, &WindowMain::onCancelBtnPress));
+
+  builder->get_widget_derived("gtk_dialog_error_dialog",
+                              gtk_dialog_error_dialog_, files_.getErrorList());
 
   signal_delete_event().connect(
     sigc::mem_fun(*this, &WindowMain::onCloseWindow));
@@ -112,6 +116,11 @@ void WindowMain::restoreEntryData(int pos) {
     (track_num != -1) ? std::to_string(track_num) : "");
   entry_song_track_denum_->set_text(
     (track_denum != -1) ? std::to_string(track_denum) : "");
+}
+
+void WindowMain::clearProgressBar() {
+  progressbar_main_->set_fraction(0);
+  progressbar_main_->set_text("");
 }
 
 void WindowMain::onDirEntryEnterPress() {
@@ -142,6 +151,14 @@ void WindowMain::onSearchWebBtnPress() {
 void WindowMain::onSaveAllFilesBtnPress() {
   storeEntryDataAndUpdateSelectedRowAndEntry();
   preOpSaveAllFiles();
+}
+
+bool WindowMain::onClickProgressBar(GdkEventButton* button_event) {
+  if (button_event->type == GDK_BUTTON_PRESS && button_event->button == 1 &&
+      !files_.getErrorList().empty()) {
+    showErrorDialog();
+  }
+  return true;
 }
 
 void WindowMain::onCancelBtnPress() {
@@ -286,9 +303,10 @@ void WindowMain::updateProgressBar(const std::string& filename,
   }
 }
 
-void WindowMain::clearProgressBar() {
-  progressbar_main_->set_fraction(0);
-  progressbar_main_->set_text("");
+void WindowMain::showErrorDialog() {
+  gtk_dialog_error_dialog_->set_transient_for(*this);
+  gtk_dialog_error_dialog_->run();
+  gtk_dialog_error_dialog_->hide();
 }
 
 void WindowMain::toggleLoadingMode(bool enter_loading_mode) {
@@ -307,6 +325,7 @@ void WindowMain::toggleLoadingMode(bool enter_loading_mode) {
   btn_song_save_all_->set_sensitive(!enter_loading_mode);
   btn_song_search_web_->set_sensitive(!enter_loading_mode);
   checkbox_rename_file_->set_sensitive(!enter_loading_mode);
+  eventbox_progressbar_main_->set_sensitive(!enter_loading_mode);
 }
 
 void WindowMain::enterProcessingMode(Files::Files::ProcessingMode mode) {
@@ -336,6 +355,7 @@ void WindowMain::preOpLoadEntryDir() {
 void WindowMain::postOpLoadEntryDir() {
   treeview_files_->populateTreeView(-1);
   restoreEntryData(-1);
+  if (!files_.getErrorList().empty()) showErrorDialog();
   enterProcessingMode(Files::Files::ProcessingMode::kReady);
 }
 
@@ -352,7 +372,7 @@ void WindowMain::postOpSaveFile() {
   if (!files_.getErrorList().empty()) {
     treeview_files_->removeSelectedRow();
     restoreEntryData(-1);
-    // TODO show error
+    showErrorDialog();
   } else if (checkbox_rename_file_->get_active()) {
     treeview_files_->updateSelectedRowFilepath();
   }
@@ -371,7 +391,7 @@ void WindowMain::postOpSaveAllFiles() {
   if (!files_.getErrorList().empty()) {
     treeview_files_->populateTreeView(treeview_files_->getSelectedFileIdx());
     if (!treeview_files_->getSelectedFileIdx()) restoreEntryData(-1);
-    // TODO show error
+    showErrorDialog();
   } else if (checkbox_rename_file_->get_active()) {
     treeview_files_->updateAllRowsFilepath();
   }

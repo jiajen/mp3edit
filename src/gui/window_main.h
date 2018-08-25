@@ -10,10 +10,12 @@
 #include <gtkmm/entry.h>
 #include <gtkmm/checkbutton.h>
 #include <gtkmm/button.h>
+#include <gtkmm/eventbox.h>
 #include <gtkmm/progressbar.h>
 
 #include "mp3edit/src/files.h"
 #include "mp3edit/src/gui/treeview_files.h"
+#include "mp3edit/src/gui/error_dialog.h"
 
 namespace Mp3Edit {
 namespace Gui {
@@ -36,6 +38,7 @@ class WindowMain: public Gtk::Window {
   void onSaveFileBtnPress();
   void onSearchWebBtnPress();
   void onSaveAllFilesBtnPress();
+  bool onClickProgressBar(GdkEventButton* button_event);
   void onCancelBtnPress();
   bool onCloseWindow(bool);
 
@@ -45,6 +48,7 @@ class WindowMain: public Gtk::Window {
   bool storeEntryDataAndUpdateSelectedRowAndEntry();
   void updateProgressBar(const std::string& filename, int processed_files,
                          int total_files, bool done_processing);
+  void showErrorDialog();
   void toggleLoadingMode(bool enter_loading_mode);
   void enterProcessingMode(Files::Files::ProcessingMode processing_mode);
 
@@ -76,8 +80,10 @@ class WindowMain: public Gtk::Window {
   Gtk::Button* btn_song_save_single_;
   Gtk::Button* btn_song_search_web_;
   Gtk::Button* btn_song_save_all_;
+  Gtk::EventBox* eventbox_progressbar_main_;
   Gtk::ProgressBar* progressbar_main_;
   Gtk::Button* btn_cancel_action_;
+  ErrorDialog* gtk_dialog_error_dialog_;
 };
 
 }  // namespace Gui
