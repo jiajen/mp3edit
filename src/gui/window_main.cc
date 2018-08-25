@@ -377,8 +377,11 @@ void WindowMain::enterProcessingMode(Files::Files::ProcessingMode mode) {
 }
 
 std::string WindowMain::getSongTitleOrFilename() {
-  // TODO
-  return entry_song_title_->get_text();
+  if (!entry_song_title_->get_text().empty())
+    return entry_song_title_->get_text();
+  int idx = treeview_files_->getSelectedFileIdx();
+  if (idx == -1) return "";
+  return files_[idx].getFilename();
 }
 
 void WindowMain::preOpLoadEntryDir() {
