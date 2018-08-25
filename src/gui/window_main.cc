@@ -6,8 +6,6 @@
 
 #include <gtkmm/filechooserdialog.h>
 
-#include "mp3edit/src/gui/error_dialog.h"
-
 namespace Mp3Edit {
 namespace Gui {
 
@@ -92,6 +90,9 @@ WindowMain::WindowMain(BaseObjectType* cobject,
   builder_->get_widget("btn_cancel_action", btn_cancel_action_);
   btn_cancel_action_->signal_clicked().connect(
     sigc::mem_fun(*this, &WindowMain::onCancelBtnPress));
+
+  builder->get_widget_derived("gtk_dialog_error_dialog",
+                              gtk_dialog_error_dialog_, files_.getErrorList());
 
   signal_delete_event().connect(
     sigc::mem_fun(*this, &WindowMain::onCloseWindow));
@@ -303,9 +304,9 @@ void WindowMain::updateProgressBar(const std::string& filename,
 }
 
 void WindowMain::showErrorDialog() {
-  ErrorDialog error_dialog(files_.getErrorList());
-  error_dialog.set_transient_for(*this);
-  error_dialog.run();
+  gtk_dialog_error_dialog_->set_transient_for(*this);
+  gtk_dialog_error_dialog_->run();
+  gtk_dialog_error_dialog_->hide();
 }
 
 void WindowMain::toggleLoadingMode(bool enter_loading_mode) {

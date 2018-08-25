@@ -15,6 +15,7 @@
 
 #include "mp3edit/src/files.h"
 #include "mp3edit/src/gui/treeview_files.h"
+#include "mp3edit/src/gui/error_dialog.h"
 
 namespace Mp3Edit {
 namespace Gui {
@@ -82,6 +83,7 @@ class WindowMain: public Gtk::Window {
   Gtk::EventBox* eventbox_progressbar_main_;
   Gtk::ProgressBar* progressbar_main_;
   Gtk::Button* btn_cancel_action_;
+  ErrorDialog* gtk_dialog_error_dialog_;
 };
 
 }  // namespace Gui
