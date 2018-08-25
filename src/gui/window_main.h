@@ -52,6 +52,7 @@ class WindowMain: public Gtk::Window {
   void showErrorDialog();
   void toggleLoadingMode(bool enter_loading_mode);
   void enterProcessingMode(Files::Files::ProcessingMode processing_mode);
+  void attemptBrowserSearch();
   std::string getSongTitleOrFilename();
 
   void preOpLoadEntryDir();
