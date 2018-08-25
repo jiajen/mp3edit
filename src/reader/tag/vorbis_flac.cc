@@ -2,7 +2,7 @@
 
 #include <cstring>
 
-#include <system_error>
+#include <stdexcept>
 
 #include "mp3edit/src/reader/utility.h"
 #include "mp3edit/src/reader/tag/vorbis_shared.h"
@@ -40,7 +40,7 @@ int skipMetadataBlock(Filesystem::FileStream& file_stream, int seek,
   do {
     readBytes(file_stream, seek, kBlockHeaderLength, header);
     if ((header[kBlockTypePos]&0x7F) == 0x7F)
-      throw std::system_error(std::error_code(), "Invalid FLAC.");
+      throw std::runtime_error("Invalid FLAC.");
 
     using Reader::Utility::bEndianToInt;
     size = kBlockHeaderLength +

@@ -4,7 +4,7 @@
 
 #include <algorithm>
 #include <exception>
-#include <system_error>
+#include <stdexcept>
 #include <filesystem>
 
 #include "mp3edit/src/filesystem.h"
@@ -227,14 +227,13 @@ void File::updateFields(const std::string& title, const std::string& artist,
 void File::saveFileChanges(bool rename_file) {
   try {
     if (!is_valid_) {
-      throw std::system_error(std::error_code(),
-                              "Attempted to save an invalid file.");
+      throw std::runtime_error("Attempted to save an invalid file.");
     }
     using Filesystem::readBytes;
     Filesystem::FileStream file_stream(filepath_, std::ios::in |
                                                   std::ifstream::binary);
     if (!file_stream) {
-      throw std::system_error(std::error_code(), "Error accessing file.");
+      throw std::runtime_error("Error accessing file.");
     }
 
     Bytes metadata_front, metadata_back, audio_raw;
@@ -288,7 +287,7 @@ void File::saveFileChanges(bool rename_file) {
     if (!skip_writing) {
       if (!writeFile(audio_raw, metadata_front, metadata_back,
                      rename_file ?  title_ : ""))
-        throw std::system_error(std::error_code(), "Unable to write.");
+        throw std::runtime_error("Unable to write.");
       filesize_ = metadata_front.size() + audio_raw.size() +
                   metadata_back.size();
       audio_start_ = metadata_front.size();
@@ -368,10 +367,10 @@ void File::readMetaData(Filesystem::FileStream& file_stream) {
         file_container_start_seek_ = audio_start_;
         if (!parseTag(extractTag(file_stream, audio_start_, seek),
                       title_, artist_, album_, track_num_, track_denum_))
-          throw std::system_error(std::error_code(), "Invalid FLAC Tag.");
+          throw std::runtime_error("Invalid FLAC Tag.");
         audio_start_ = seek;
       } else {
-        throw std::system_error(std::error_code(), "Invalid FLAC.");
+        throw std::runtime_error("Invalid FLAC.");
       }
       break;
     case FileType::kOgg:
@@ -382,10 +381,10 @@ void File::readMetaData(Filesystem::FileStream& file_stream) {
         file_container_start_seek_ = audio_start_;
         if (!parseTag(extractTag(file_stream, audio_start_, seek),
                       title_, artist_, album_, track_num_, track_denum_))
-          throw std::system_error(std::error_code(), "Invalid OGG Tag.");
+          throw std::runtime_error("Invalid OGG Tag.");
         audio_start_ = seek;
       } else {
-        throw std::system_error(std::error_code(), "Invalid OGG.");
+        throw std::runtime_error("Invalid OGG.");
       }
       break;
     default:
