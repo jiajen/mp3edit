@@ -16,7 +16,8 @@ namespace Gui {
 namespace {
 
 const char* kWsHeader = "https://musicbrainz.org/search?";
-const char* kWsParams = "type=recording&limit=10&method=advanced&query=";
+const char* kWsParams = "type=recording&limit=10&method=advanced&query="
+                        "(primarytype:album OR primarytype:single)";
 const char* kWsFieldSeparator = " AND ";
 const char* kWsTitleField = "recording:";
 const char* kWsArtistField = "artist:";
@@ -35,8 +36,7 @@ int stringToTrack(const std::string& track) {
 void appendField(const char* field_name, const std::string& field_data,
                  std::string& query) {
   if (field_data.empty()) return;
-  if (!query.empty()) query += kWsFieldSeparator;
-  query += field_name + field_data;
+  query += std::string(kWsFieldSeparator) + field_name + field_data;
 }
 
 }  // namespace
