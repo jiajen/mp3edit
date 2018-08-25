@@ -51,8 +51,10 @@ void Files::saveFile(int idx, bool rename_file, bool is_single_file) {
     errors_.emplace_back(files_[idx].getFilepath(),
                          files_[idx].getErrorMessage());
   }
-  setOperation(ProcessingMode::kReady);
-  if (is_single_file) updateProgress(files_[idx].getFilepath(), 1);
+  if (is_single_file) {
+    stopOperation();
+    updateProgress(files_[idx].getFilepath(), 1);
+  }
 }
 
 void Files::saveAllFiles(bool rename_file) {
@@ -72,7 +74,7 @@ void Files::saveAllFiles(bool rename_file) {
       processed_files_n++;
     }
   }
-  setOperation(ProcessingMode::kReady);
+  stopOperation();
   updateProgress("", processed_files_n);
 }
 
@@ -139,7 +141,7 @@ inline void Files::readFiles(const std::string& directory,
       files_.pop_back();
     }
   }
-  setOperation(ProcessingMode::kReady);
+  stopOperation();
   updateProgress("", dir_entries.size());
 }
 

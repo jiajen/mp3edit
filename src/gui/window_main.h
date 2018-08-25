@@ -27,6 +27,7 @@ class WindowMain: public Gtk::Window {
   // Called by self to update entry with file data and also
   // by treeview when row data is edited.
   void restoreEntryData(int pos);
+  void clearProgressBar();
  private:
   void onDirEntryEnterPress();
   void onOpenDirBtnPress();
@@ -42,6 +43,8 @@ class WindowMain: public Gtk::Window {
 
   void openDirDialog();
   bool storeEntryDataAndUpdateSelectedRowAndEntry();
+  void updateProgressBar(const std::string& filename, int processed_files,
+                         int total_files, bool done_processing);
   void toggleLoadingMode(bool enter_loading_mode);
   void enterProcessingMode(Files::Files::ProcessingMode processing_mode);
 
