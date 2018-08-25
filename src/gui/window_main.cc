@@ -85,10 +85,7 @@ WindowMain::WindowMain(BaseObjectType* cobject,
     sigc::mem_fun(*this, &WindowMain::onClickProgressBar));
 
   builder_->get_widget("progressbar_main", progressbar_main_);
-  progressbar_main_->set_show_text(true);
-  progressbar_main_->set_text("");
-  progressbar_main_->set_ellipsize(Pango::EllipsizeMode::ELLIPSIZE_END);
-  progressbar_main_->set_pulse_step(0.1);
+  clearProgressBar();
 
   builder_->get_widget("btn_cancel_action", btn_cancel_action_);
   btn_cancel_action_->signal_clicked().connect(
