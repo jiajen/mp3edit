@@ -162,7 +162,7 @@ void WindowMain::onSaveFileBtnPress() {
 
 void WindowMain::onSearchWebBtnPress() {
   std::string query;
-  appendField(kWsTitleField, entry_song_title_->get_text(), query);
+  appendField(kWsTitleField, getSongTitleOrFilename(), query);
   appendField(kWsArtistField, entry_song_artist_->get_text(), query);
   appendField(kWsAlbumField, entry_song_album_->get_text(), query);
   appendField(kWsTrackNumField, entry_song_track_num_->get_text(), query);
@@ -374,6 +374,11 @@ void WindowMain::enterProcessingMode(Files::Files::ProcessingMode mode) {
     thread_ = nullptr;
   }
   processing_mode_ = mode;
+}
+
+std::string WindowMain::getSongTitleOrFilename() {
+  // TODO
+  return entry_song_title_->get_text();
 }
 
 void WindowMain::preOpLoadEntryDir() {
