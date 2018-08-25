@@ -111,6 +111,7 @@ File::File(const std::string& filepath, FileType filetype,
   try {
     if (!file_stream) {
       is_valid_ = false;
+      error_ = "Unable to open file.";
       return;
     }
 
