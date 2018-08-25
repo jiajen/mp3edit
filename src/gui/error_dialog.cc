@@ -1,5 +1,7 @@
 #include "mp3edit/src/gui/error_dialog.h"
 
+#include <gtkmm/clipboard.h>
+
 namespace Mp3Edit {
 namespace Gui {
 
@@ -41,6 +43,18 @@ void ErrorDialog::run() {
     row[columns_.error()] = errors_[i].what();
   }
   Gtk::MessageDialog::run();
+}
+
+bool ErrorDialog::on_key_press_event(GdkEventKey* event) {
+  using std::string;
+  if (event->state == GDK_CONTROL_MASK &&
+      (event->keyval == GDK_KEY_c || event->keyval == GDK_KEY_C)) {
+    Gtk::TreeModel::iterator row_it = treeselection_->get_selected();
+    if (!row_it) return Gtk::Window::on_key_press_event(event);
+    Gtk::Clipboard::get()->set_text((string)((*row_it)[columns_.filepath()]));
+    return true;
+  }
+  return Gtk::Window::on_key_press_event(event);
 }
 
 }  // namespace Gui

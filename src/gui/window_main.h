@@ -41,6 +41,7 @@ class WindowMain: public Gtk::Window {
   bool onClickProgressBar(GdkEventButton* button_event);
   void onCancelBtnPress();
   bool onCloseWindow(bool);
+  bool on_key_press_event(GdkEventKey* event) override;
 
   void onOperationUpdate();
 

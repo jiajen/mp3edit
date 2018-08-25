@@ -36,6 +36,8 @@ class ErrorDialog: public Gtk::MessageDialog {
     Column error_;
   };
 
+  bool on_key_press_event(GdkEventKey* event) override;
+
   const std::vector<Files::FilesError>& errors_;
 
   Glib::RefPtr<Gtk::Builder> builder_;
