@@ -284,7 +284,6 @@ void WindowMain::updateProgressBar(const std::string& filename,
     default:
       break;
   }
-  // TODO
 }
 
 void WindowMain::clearProgressBar() {
