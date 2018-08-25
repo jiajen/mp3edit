@@ -108,15 +108,17 @@ void Files::stopOperation() {
 template <class T>
 inline void Files::readFiles(const std::string& directory,
                              bool read_audio_data, T& it) {
+  beginProgress(-1);
   try {
     it = T(directory);
   } catch (const std::filesystem::filesystem_error&) {
+    stopOperation();
+    updateProgress("", -1);
     return;
   }
 
   std::vector<DirectoryEntry> dir_entries;
   int file_num = 0;
-  beginProgress(-1);
   for (const auto& entry: it) {
     if (!entry.is_regular_file()) continue;
     std::string filepath = entry.path();
