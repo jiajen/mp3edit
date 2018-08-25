@@ -45,6 +45,7 @@ class File {
   inline int getTrackDenum() const { return track_denum_; }
   inline std::string getErrorMessage() const { return error_; }
   inline operator bool() const { return is_valid_; }
+  std::string getFilename() const;
   std::string getTrack() const;
   std::string getBitrate() const;
   std::string getSamplingRate() const;

@@ -133,6 +133,12 @@ File::File(const std::string& filepath, FileType filetype,
   file_stream.close();
 }
 
+std::string File::getFilename() const {
+  std::filesystem::path current_path = filepath_;
+  current_path.replace_extension();
+  return current_path.filename();
+}
+
 std::string File::getTrack() const {
   if (track_num_ > 0) {
     if (track_denum_ > 0) {
