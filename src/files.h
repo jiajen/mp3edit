@@ -12,19 +12,19 @@
 namespace Mp3Edit {
 namespace Files {
 
+class FilesError {
+ public:
+  FilesError(const std::string& filepath, const std::string& error_message);
+  inline std::string path() { return filepath_; }
+  inline std::string what() { return error_message_; }
+ private:
+  std::string filepath_;
+  std::string error_message_;
+};
+
 // This class is not fully multi-threaded beyond the bare minimal for use
 // with the GUI. Caution is advised if this is used with multi-threading.
 class Files {
- private:
-  class Error {
-   public:
-    Error(const std::string& filepath, const std::string& error_message);
-    inline std::string path() { return filepath_; }
-    inline std::string what() { return error_message_; }
-   private:
-    std::string filepath_;
-    std::string error_message_;
-  };
  public:
   enum class ProcessingMode {
     kReady = 0,
@@ -36,7 +36,7 @@ class Files {
 
   inline File::File& operator[](int idx) { return files_[idx]; }
   inline int size() const { return files_.size(); }
-  inline const std::vector<Error>& getErrorList() const { return errors_; }
+  inline const std::vector<FilesError>& getErrorList() const { return errors_; }
 
   void readDirectory(const std::string& directory, bool recurse,
                      bool read_audio_data);
@@ -59,7 +59,7 @@ class Files {
   // Check if operation has been stopped.
   bool updateProgress(const std::string& filepath, int processed_files_n);
 
-  std::vector<Error> errors_;
+  std::vector<FilesError> errors_;
   std::vector<File::File> files_;
 
   // Multi-threading
