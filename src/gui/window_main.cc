@@ -83,6 +83,8 @@ WindowMain::WindowMain(BaseObjectType* cobject,
   builder_->get_widget("progressbar_main", progressbar_main_);
   progressbar_main_->set_show_text(true);
   progressbar_main_->set_text("");
+  progressbar_main_->set_ellipsize(Pango::EllipsizeMode::ELLIPSIZE_END);
+  progressbar_main_->set_pulse_step(0.1);
 
   builder_->get_widget("btn_cancel_action", btn_cancel_action_);
   btn_cancel_action_->signal_clicked().connect(
@@ -161,7 +163,8 @@ void WindowMain::onOperationUpdate() {
   auto mode = files_.fileOperationStatus(processed_files, total_files,
                                          processing_file);
 
-  // TODO update progress bar.
+  updateProgressBar(processing_file, processed_files, total_files,
+                    mode == Files::Files::ProcessingMode::kReady);
 
   if (mode != Files::Files::ProcessingMode::kReady) return;
   switch (processing_mode_) {
@@ -208,6 +211,56 @@ bool WindowMain::storeEntryDataAndUpdateSelectedRowAndEntry() {
   return true;
 }
 
+void WindowMain::updateProgressBar(const std::string& filename,
+                                   int processed_files, int total_files,
+                                   bool done_processing) {
+  using std::to_string;
+  switch (processing_mode_) {
+    case Files::Files::ProcessingMode::kReadMulti:
+      if (done_processing) {
+        if (total_files == -1) return;
+        progressbar_main_->set_fraction(1);
+        if (files_.getErrorList().empty()) {
+          progressbar_main_->set_text("Loaded " + to_string(processed_files) +
+                                      " files.");
+        } else {
+          int ok_files = processed_files - files_.getErrorList().size();
+          progressbar_main_->set_text("Loaded " + to_string(ok_files) +
+                                      " out of " + to_string(processed_files) +
+                                      " files. Click here for details.");
+        }
+      } else {
+        if (total_files == -1 && processed_files != -1) {
+          progressbar_main_->set_text("Finding files - " +
+                                      filename + " [" +
+                                      to_string(processed_files+1) + "]");
+          progressbar_main_->pulse();
+        } else if (total_files != -1) {
+          if (total_files == 0) total_files = 1;
+          progressbar_main_->set_fraction((double)processed_files/total_files);
+          progressbar_main_->set_text("Loading " + filename +
+                                      " [" + to_string(processed_files+1) +
+                                      "/" + to_string(total_files) + "]");
+        }
+      }
+      break;
+    case Files::Files::ProcessingMode::kSaveSingle:
+
+      break;
+    case Files::Files::ProcessingMode::kSaveMulti:
+
+      break;
+    default:
+      break;
+  }
+  // TODO
+}
+
+void WindowMain::clearProgressBar() {
+  progressbar_main_->set_fraction(0);
+  progressbar_main_->set_text("");
+}
+
 void WindowMain::toggleLoadingMode(bool enter_loading_mode) {
   checkbox_read_subdir_->set_sensitive(!enter_loading_mode);
   checkbox_read_audio_->set_sensitive(!enter_loading_mode);
@@ -230,6 +283,7 @@ void WindowMain::enterProcessingMode(Files::Files::ProcessingMode mode) {
   const auto kReady = Files::Files::ProcessingMode::kReady;
   if (processing_mode_ == kReady && mode != kReady) {
     toggleLoadingMode(true);
+    clearProgressBar();
   } else if (mode == kReady && processing_mode_ != kReady) {
     toggleLoadingMode(false);
     thread_->join();

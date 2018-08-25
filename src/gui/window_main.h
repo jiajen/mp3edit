@@ -42,6 +42,9 @@ class WindowMain: public Gtk::Window {
 
   void openDirDialog();
   bool storeEntryDataAndUpdateSelectedRowAndEntry();
+  void updateProgressBar(const std::string& filename, int processed_files,
+                         int total_files, bool done_processing);
+  void clearProgressBar();
   void toggleLoadingMode(bool enter_loading_mode);
   void enterProcessingMode(Files::Files::ProcessingMode processing_mode);
 
