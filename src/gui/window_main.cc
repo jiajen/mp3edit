@@ -25,6 +25,7 @@ WindowMain::WindowMain(BaseObjectType* cobject,
                        const Glib::RefPtr<Gtk::Builder>& builder)
     : Gtk::Window(cobject), files_(&dispatcher_),
       processing_mode_(Files::Files::ProcessingMode::kReady),
+      thread_(nullptr),
       builder_(builder) {
   dispatcher_.connect(
     sigc::mem_fun(*this, &WindowMain::onOperationUpdate));
@@ -222,6 +223,9 @@ void WindowMain::enterProcessingMode(Files::Files::ProcessingMode mode) {
     toggleLoadingMode(true);
   } else if (mode == kReady && processing_mode_ != kReady) {
     toggleLoadingMode(false);
+    thread_->join();
+    delete thread_;
+    thread_ = nullptr;
   }
   processing_mode_ = mode;
 }
@@ -229,10 +233,11 @@ void WindowMain::enterProcessingMode(Files::Files::ProcessingMode mode) {
 void WindowMain::preOpLoadEntryDir() {
   enterProcessingMode(Files::Files::ProcessingMode::kReadMulti);
   files_.setOperation(Files::Files::ProcessingMode::kReadMulti);
-  // TODO threading
-  files_.readDirectory(entry_dir_->get_text(),
-                       checkbox_read_subdir_->get_active(),
-                       checkbox_read_audio_->get_active());
+  thread_ = new std::thread([this]() {
+    files_.readDirectory(entry_dir_->get_text(),
+                         checkbox_read_subdir_->get_active(),
+                         checkbox_read_audio_->get_active());
+  });
 }
 
 void WindowMain::postOpLoadEntryDir() {
@@ -244,9 +249,10 @@ void WindowMain::postOpLoadEntryDir() {
 void WindowMain::preOpSaveFile() {
   enterProcessingMode(Files::Files::ProcessingMode::kSaveSingle);
   files_.setOperation(Files::Files::ProcessingMode::kSaveSingle);
-  // TODO threading
-  files_.saveFile(treeview_files_->getSelectedFileIdx(),
-                  checkbox_rename_file_->get_active());
+  thread_ = new std::thread([this]() {
+    files_.saveFile(treeview_files_->getSelectedFileIdx(),
+                    checkbox_rename_file_->get_active());
+  });
 }
 
 void WindowMain::postOpSaveFile() {
@@ -263,8 +269,9 @@ void WindowMain::postOpSaveFile() {
 void WindowMain::preOpSaveAllFiles() {
   enterProcessingMode(Files::Files::ProcessingMode::kSaveMulti);
   files_.setOperation(Files::Files::ProcessingMode::kSaveMulti);
-  // TODO threading
-  files_.saveAllFiles(checkbox_rename_file_->get_active());
+  thread_ = new std::thread([this]() {
+    files_.saveAllFiles(checkbox_rename_file_->get_active());
+  });
 }
 
 void WindowMain::postOpSaveAllFiles() {
