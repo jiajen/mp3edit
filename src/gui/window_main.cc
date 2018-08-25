@@ -4,6 +4,10 @@
 #include <algorithm>
 #include <filesystem>
 
+#include <gtkmm/widget.h>
+#include <gtkmm/box.h>
+#include <gtkmm/grid.h>
+#include <gtkmm/scrolledwindow.h>
 #include <gtkmm/filechooserdialog.h>
 
 namespace Mp3Edit {
@@ -112,6 +116,41 @@ WindowMain::WindowMain(BaseObjectType* cobject,
 
   signal_delete_event().connect(
     sigc::mem_fun(*this, &WindowMain::onCloseWindow));
+
+  Gtk::Box* box_main;
+  Gtk::Box* box_dir_path;
+  Gtk::ScrolledWindow* scroller_view;
+  Gtk::Grid* grid_main_controls;
+  Gtk::Box* box_track_controls;
+
+  builder->get_widget("gtk_box_main", box_main);
+  builder->get_widget("gtk_box_dir_path", box_dir_path);
+  builder->get_widget("gtk_scroller_treeview_files", scroller_view);
+  builder->get_widget("gtk_grid_main_controls", grid_main_controls);
+  builder->get_widget("gtk_box_track_controls", box_track_controls);
+
+  std::vector<Gtk::Widget*> widget_order_box_main;
+  widget_order_box_main.push_back(box_dir_path);
+  widget_order_box_main.push_back(scroller_view);
+  widget_order_box_main.push_back(grid_main_controls);
+  widget_order_box_main.push_back(scroller_view);
+  box_main->set_focus_chain(widget_order_box_main);
+
+  std::vector<Gtk::Widget*> widget_order_box_dir;
+  widget_order_box_dir.push_back(entry_dir_);
+  box_dir_path->set_focus_chain(widget_order_box_dir);
+
+  std::vector<Gtk::Widget*> widget_order_grid;
+  widget_order_grid.push_back(entry_song_title_);
+  widget_order_grid.push_back(entry_song_artist_);
+  widget_order_grid.push_back(entry_song_album_);
+  widget_order_grid.push_back(box_track_controls);
+  grid_main_controls->set_focus_chain(widget_order_grid);
+
+  std::vector<Gtk::Widget*> widget_order_box_track;
+  widget_order_box_track.push_back(entry_song_track_num_);
+  widget_order_box_track.push_back(entry_song_track_denum_);
+  box_track_controls->set_focus_chain(widget_order_box_track);
 }
 
 void WindowMain::storeEntryData(int pos) {
