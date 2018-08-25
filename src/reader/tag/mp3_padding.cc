@@ -1,5 +1,8 @@
 #include "mp3edit/src/reader/tag/mp3_padding.h"
 
+#include <exception>
+#include <stdexcept>
+
 namespace Mp3Edit {
 namespace ReaderTag {
 namespace Mp3Padding {
@@ -30,8 +33,7 @@ int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek) {
       Filesystem::readBytes(file_stream, seek+1, 1, buffer);
     } while (!checkIsValidSync(old_byte, buffer, seek));
   } catch (const std::exception& ex) {
-    throw std::system_error(std::error_code(),
-                            "Unable to locate a valid MP3 Frame.");
+    throw std::runtime_error("Unable to locate a valid MP3 Frame.");
   }
   return seek;
 }

@@ -2,7 +2,7 @@
 
 #include <cstring>
 
-#include <system_error>
+#include <stdexcept>
 
 #include "mp3edit/src/reader/tag/vorbis_shared.h"
 #include "mp3edit/src/reader/utility.h"
@@ -70,7 +70,7 @@ bool verifyValidOggHeaderPrefix(const Bytes& header) {
 int segmentTableToSize(const Bytes& segment_table) {
   int size = 0, n = segment_table.size();
   if (n > 0 && segment_table[n-1] == 0xFF)
-    throw std::system_error(std::error_code(), "Invalid OGG.");
+    throw std::runtime_error("Invalid OGG.");
   for (int i = 0; i < n; i++)
     size += (int)segment_table[i];
   return size;
@@ -93,7 +93,7 @@ Bytes generateSegmentTable(int size_t1, int size_t2) {
   }
 
   if (segment_table.size() > 255)
-    throw std::system_error(std::error_code(), "Tag too large.");
+    throw std::runtime_error("Tag too large.");
   return segment_table;
 }
 
@@ -152,7 +152,7 @@ int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek) {
             header);
   seek += kFirstPageLength + kPageHeaderPrefixLength;
   if (!verifyValidOggHeaderPrefix(header))
-    throw std::system_error(std::error_code(), "Unsupported OGG.");
+    throw std::runtime_error("Unsupported OGG.");
 
   int number_segments = header[kFirstPageLength + kNumberPageSegmentsPos];
   readBytes(file_stream, seek, number_segments, segment_table);
@@ -161,17 +161,17 @@ int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek) {
 
   readBytes(file_stream, seek, page_size, second_page);
   if (!verifyValidOggVorbisCommentHeader(second_page, 0))
-    throw std::system_error(std::error_code(), "Invalid OGG.");
+    throw std::runtime_error("Invalid OGG.");
   int vorbis_tag_size = VorbisShared::parseTag(second_page,
                                                kCommonVorbisHeaderSize,
                                                true, true);
   if (vorbis_tag_size == -1)
-    throw std::system_error(std::error_code(), "Unsupported OGG.");
+    throw std::runtime_error("Unsupported OGG.");
   seek += kCommonVorbisHeaderSize + vorbis_tag_size;
 
   if (!verifyValidOggVorbisSetupHeader(second_page, kCommonVorbisHeaderSize +
                                                     vorbis_tag_size))
-    throw std::system_error(std::error_code(), "Unsupported OGG.");
+    throw std::runtime_error("Unsupported OGG.");
 
   return seek;
 }

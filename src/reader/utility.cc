@@ -4,7 +4,7 @@
 
 #include <algorithm>
 #include <exception>
-#include <system_error>
+#include <stdexcept>
 
 #include "mp3edit/src/sanitiser.h"
 
@@ -110,8 +110,7 @@ void intToBytes(unsigned int val, bool is_sync_safe,
     val >>= jmp;
     it_begin = (it_begin < it_end) ? it_begin+1:it_begin-1;
   }
-  if (val > 0) throw std::system_error(std::error_code(),
-                                       "Integer to byte string overflow.");
+  if (val > 0) throw std::runtime_error("Integer to byte string overflow.");
 }
 
 }  // namespace
