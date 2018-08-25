@@ -200,20 +200,7 @@ void WindowMain::onSaveFileBtnPress() {
 }
 
 void WindowMain::onSearchWebBtnPress() {
-  std::string query;
-  appendField(kWsTitleField, getSongTitleOrFilename(), query);
-  appendField(kWsArtistField, entry_song_artist_->get_text(), query);
-  appendField(kWsAlbumField, entry_song_album_->get_text(), query);
-  std::string track_num_str = entry_song_track_num_->get_text();
-  std::string track_denum_str = entry_song_track_denum_->get_text();
-  if (track_num_str == "1" && (track_denum_str.empty() ||
-                               track_denum_str == "1")) track_num_str.clear();
-  if (track_denum_str == "1") track_denum_str.clear();
-  appendField(kWsTrackNumField, track_num_str, query);
-  appendField(kWsTrackDenumField, track_denum_str, query);
-  if (query.empty()) return;
-  query = std::string(kWsHeader) + std::string(kWsParams) + query;
-  gtk_show_uri_on_window(nullptr, query.c_str(), GDK_CURRENT_TIME, nullptr);
+  attemptBrowserSearch();
 }
 
 void WindowMain::onSaveAllFilesBtnPress() {
@@ -241,9 +228,19 @@ bool WindowMain::onCloseWindow(bool) {
 
 bool WindowMain::on_key_press_event(GdkEventKey* event) {
   if (processing_mode_ == Files::Files::ProcessingMode::kReady &&
-      event->state == GDK_CONTROL_MASK &&
-      (event->keyval == GDK_KEY_o || event->keyval == GDK_KEY_O)) {
-    openDirDialog();
+      event->state == GDK_CONTROL_MASK) {
+    switch (event->keyval) {
+      case GDK_KEY_O:
+      case GDK_KEY_o:
+        openDirDialog();
+        break;
+      case GDK_KEY_Return:
+        attemptBrowserSearch();
+        break;
+      default:
+        return Gtk::Window::on_key_press_event(event);
+        break;
+    }
     return true;
   }
   return Gtk::Window::on_key_press_event(event);
@@ -418,6 +415,23 @@ void WindowMain::enterProcessingMode(Files::Files::ProcessingMode mode) {
     thread_ = nullptr;
   }
   processing_mode_ = mode;
+}
+
+void WindowMain::attemptBrowserSearch() {
+  std::string query;
+  appendField(kWsTitleField, getSongTitleOrFilename(), query);
+  appendField(kWsArtistField, entry_song_artist_->get_text(), query);
+  appendField(kWsAlbumField, entry_song_album_->get_text(), query);
+  std::string track_num_str = entry_song_track_num_->get_text();
+  std::string track_denum_str = entry_song_track_denum_->get_text();
+  if (track_num_str == "1" && (track_denum_str.empty() ||
+                               track_denum_str == "1")) track_num_str.clear();
+  if (track_denum_str == "1") track_denum_str.clear();
+  appendField(kWsTrackNumField, track_num_str, query);
+  appendField(kWsTrackDenumField, track_denum_str, query);
+  if (query.empty()) return;
+  query = std::string(kWsHeader) + std::string(kWsParams) + query;
+  gtk_show_uri_on_window(nullptr, query.c_str(), GDK_CURRENT_TIME, nullptr);
 }
 
 std::string WindowMain::getSongTitleOrFilename() {
