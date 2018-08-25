@@ -118,6 +118,11 @@ void WindowMain::restoreEntryData(int pos) {
     (track_denum != -1) ? std::to_string(track_denum) : "");
 }
 
+void WindowMain::clearProgressBar() {
+  progressbar_main_->set_fraction(0);
+  progressbar_main_->set_text("");
+}
+
 void WindowMain::onDirEntryEnterPress() {
   preOpLoadEntryDir();
 }
@@ -151,7 +156,7 @@ void WindowMain::onSaveAllFilesBtnPress() {
 bool WindowMain::onClickProgressBar(GdkEventButton* button_event) {
   if (button_event->type == GDK_BUTTON_PRESS && button_event->button == 1 &&
       !files_.getErrorList().empty()) {
-    // TODO show error
+    showErrorDialog();
   }
   return true;
 }
@@ -298,9 +303,8 @@ void WindowMain::updateProgressBar(const std::string& filename,
   }
 }
 
-void WindowMain::clearProgressBar() {
-  progressbar_main_->set_fraction(0);
-  progressbar_main_->set_text("");
+void WindowMain::showErrorDialog() {
+  // TODO
 }
 
 void WindowMain::toggleLoadingMode(bool enter_loading_mode) {
@@ -365,7 +369,7 @@ void WindowMain::postOpSaveFile() {
   if (!files_.getErrorList().empty()) {
     treeview_files_->removeSelectedRow();
     restoreEntryData(-1);
-    // TODO show error
+    showErrorDialog();
   } else if (checkbox_rename_file_->get_active()) {
     treeview_files_->updateSelectedRowFilepath();
   }
@@ -384,7 +388,7 @@ void WindowMain::postOpSaveAllFiles() {
   if (!files_.getErrorList().empty()) {
     treeview_files_->populateTreeView(treeview_files_->getSelectedFileIdx());
     if (!treeview_files_->getSelectedFileIdx()) restoreEntryData(-1);
-    // TODO show error
+    showErrorDialog();
   } else if (checkbox_rename_file_->get_active()) {
     treeview_files_->updateAllRowsFilepath();
   }
