@@ -11,20 +11,12 @@
 #include <gtkmm/scrolledwindow.h>
 #include <gtkmm/filechooserdialog.h>
 
+#include "mp3edit/src/webservice/musicbrainz.h"
+
 namespace Mp3Edit {
 namespace Gui {
 
 namespace {
-
-const char* kWsHeader = "https://musicbrainz.org/search?";
-const char* kWsParams = "type=recording&limit=10&method=advanced&query="
-                        "(primarytype:album OR primarytype:single)";
-const char* kWsFieldSeparator = " AND ";
-const char* kWsTitleField = "recording:";
-const char* kWsArtistField = "artist:";
-const char* kWsAlbumField = "release:";
-const char* kWsTrackNumField = "tnum:";
-const char* kWsTrackDenumField = "tracks:";
 
 int stringToTrack(const std::string& track) {
   try {
@@ -32,12 +24,6 @@ int stringToTrack(const std::string& track) {
   } catch (const std::exception&) {
     return -1;
   }
-}
-
-void appendField(const char* field_name, const std::string& field_data,
-                 std::string& query) {
-  if (field_data.empty()) return;
-  query += std::string(kWsFieldSeparator) + field_name + field_data;
 }
 
 }  // namespace
@@ -427,20 +413,14 @@ void WindowMain::enterProcessingMode(Files::Files::ProcessingMode mode) {
 }
 
 void WindowMain::attemptBrowserSearch() {
-  std::string query;
-  appendField(kWsTitleField, getSongTitleOrFilename(), query);
-  appendField(kWsArtistField, entry_song_artist_->get_text(), query);
-  appendField(kWsAlbumField, entry_song_album_->get_text(), query);
-  std::string track_num_str = entry_song_track_num_->get_text();
-  std::string track_denum_str = entry_song_track_denum_->get_text();
-  if (track_num_str == "1" && (track_denum_str.empty() ||
-                               track_denum_str == "1")) track_num_str.clear();
-  if (track_denum_str == "1") track_denum_str.clear();
-  appendField(kWsTrackNumField, track_num_str, query);
-  appendField(kWsTrackDenumField, track_denum_str, query);
-  if (query.empty()) return;
-  query = std::string(kWsHeader) + std::string(kWsParams) + query;
-  gtk_show_uri_on_window(nullptr, query.c_str(), GDK_CURRENT_TIME, nullptr);
+  using WebService::MusicBrainz::generateSearchUrl;
+  std::string url = generateSearchUrl(getSongTitleOrFilename(),
+                                      entry_song_artist_->get_text(),
+                                      entry_song_album_->get_text(),
+                                      entry_song_track_num_->get_text(),
+                                      entry_song_track_denum_->get_text());
+  if (url.empty()) return;
+  gtk_show_uri_on_window(nullptr, url.c_str(), GDK_CURRENT_TIME, nullptr);
 }
 
 std::string WindowMain::getSongTitleOrFilename() {
