@@ -7,12 +7,27 @@ namespace Wikipedia {
 namespace {
 
 const char* kWsHeader = "https://en.wikipedia.org/w/index.php?search=";
-const char* kWsTitleField = " (song)";
-const char* kWsAlbumField = " (album)";
-const char* kWsTitleArtistPreField = " (";
-const char* kWsTitleArtistPostField = " song)";
-const char* kWsAlbumArtistPreField = " (";
-const char* kWsAlbumArtistPostField = " album)";
+
+#define TITLE "song"
+#define ALBUM "album"
+#define TYPE_PRE " \\("
+#define TYPE_POST "\\)"
+#define REGEX_PRE "( \\(("
+#define REGEX_POSTPRE " |)"
+#define REGEX_POSTPOST "\\)|)"
+const char* kWsTitleField = TYPE_PRE TITLE TYPE_POST;
+const char* kWsAlbumField = TYPE_PRE ALBUM TYPE_POST;
+const char* kWsTitleArtistPreField = REGEX_PRE;
+const char* kWsTitleArtistPostField = REGEX_POSTPRE TITLE REGEX_POSTPOST;
+const char* kWsAlbumArtistPreField = REGEX_PRE;
+const char* kWsAlbumArtistPostField = REGEX_POSTPRE ALBUM REGEX_POSTPOST;
+#undef REGEX_POSTPOST
+#undef REGEX_POSTPRE
+#undef REGEX_PRE
+#undef TYPE_POST
+#undef TYPE_PRE
+#undef ALBUM
+#undef TITLE
 
 }  // namespace
 
