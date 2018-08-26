@@ -11,14 +11,14 @@
 #include <gtkmm/scrolledwindow.h>
 #include <gtkmm/filechooserdialog.h>
 
-#include "mp3edit/src/webservice/musicbrainz.h"
+#include "mp3edit/src/webservice/wikipedia.h"
 
 namespace Mp3Edit {
 namespace Gui {
 
 namespace {
 
-using WebService::MusicBrainz::generateSearchUrl;
+using WebService::Wikipedia::generateSearchUrl;
 
 int stringToTrack(const std::string& track) {
   try {
