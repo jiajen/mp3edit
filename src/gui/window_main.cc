@@ -235,6 +235,10 @@ bool WindowMain::on_key_press_event(GdkEventKey* event) {
       case GDK_KEY_o:
         openDirDialog();
         break;
+      case GDK_KEY_L:
+      case GDK_KEY_l:
+        selectDirEntry();
+        break;
       case GDK_KEY_Return:
         attemptBrowserSearch();
         break;
@@ -377,6 +381,10 @@ void WindowMain::updateProgressBar(const std::string& filename,
     default:
       break;
   }
+}
+
+void WindowMain::selectDirEntry() {
+  entry_dir_->grab_focus();
 }
 
 void WindowMain::showErrorDialog() {
