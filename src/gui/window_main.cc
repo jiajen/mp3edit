@@ -18,6 +18,8 @@ namespace Gui {
 
 namespace {
 
+using WebService::MusicBrainz::generateSearchUrl;
+
 int stringToTrack(const std::string& track) {
   try {
     return std::stoi(track);
@@ -413,7 +415,6 @@ void WindowMain::enterProcessingMode(Files::Files::ProcessingMode mode) {
 }
 
 void WindowMain::attemptBrowserSearch() {
-  using WebService::MusicBrainz::generateSearchUrl;
   std::string url = generateSearchUrl(getSongTitleOrFilename(),
                                       entry_song_artist_->get_text(),
                                       entry_song_album_->get_text(),
