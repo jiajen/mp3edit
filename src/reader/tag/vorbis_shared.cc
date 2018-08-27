@@ -28,6 +28,8 @@ int kCommentTrackNumHeaderSize = 12;
 const char* kCommentTrackNumHeader = "TRACKNUMBER=";
 int kCommentTrackTotalHeaderSize = 11;
 const char* kCommentTrackTotalHeader = "TRACKTOTAL=";
+int kCommentAlbumArtistHeaderSize = 12;
+const char* kCommentAlbumArtistHeader = "ALBUMARTIST=";
 
 // Custom exception to throw when there is nothing else to read.
 class SafeReaderException: public std::exception {
@@ -128,6 +130,11 @@ inline bool checkCommentIsTrackTotal(const std::string& comment,
   return matchTrackComment(comment, kCommentTrackTotalHeader,
                            kCommentTrackTotalHeaderSize, value);
 }
+inline bool checkCommentIsAlbumArtist(const std::string& comment,
+                                      std::string& value) {
+  return matchComment(comment, kCommentAlbumArtistHeader,
+                      kCommentAlbumArtistHeaderSize, value);
+}
 
 void markVorbisData(const std::string& field, int field_header_size,
                     int& field_count, int& size) {
@@ -180,6 +187,7 @@ int parseTag(const Bytes& tag, int seek,
 
   SafeReader reader(tag, seek);
   std::string track;
+  std::string album_artist;
   try {
     int vender_length = reader.readInt(kLengthSize);
     reader.readSkip(vender_length);
@@ -191,12 +199,16 @@ int parseTag(const Bytes& tag, int seek,
           checkCommentIsArtist(comment, artist) ||
           checkCommentIsAlbum(comment, album) ||
           checkCommentIsTrackNum(comment, track_num) ||
-          checkCommentIsTrackTotal(comment, track_denum)) continue;
+          checkCommentIsTrackTotal(comment, track_denum) ||
+          checkCommentIsAlbumArtist(comment, album_artist)) continue;
     }
     Sanitiser::sanitiseString(title);
     Sanitiser::sanitiseString(artist);
     Sanitiser::sanitiseString(album);
     Sanitiser::sanitiseTrack(track_num, track_denum);
+    Sanitiser::sanitiseString(album_artist);
+    if (!album_artist.empty() && artist != album_artist)
+      artist += " + " + album_artist;
     if (has_framing_bit && reader.readInt(1) != 0x01) return -1;
     if (remove_padding) reader.skipPadding();
   } catch (const SafeReaderException&) {
@@ -217,6 +229,7 @@ Bytes generateTag(const std::string& title, const std::string& artist,
   markVorbisData(album, kCommentAlbumHeaderSize, num_fields, size);
   markVorbisData(track_num, kCommentTrackNumHeaderSize, num_fields, size);
   markVorbisData(track_denum, kCommentTrackTotalHeaderSize, num_fields, size);
+  markVorbisData(artist, kCommentAlbumArtistHeaderSize, num_fields, size);
 
   Bytes tag;
   tag.reserve(size);
@@ -233,6 +246,8 @@ Bytes generateTag(const std::string& title, const std::string& artist,
   if (track_num != -1)
     addVorbisField(track_denum,
                    kCommentTrackTotalHeader, kCommentTrackTotalHeaderSize, tag);
+  addVorbisField(artist, kCommentAlbumArtistHeader,
+                 kCommentAlbumArtistHeaderSize, tag);
 
   if (has_framing_bit) tag.push_back(0x01);
 
