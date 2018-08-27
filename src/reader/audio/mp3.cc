@@ -242,7 +242,7 @@ bool getAudioProperties(Filesystem::FileStream& file_stream,
   for (int size; seek < audio_end; seek += size) {
     readBytes(file_stream, seek, kFrameHeaderLength, header);
     if (!checkValidSync(header)) {
-      if (n_frames > 0) {
+      if (n_frames > 1) {  // If false sync, n_frames is likely to be 1.
         audio_end = seek;
         break;
       } else {
