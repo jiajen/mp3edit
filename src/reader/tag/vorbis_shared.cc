@@ -207,7 +207,8 @@ int parseTag(const Bytes& tag, int seek,
     Sanitiser::sanitiseString(album);
     Sanitiser::sanitiseTrack(track_num, track_denum);
     Sanitiser::sanitiseString(album_artist);
-    if (artist != album_artist) artist += " + " + album_artist;
+    if (!album_artist.empty() && artist != album_artist)
+      artist += " + " + album_artist;
     if (has_framing_bit && reader.readInt(1) != 0x01) return -1;
     if (remove_padding) reader.skipPadding();
   } catch (const SafeReaderException&) {

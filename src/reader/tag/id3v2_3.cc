@@ -147,7 +147,8 @@ void parseTag(const Bytes& raw_tag, std::string& title, std::string& artist,
       bytesToString(frame_data_ptr, frame_data_ptr + frame_size,
                     album_artist);
       Sanitiser::sanitiseString(album_artist);
-      if (artist != album_artist) artist += " + " + album_artist;
+      if (!album_artist.empty() && artist != album_artist)
+        artist += " + " + album_artist;
     } else if (*frame_ptr == 0x00) {
       break;
     }
