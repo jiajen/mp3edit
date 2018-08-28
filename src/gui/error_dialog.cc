@@ -12,8 +12,9 @@ const char* kError = "Error";
 
 void appendColumn(Gtk::TreeView* tree_view, const char* column_title,
                   Gtk::TreeModelColumn<std::string>& column) {
-  tree_view->get_column(tree_view->append_column(
-    column_title, column)-1)->set_sort_column(column);
+  int idx = tree_view->append_column(column_title, column)-1;
+  tree_view->get_column(idx)->set_sort_column(column);
+  tree_view->get_column(idx)->set_resizable(true);
 }
 
 }  // namespace
