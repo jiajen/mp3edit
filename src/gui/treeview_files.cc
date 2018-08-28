@@ -22,8 +22,9 @@ const char* kFilepath = "Path";
 
 void appendColumn(TreeViewFiles* tree_view, const char* column_title,
                   Gtk::TreeModelColumn<std::string>& column) {
-  tree_view->get_column(tree_view->append_column(
-    column_title, column)-1)->set_sort_column(column);
+  int idx = tree_view->append_column(column_title, column)-1;
+  tree_view->get_column(idx)->set_sort_column(column);
+  tree_view->get_column(idx)->set_resizable(true);
 }
 
 void appendColumnEditable(TreeViewFiles* tree_view, const char* column_title,
@@ -32,6 +33,7 @@ void appendColumnEditable(TreeViewFiles* tree_view, const char* column_title,
                             const Glib::ustring&, const Glib::ustring&)) {
   int idx = tree_view->append_column_editable(column_title, column)-1;
   tree_view->get_column(idx)->set_sort_column(column);
+  tree_view->get_column(idx)->set_resizable(true);
 
   Gtk::CellRenderer* renderer = tree_view->get_column_cell_renderer(idx);
   Gtk::CellRendererText* renderer_text = (Gtk::CellRendererText*)(renderer);
