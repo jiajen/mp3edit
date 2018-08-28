@@ -3,4 +3,9 @@
 
 const char* kApplicationVersion = "@PROJECT_VERSION@";
 
+#cmakedefine RELEASE_BUILD
+#ifdef RELEASE_BUILD
+const char* kApplicationGladeContent = "@GLADE_CONTENTS@";
+#endif  // RELEASE_BUILD
+
 #endif  // MP3EDIT_SRC_MAIN_H_

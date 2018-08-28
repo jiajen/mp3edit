@@ -28,6 +28,11 @@ set(LIB_INC_DIR ${LIB_INC_DIR} ${GTKMM3_INCLUDE_DIRS})
 set(LIB_LIB_DIR ${LIB_LIB_DIR} ${GTKMM3_LIBRARY_DIRS})
 set(LIB_LINKED_LIBS ${LIB_LINKED_LIBS} ${GTKMM3_LIBRARIES})
 
+## Gtkmm Internal GUI
+file(READ ${PROJECT_SOURCE_DIR}/bin/${CMAKE_PROJECT_NAME}.glade GLADE_CONTENTS)
+string(REGEX REPLACE " *\n *" "" GLADE_CONTENTS ${GLADE_CONTENTS})
+string(REPLACE "\"" "\\\"" GLADE_CONTENTS ${GLADE_CONTENTS})
+
 ## C++17 Filesystem support is still experimental hence requiring the below
 set(LIB_LINKED_LIBS ${LIB_LINKED_LIBS} -lstdc++fs)
 
