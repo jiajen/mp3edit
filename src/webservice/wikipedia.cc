@@ -45,8 +45,10 @@ std::string generateSearchUrl(const std::string& title_filename,
   } else if (!artist.empty()) {
     return kWsHeader + title_filename + kWsTitleArtistPreField + artist +
                                         kWsTitleArtistPostField;
-  } else {
+  } else if (!title_filename.empty()) {
     return kWsHeader + title_filename + kWsTitleField;
+  } else {
+    return std::string();
   }
 }
 
