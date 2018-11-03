@@ -2,6 +2,59 @@
 <!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
+  <object class="GtkMessageDialog" id="gtk_dialog_error_dialog">
+    <property name="can_focus">False</property>
+    <property name="type_hint">dialog</property>
+    <property name="buttons">ok</property>
+    <property name="text" translatable="yes">Status</property>
+    <property name="secondary_text" translatable="yes">Errors were encountered while performing operations.</property>
+    <child>
+      <placeholder/>
+    </child>
+    <child internal-child="vbox">
+      <object class="GtkBox" id="gtk_box_error_dialog">
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">2</property>
+        <child internal-child="action_area">
+          <object class="GtkButtonBox" id="gtk_button_box_error_dialog">
+            <property name="can_focus">False</property>
+            <property name="homogeneous">True</property>
+            <property name="layout_style">end</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkScrolledWindow" id="gtk_scroller_treeview_error_dialog">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="shadow_type">in</property>
+            <property name="propagate_natural_width">True</property>
+            <property name="propagate_natural_height">True</property>
+            <child>
+              <object class="GtkTreeView" id="gtk_treeview_error_dialog">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="search_column">0</property>
+                <child internal-child="selection">
+                  <object class="GtkTreeSelection"/>
+                </child>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
   <object class="GtkWindow" id="gtk_window_main">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">MP3 Tag Editor</property>
@@ -97,11 +150,19 @@
           </packing>
         </child>
         <child>
-          <object class="GtkTreeView" id="gtk_treeview_files">
+          <object class="GtkScrolledWindow" id="gtk_scroller_treeview_files">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <child internal-child="selection">
-              <object class="GtkTreeSelection"/>
+            <property name="shadow_type">in</property>
+            <child>
+              <object class="GtkTreeView" id="gtk_treeview_files">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="search_column">1</property>
+                <child internal-child="selection">
+                  <object class="GtkTreeSelection"/>
+                </child>
+              </object>
             </child>
           </object>
           <packing>
@@ -170,6 +231,21 @@
                     <property name="position">3</property>
                   </packing>
                 </child>
+                <child>
+                  <object class="GtkCheckButton" id="checkbox_rename_file">
+                    <property name="label" translatable="yes">Title as Filename</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="active">True</property>
+                    <property name="draw_indicator">True</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">4</property>
+                  </packing>
+                </child>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -221,18 +297,6 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="btn_song_convert_vbr">
-                <property name="label" translatable="yes">Convert to VBR</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-              </object>
-              <packing>
-                <property name="left_attach">2</property>
-                <property name="top_attach">1</property>
-              </packing>
-            </child>
-            <child>
               <object class="GtkButton" id="btn_song_search_web">
                 <property name="label" translatable="yes">Search ID3 Tag</property>
                 <property name="visible">True</property>
@@ -246,7 +310,7 @@
             </child>
             <child>
               <object class="GtkButton" id="btn_song_save_all">
-                <property name="label" translatable="yes">Trim/Save All Files</property>
+                <property name="label" translatable="yes">Save All Files</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -303,6 +367,9 @@
                 <property name="top_attach">0</property>
               </packing>
             </child>
+            <child>
+              <placeholder/>
+            </child>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -316,9 +383,17 @@
             <property name="can_focus">False</property>
             <property name="spacing">4</property>
             <child>
-              <object class="GtkProgressBar" id="progressbar_main">
+              <object class="GtkEventBox" id="eventbox_progressbar_main">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <child>
+                  <object class="GtkProgressBar" id="progressbar_main">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="show_text">True</property>
+                    <property name="ellipsize">end</property>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="expand">True</property>

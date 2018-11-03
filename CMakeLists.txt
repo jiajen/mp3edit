@@ -18,7 +18,8 @@ set(LIB_LINKED_LIBS "")
 project(mp3edit VERSION 6.0.0 LANGUAGES CXX)
 
 ## Poco
-find_package(Poco REQUIRED Foundation Util Net Crypto NetSSL)
+# find_library(POCO_FOUNDATION PocoFoundation)
+# set(LIB_LINKED_LIBS ${LIB_LINKED_LIBS} ${POCO_FOUNDATION})
 
 ## Gtkmm
 find_package(PkgConfig)
@@ -26,6 +27,11 @@ pkg_check_modules(GTKMM3 gtkmm-3.0)
 set(LIB_INC_DIR ${LIB_INC_DIR} ${GTKMM3_INCLUDE_DIRS})
 set(LIB_LIB_DIR ${LIB_LIB_DIR} ${GTKMM3_LIBRARY_DIRS})
 set(LIB_LINKED_LIBS ${LIB_LINKED_LIBS} ${GTKMM3_LIBRARIES})
+
+## Gtkmm Internal GUI
+file(READ ${PROJECT_SOURCE_DIR}/bin/${CMAKE_PROJECT_NAME}.glade GLADE_CONTENTS)
+string(REGEX REPLACE " *\n *" "" GLADE_CONTENTS ${GLADE_CONTENTS})
+string(REPLACE "\"" "\\\"" GLADE_CONTENTS ${GLADE_CONTENTS})
 
 ## C++17 Filesystem support is still experimental hence requiring the below
 set(LIB_LINKED_LIBS ${LIB_LINKED_LIBS} -lstdc++fs)
@@ -44,7 +50,7 @@ configure_file(
 )
 
 ## Custom Compiler Flags
-set(COMPILER_FLAGS_CUSTOM)
+set(COMPILER_FLAGS_CUSTOM -pthread)
 
 ## Compiler Optimisations
 set(COMPILER_FLAGS_OPTIMISATIONS -O2 -flto)
