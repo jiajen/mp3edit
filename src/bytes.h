@@ -1,5 +1,5 @@
-#ifndef MP3EDIT_SRC_BYTES_H_
-#define MP3EDIT_SRC_BYTES_H_
+#ifndef MP3EDIT_BYTES_H_
+#define MP3EDIT_BYTES_H_
 
 #include <vector>
 
@@ -9,4 +9,4 @@ typedef std::vector<unsigned char> Bytes;
 
 }  // namespace Mp3Edit
 
-#endif  // MP3EDIT_SRC_BYTES_H_
+#endif  // MP3EDIT_BYTES_H_

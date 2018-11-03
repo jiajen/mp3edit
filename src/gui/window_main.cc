@@ -1,6 +1,7 @@
 #include "mp3edit/src/gui/window_main.h"
 
 #include <string>
+#include <vector>
 #include <algorithm>
 #include <filesystem>
 #include <exception>

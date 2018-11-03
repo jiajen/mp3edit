@@ -13,6 +13,7 @@ class DirectoryEntry {
       : filetype_(filetype), path_(path) {}
   inline File::FileType getFiletype() const { return filetype_; }
   inline const std::string& getPath() const { return path_; }
+
  private:
   File::FileType filetype_;
   std::string path_;
@@ -61,7 +62,7 @@ void Files::saveAllFiles(bool rename_file) {
   errors_.clear();
 
   int total_files = 0;
-  for (const auto& file: files_) {
+  for (const auto& file : files_) {
     if (file) total_files++;
   }
   beginProgress(total_files);
@@ -121,7 +122,7 @@ inline void Files::readFiles(const std::string& directory,
 
   std::vector<DirectoryEntry> dir_entries;
   int file_num = 0;
-  for (const auto& entry: it) {
+  for (const auto& entry : it) {
     if (!entry.is_regular_file()) continue;
     std::string filepath = entry.path();
     File::FileType filetype = File::getAudioExtension(filepath);

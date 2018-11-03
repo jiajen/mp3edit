@@ -1,6 +1,7 @@
-#ifndef MP3EDIT_SRC_GUI_WINDOW_MAIN_H_
-#define MP3EDIT_SRC_GUI_WINDOW_MAIN_H_
+#ifndef MP3EDIT_GUI_WINDOW_MAIN_H_
+#define MP3EDIT_GUI_WINDOW_MAIN_H_
 
+#include <string>
 #include <thread>
 
 #include <glibmm/dispatcher.h>
@@ -30,6 +31,7 @@ class WindowMain: public Gtk::Window {
   // by treeview when row data is edited.
   void restoreEntryData(int pos);
   void clearProgressBar();
+
  private:
   void onDirEntryEnterPress();
   void onOpenDirBtnPress();
@@ -93,4 +95,4 @@ class WindowMain: public Gtk::Window {
 }  // namespace Gui
 }  // namespace Mp3Edit
 
-#endif  // MP3EDIT_SRC_GUI_WINDOW_MAIN_H_
+#endif  // MP3EDIT_GUI_WINDOW_MAIN_H_

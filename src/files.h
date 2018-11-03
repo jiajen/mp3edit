@@ -1,5 +1,5 @@
-#ifndef MP3EDIT_SRC_FILES_H_
-#define MP3EDIT_SRC_FILES_H_
+#ifndef MP3EDIT_FILES_H_
+#define MP3EDIT_FILES_H_
 
 #include <string>
 #include <vector>
@@ -17,6 +17,7 @@ class FilesError {
   FilesError(const std::string& filepath, const std::string& error_message);
   inline const std::string path() const { return filepath_; }
   inline const std::string what() const { return error_message_; }
+
  private:
   std::string filepath_;
   std::string error_message_;
@@ -32,7 +33,7 @@ class Files {
     kSaveSingle = 2,
     kSaveMulti = 3,
   };
-  Files(Glib::Dispatcher* dispatcher);
+  explicit Files(Glib::Dispatcher* dispatcher);
 
   inline File::File& operator[](int idx) { return files_[idx]; }
   inline int size() const { return files_.size(); }
@@ -50,6 +51,7 @@ class Files {
   // This must be called by the GUI thread before the start of an operation.
   void setOperation(ProcessingMode processing_mode);
   void stopOperation();
+
  private:
   template <class T>
   void readFiles(const std::string& directory, bool read_audio_data, T& it);
@@ -75,4 +77,4 @@ class Files {
 }  // namespace Files
 }  // namespace Mp3Edit
 
-#endif  // MP3EDIT_SRC_FILES_H_
+#endif  // MP3EDIT_FILES_H_

@@ -38,6 +38,6 @@ int seekHeaderEnd(Filesystem::FileStream& file_stream, int seek) {
   return seek;
 }
 
-}  // Mp3Padding
-}  // ReaderTag
-}  // Mp3Edit
+}  // namespace Mp3Padding
+}  // namespace ReaderTag
+}  // namespace Mp3Edit

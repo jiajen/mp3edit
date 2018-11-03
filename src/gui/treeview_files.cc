@@ -29,7 +29,7 @@ void appendColumn(TreeViewFiles* tree_view, const char* column_title,
 
 void appendColumnEditable(TreeViewFiles* tree_view, const char* column_title,
                           Gtk::TreeModelColumn<std::string>& column,
-                          void (TreeViewFiles::* function_ptr)(
+                          void(TreeViewFiles::* function_ptr)(
                             const Glib::ustring&, const Glib::ustring&)) {
   int idx = tree_view->append_column_editable(column_title, column)-1;
   tree_view->get_column(idx)->set_sort_column(column);
@@ -120,7 +120,7 @@ void TreeViewFiles::updateSelectedRowFilepath() {
 }
 
 void TreeViewFiles::updateAllRowsFilepath() {
-  for (Gtk::TreeModel::Row row: liststore_->children())
+  for (Gtk::TreeModel::Row row : liststore_->children())
     row[columns_.filepath()] = files_[row[columns_.pos()]].getFilepath();
 }
 

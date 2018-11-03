@@ -1,5 +1,5 @@
-#ifndef MP3EDIT_SRC_WEBSERVICE_MUSICBRAINZ_H_
-#define MP3EDIT_SRC_WEBSERVICE_MUSICBRAINZ_H_
+#ifndef MP3EDIT_WEBSERVICE_MUSICBRAINZ_H_
+#define MP3EDIT_WEBSERVICE_MUSICBRAINZ_H_
 
 #include <string>
 
@@ -13,8 +13,8 @@ std::string generateSearchUrl(const std::string& title_filename,
                               const std::string& track_num,
                               const std::string& track_denum);
 
-}  // MusicBrainz
-}  // WebService
-}  // Mp3Edit
+}  // namespace MusicBrainz
+}  // namespace WebService
+}  // namespace Mp3Edit
 
-#endif  // MP3EDIT_SRC_WEBSERVICE_MUSICBRAINZ_H_
+#endif  // MP3EDIT_WEBSERVICE_MUSICBRAINZ_H_

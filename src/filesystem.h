@@ -1,5 +1,5 @@
-#ifndef MP3EDIT_SRC_FILESYSTEM_H_
-#define MP3EDIT_SRC_FILESYSTEM_H_
+#ifndef MP3EDIT_FILESYSTEM_H_
+#define MP3EDIT_FILESYSTEM_H_
 
 #include <cstdio>
 
@@ -15,10 +15,11 @@ typedef std::basic_ifstream<char> FileStream;
 
 class FileWriter {
  public:
-  FileWriter(const std::string& path);
+  explicit FileWriter(const std::string& path);
   ~FileWriter();
   void write(const Bytes& data);
   void close();
+
  private:
   FILE* file_;
   bool closed_;
@@ -29,4 +30,4 @@ bool readBytes(FileStream& file_stream, int offset, int length, Bytes& output);
 }  // namespace Filesystem
 }  // namespace Mp3Edit
 
-#endif  // MP3EDIT_SRC_FILESYSTEM_H_
+#endif  // MP3EDIT_FILESYSTEM_H_

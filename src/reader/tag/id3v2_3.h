@@ -1,5 +1,5 @@
-#ifndef MP3EDIT_SRC_READER_TAG_ID3V2_3_H_
-#define MP3EDIT_SRC_READER_TAG_ID3V2_3_H_
+#ifndef MP3EDIT_READER_TAG_ID3V2_3_H_
+#define MP3EDIT_READER_TAG_ID3V2_3_H_
 
 #include <string>
 
@@ -22,8 +22,8 @@ void parseTag(const Bytes& tag, std::string& title, std::string& artist,
 Bytes generateTag(const std::string& title, const std::string& artist,
                   const std::string& album, int track_num, int track_denum);
 
-}  // Id3v2_3
-}  // ReaderTag
-}  // Mp3Edit
+}  // namespace Id3v2_3
+}  // namespace ReaderTag
+}  // namespace Mp3Edit
 
-#endif  // MP3EDIT_SRC_READER_TAG_ID3V2_3_H_
+#endif  // MP3EDIT_READER_TAG_ID3V2_3_H_

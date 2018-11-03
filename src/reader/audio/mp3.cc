@@ -54,17 +54,17 @@ const int kBitrateTable[][16] = {
   {-1, 32, 48, 56, 64, 80, 96, 112, 128, 144, 160, 176, 192, 224, 256, -1},
   {-1, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160, -1}
 };
-const int* kBitrateRefTable[][4] = { // [Version][Layer]
-  {0,kBitrateTable[4],kBitrateTable[4],kBitrateTable[3]},
-  {0,0,0,0},
-  {0,kBitrateTable[4],kBitrateTable[4],kBitrateTable[3]},
-  {0,kBitrateTable[2],kBitrateTable[1],kBitrateTable[0]}
+const int* kBitrateRefTable[][4] = {  // [Version][Layer]
+  {0, kBitrateTable[4], kBitrateTable[4], kBitrateTable[3]},
+  {0, 0, 0, 0},
+  {0, kBitrateTable[4], kBitrateTable[4], kBitrateTable[3]},
+  {0, kBitrateTable[2], kBitrateTable[1], kBitrateTable[0]}
 };
 
 const int kSamplingPos = 2;
 const char kSamplingBitMask = '\x0C';
 const int kSamplingShift = 2;
-const int kSamplingTable[][4] = { // [Version][Sampling]
+const int kSamplingTable[][4] = {  // [Version][Sampling]
   {11025, 12000, 8000, -1},
   {-1, -1, -1, -1},
   {22050, 24000, 16000, -1},
@@ -149,7 +149,7 @@ bool getLayer(const Bytes& header, Layer& layer) {
 }
 
 bool getBitrate(const Bytes& header, MpegVersion version, Layer layer,
-                ChannelMode channel_mode, int& bitrate, long long& bitrate_sum,
+                ChannelMode channel_mode, int& bitrate, int64_t& bitrate_sum,
                 File::BitrateType& bitrate_type) {
   using File::BitrateType;
 
@@ -237,7 +237,7 @@ bool getAudioProperties(Filesystem::FileStream& file_stream,
   Bytes header;
   bitrate_type = File::BitrateType::kInvalid;
   int n_frames = 0;
-  long long bitrate_sum = 0;
+  int64_t bitrate_sum = 0;
   bool is_first_frame = true;
   for (int size; seek < audio_end; seek += size) {
     readBytes(file_stream, seek, kFrameHeaderLength, header);

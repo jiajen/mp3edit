@@ -191,6 +191,6 @@ Bytes generateTag(const std::string& title, const std::string& artist,
   return tag;
 }
 
-}  // Id3v2
-}  // ReaderTag
-}  // Mp3Edit
+}  // namespace Id3v2_3
+}  // namespace ReaderTag
+}  // namespace Mp3Edit

@@ -52,6 +52,6 @@ std::string generateSearchUrl(const std::string& title_filename,
   }
 }
 
-}  // Wikipedia
-}  // WebService
-}  // Mp3Edit
+}  // namespace Wikipedia
+}  // namespace WebService
+}  // namespace Mp3Edit

@@ -1,5 +1,7 @@
-#ifndef MP3EDIT_SRC_READER_TAG_VORBIS_OGG_H_
-#define MP3EDIT_SRC_READER_TAG_VORBIS_OGG_H_
+#ifndef MP3EDIT_READER_TAG_VORBIS_OGG_H_
+#define MP3EDIT_READER_TAG_VORBIS_OGG_H_
+
+#include <string>
 
 #include "mp3edit/src/filesystem.h"
 
@@ -27,4 +29,4 @@ Bytes generateTag(Filesystem::FileStream& file_stream,
 }  // namespace ReaderTag
 }  // namespace Mp3Edit
 
-#endif  // MP3EDIT_SRC_READER_TAG_VORBIS_OGG_H_
+#endif  // MP3EDIT_READER_TAG_VORBIS_OGG_H_
