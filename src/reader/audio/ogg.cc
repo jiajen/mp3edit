@@ -47,9 +47,13 @@ bool getAudioProperties(Filesystem::FileStream& file_stream, int seek,
                                   header.begin() + kNumChannelsPos +
                                                    kNumChannelsSize,
                                   false);
-  if (num_channels == 1) channel_mode = File::ChannelMode::kMono;
-  else if (num_channels == 2) channel_mode = File::ChannelMode::kStereo;
-  else return false;
+  if (num_channels == 1) {
+    channel_mode = File::ChannelMode::kMono;
+  } else if (num_channels == 2) {
+    channel_mode = File::ChannelMode::kStereo;
+  } else {
+     return false;
+  }
 
   sampling_rate = lEndianToInt(header.begin() + kSamplingRatePos,
                                header.begin() + kSamplingRatePos +

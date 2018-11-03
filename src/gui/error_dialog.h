@@ -1,5 +1,5 @@
-#ifndef MP3EDIT_SRC_GUI_ERROR_DIALOG_H_
-#define MP3EDIT_SRC_GUI_ERROR_DIALOG_H_
+#ifndef MP3EDIT_GUI_ERROR_DIALOG_H_
+#define MP3EDIT_GUI_ERROR_DIALOG_H_
 
 #include <string>
 #include <vector>
@@ -20,17 +20,20 @@ namespace Gui {
 
 class ErrorDialog: public Gtk::MessageDialog {
  public:
-   ErrorDialog(BaseObjectType* cobject,
+  ErrorDialog(BaseObjectType* cobject,
                const Glib::RefPtr<Gtk::Builder>& builder,
                const std::vector<Files::FilesError>& files);
-   void run();
+  void run();
+
  private:
   class Columns : public Gtk::TreeModel::ColumnRecord {
     typedef Gtk::TreeModelColumn<std::string> Column;
+
    public:
     Columns();
     inline Column& filepath() { return filepath_; }
     inline Column& error() { return error_; }
+
    private:
     Column filepath_;
     Column error_;
@@ -50,4 +53,4 @@ class ErrorDialog: public Gtk::MessageDialog {
 }  // namespace Gui
 }  // namespace Mp3Edit
 
-#endif  // MP3EDIT_SRC_GUI_ERROR_DIALOG_H_
+#endif  // MP3EDIT_GUI_ERROR_DIALOG_H_

@@ -92,7 +92,8 @@ inline bool isValidByteArray(Bytes::const_iterator it_begin,
 int bytesToInt(Bytes::const_iterator it_begin, Bytes::const_iterator it_end,
                bool is_sync_safe) {
   int size = 0;
-  for (int shift = 0, byte; it_begin != it_end; shift += (is_sync_safe ? 7:8)) {
+  int delta_shift = is_sync_safe ? 7 : 8;
+  for (int shift = 0, byte; it_begin != it_end; shift += delta_shift) {
     byte = (int)(*it_begin);
     if (is_sync_safe && byte >= 0x80) return -1;
     size += (byte << shift);

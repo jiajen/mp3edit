@@ -42,6 +42,6 @@ std::string generateSearchUrl(const std::string& title_filename,
   return std::string(kWsHeader) + std::string(kWsParams) + query;
 }
 
-}  // MusicBrainz
-}  // WebService
-}  // Mp3Edit
+}  // namespace MusicBrainz
+}  // namespace WebService
+}  // namespace Mp3Edit

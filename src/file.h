@@ -1,5 +1,5 @@
-#ifndef MP3EDIT_SRC_FILE_H_
-#define MP3EDIT_SRC_FILE_H_
+#ifndef MP3EDIT_FILE_H_
+#define MP3EDIT_FILE_H_
 
 #include <string>
 
@@ -13,7 +13,7 @@ enum class FileType {
   kMp3 = 0,
   kFlac = 1,
   kOgg = 2,
-  kInvalid = 3, // kInvalid must be last
+  kInvalid = 3,  // kInvalid must be last
 };
 
 enum class BitrateType {
@@ -55,6 +55,7 @@ class File {
   void updateFields(const std::string& title, const std::string& artist,
                     const std::string& album, int track_num, int track_denum);
   void saveFileChanges(bool rename_file);
+
  private:
   void readMetaData(Filesystem::FileStream& file_stream);
   // Sets is_valid_ to false if file appears invalid
@@ -96,4 +97,4 @@ class File {
 }  // namespace File
 }  // namespace Mp3Edit
 
-#endif  // MP3EDIT_SRC_FILE_H_
+#endif  // MP3EDIT_FILE_H_

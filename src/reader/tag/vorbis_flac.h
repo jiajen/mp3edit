@@ -1,5 +1,7 @@
-#ifndef MP3EDIT_SRC_READER_TAG_VORBIS_FLAC_H_
-#define MP3EDIT_SRC_READER_TAG_VORBIS_FLAC_H_
+#ifndef MP3EDIT_READER_TAG_VORBIS_FLAC_H_
+#define MP3EDIT_READER_TAG_VORBIS_FLAC_H_
+
+#include <string>
 
 #include "mp3edit/src/filesystem.h"
 
@@ -25,4 +27,4 @@ Bytes generateTag(Filesystem::FileStream& file_stream, int seek_flac_start,
 }  // namespace ReaderTag
 }  // namespace Mp3Edit
 
-#endif  // MP3EDIT_SRC_READER_TAG_VORBIS_FLAC_H_
+#endif  // MP3EDIT_READER_TAG_VORBIS_FLAC_H_

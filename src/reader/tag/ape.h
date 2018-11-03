@@ -1,5 +1,5 @@
-#ifndef MP3EDIT_SRC_READER_TAG_APE_H_
-#define MP3EDIT_SRC_READER_TAG_APE_H_
+#ifndef MP3EDIT_READER_TAG_APE_H_
+#define MP3EDIT_READER_TAG_APE_H_
 
 #include "mp3edit/src/filesystem.h"
 
@@ -15,4 +15,4 @@ int seekFooterStart(Filesystem::FileStream& file_stream, int seek);
 }  // namespace ReaderTag
 }  // namespace Mp3Edit
 
-#endif  // MP3EDIT_SRC_READER_TAG_APE_H_
+#endif  // MP3EDIT_READER_TAG_APE_H_

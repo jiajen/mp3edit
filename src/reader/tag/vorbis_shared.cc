@@ -75,6 +75,7 @@ class SafeReader {
   inline int bytesRead() {
     return seek_end_ - seek_start_;
   }
+
  private:
   const Bytes& tag_;
   int tag_size_;

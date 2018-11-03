@@ -1,5 +1,5 @@
-#ifndef MP3EDIT_SRC_READER_AUDIO_OGG_H_
-#define MP3EDIT_SRC_READER_AUDIO_OGG_H_
+#ifndef MP3EDIT_READER_AUDIO_OGG_H_
+#define MP3EDIT_READER_AUDIO_OGG_H_
 
 #include "mp3edit/src/filesystem.h"
 #include "mp3edit/src/file.h"
@@ -16,4 +16,4 @@ bool getAudioProperties(Filesystem::FileStream& file_stream, int seek,
 }  // namespace ReaderAudio
 }  // namespace Mp3Edit
 
-#endif  // MP3EDIT_SRC_READER_AUDIO_OGG_H_
+#endif  // MP3EDIT_READER_AUDIO_OGG_H_

@@ -82,6 +82,6 @@ int seekFooterStart(Filesystem::FileStream& file_stream, int seek) {
   return seek;
 }
 
-}  // Id3v2
-}  // ReaderTag
-}  // Mp3Edit
+}  // namespace Id3v2
+}  // namespace ReaderTag
+}  // namespace Mp3Edit

@@ -1,5 +1,7 @@
-#ifndef MP3EDIT_SRC_READER_TAG_VORBIS_SHARED_H_
-#define MP3EDIT_SRC_READER_TAG_VORBIS_SHARED_H_
+#ifndef MP3EDIT_READER_TAG_VORBIS_SHARED_H_
+#define MP3EDIT_READER_TAG_VORBIS_SHARED_H_
+
+#include <string>
 
 #include "mp3edit/src/filesystem.h"
 
@@ -23,4 +25,4 @@ Bytes generateTag(const std::string& title, const std::string& artist,
 }  // namespace ReaderTag
 }  // namespace Mp3Edit
 
-#endif  // MP3EDIT_SRC_READER_TAG_VORBIS_SHARED_H_
+#endif  // MP3EDIT_READER_TAG_VORBIS_SHARED_H_

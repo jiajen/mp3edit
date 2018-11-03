@@ -1,4 +1,4 @@
-#include "main.h"
+#include "mp3edit/src/main.h"
 
 #include <glibmm/refptr.h>
 #include <gtkmm/application.h>

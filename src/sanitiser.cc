@@ -16,7 +16,7 @@ const char kMaxValidNumericChar = 57;
 bool sanitiseIntegerString(std::string& str) {
   bool changed = false;
   std::string valid_str;
-  for (const char& c: str) {
+  for (const char& c : str) {
     if (c >= kMinValidNumericChar && c <= kMaxValidNumericChar) {
       valid_str.push_back(c);
     } else {
@@ -70,11 +70,11 @@ bool sanitiseString(std::string& str) {
   valid_str.reserve(str.length());
   trimmed_str.reserve(str.length());
 
-  for (const char& c: str) {
+  for (const char& c : str) {
     if (c >= kMinValidChar && c <= kMaxValidChar) valid_str.push_back(c);
   }
 
-  for (const char& c: valid_str) {
+  for (const char& c : valid_str) {
     if (c != ' ' || (!trimmed_str.empty() && trimmed_str.back() != ' '))
       trimmed_str.push_back(c);
   }

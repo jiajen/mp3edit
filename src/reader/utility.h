@@ -1,5 +1,5 @@
-#ifndef MP3EDIT_SRC_READER_UTILITY_H_
-#define MP3EDIT_SRC_READER_UTILITY_H_
+#ifndef MP3EDIT_READER_UTILITY_H_
+#define MP3EDIT_READER_UTILITY_H_
 
 #include <string>
 
@@ -18,6 +18,7 @@ class Crc32 {
         unsigned int final_xor);
   void update(const unsigned char* data, int size);
   unsigned int checksum();
+
  private:
   unsigned int _crc32;
   unsigned int _final_xor;
@@ -48,4 +49,4 @@ void bytesToTrack(T it_begin, T it_end, int& track_num, int& track_denum);
 }  // namespace Reader
 }  // namespace Mp3Edit
 
-#endif  // MP3EDIT_SRC_READER_UTILITY_H_
+#endif  // MP3EDIT_READER_UTILITY_H_
